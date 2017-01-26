@@ -1,0 +1,199 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DCAdmin"
+        xmlns:DCMarkerEF="clr-namespace:DCMarkerEF;assembly=DCMarkerEF"
+        x:Class="DCAdmin.MainWindow"
+        mc:Ignorable="d"
+        MaxWidth="{x:Static local:MainWindow.MaxScreenSize}"
+
+        Title="MainWindow" Height="401" Width="611" Loaded="Window_Loaded" Closing="Window_Closing" ContentRendered="Window_ContentRendered">
+    <Window.Resources>
+        <CollectionViewSource x:Key="laserDataViewSource" d:DesignSource="{d:DesignInstance {x:Type DCMarkerEF:LaserData}, CreateList=True}" />
+        <CollectionViewSource x:Key="weekCodeViewSource" d:DesignSource="{d:DesignInstance {x:Type DCMarkerEF:WeekCode}, CreateList=True}" />
+        <CollectionViewSource x:Key="quarterCodeViewSource" d:DesignSource="{d:DesignInstance {x:Type DCMarkerEF:QuarterCode}, CreateList=True}" />
+        <CollectionViewSource x:Key="fixtureViewSource" d:DesignSource="{d:DesignInstance {x:Type DCMarkerEF:Fixture}, CreateList=True}" />
+    </Window.Resources>
+    <Grid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem x:Name="New" Header="_New" Click="New_Click" />
+                    <MenuItem x:Name="Save" Header="_Save" Click="Save_Click" />
+                    <Separator />
+                    <MenuItem x:Name="Delete" Header="_Delete" Click="Delete_Click" />
+                    <Separator />
+                    <MenuItem x:Name="Exit" Header="_Exit" Click="Exit_Click" />
+                </MenuItem>
+            </Menu>
+            <ToolBarTray DockPanel.Dock="Top">
+                <ToolBar>
+                    <Button ToolTip="Create New article number" Click="New_Click">
+                        <Image Source="Images\Add_16x.png" Width="20" Height="20" />
+                    </Button>
+                    <Button  ToolTip="Save changes to database" Click="Save_Click">
+                        <Image Source="Images\Save_16x.png" Width="20" Height="20" />
+                    </Button>
+                    <Separator />
+                    <Button  ToolTip="Delect selected article number." Click="Delete_Click">
+                        <Image Source="Images\Cancel_16x.png" Width="20" Height="20" />
+                    </Button>
+                </ToolBar>
+            </ToolBarTray>
+            <TabControl x:Name="tcControl" DockPanel.Dock="Top">
+                <TabItem Header="LaserData">
+                    <DockPanel>
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                            <TextBlock Text=" " Width="10" />
+                            <TextBlock Text="Article Number (F1)" />
+                            <TextBlock Text=" " Width="5" />
+                            <TextBox x:Name="SearchArticleNumber" Width="100" LostFocus="SearchArticleNumber_LostFocus" KeyUp="SearchArticleNumber_KeyUp" />
+                            <TextBlock Text=" " Width="10" />
+                            <Button x:Name="FindButton" Content="Find" Click="FindButton_Click" />
+                        </StackPanel>
+                        <TextBlock x:Name="SearchError" Text="" Foreground="Red" DockPanel.Dock="Top" />
+
+                        <DataGrid DockPanel.Dock="Top" x:Name="laserDataDataGrid" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            ScrollViewer.HorizontalScrollBarVisibility="Auto" RowDetailsVisibilityMode="VisibleWhenSelected"
+                            Margin="57,20,60,37" ItemsSource="{Binding}" EnableRowVirtualization="True" AutoGenerateColumns="False"
+                            SelectionUnit="FullRow" SelectionMode="Single"
+                                  CanUserAddRows="false"
+                            DataContext="{StaticResource laserDataViewSource}">
+                            <!--<DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Style.Triggers>
+
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Foreground" Value="Black" />
+                                            <Setter Property="Background" Value="White" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.CellStyle>
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Foreground" Value="Black" />
+                                            <Setter Property="Background" Value="White" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.RowStyle>-->
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn x:Name="f1Column" Width="*" MinWidth="50" Header="F1" Binding="{Binding F1 ,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="kantColumn" Width="*" MinWidth="50" Header="Kant" Binding="{Binding Kant,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="f2Column" Width="*" MinWidth="50" Header="F2" Binding="{Binding F2,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="f3Column" Width="*" MinWidth="50" Header="F3" Binding="{Binding F3,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="f4Column" Width="*" MinWidth="50" Header="F4" Binding="{Binding F4,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="f5Column" Width="*" MinWidth="50" Header="F5" Binding="{Binding F5,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="f6Column" Width="*" MinWidth="50" Header="F6" Binding="{Binding F6,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="f7Column" Width="*" MinWidth="50" Header="F7" Binding="{Binding F7,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="f8Column" Width="*" MinWidth="50" Header="F8" Binding="{Binding F8,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="f9Column" Width="*" MinWidth="50" Header="F9" Binding="{Binding F9,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="f10Column" Width="*" MinWidth="50" Header="F10" Binding="{Binding F10,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="bC1Column" Width="*" MinWidth="50" Header="BC1" Binding="{Binding BC1,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="bC2Column" Width="*" MinWidth="50" Header="BC2" Binding="{Binding BC2,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="templateColumn" Width="*" MinWidth="50" Header="Template" Binding="{Binding Template,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="p1Column" Width="*" MinWidth="50" Header="P1" Binding="{Binding P1,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="p2Column" Width="*" MinWidth="50" Header="P2" Binding="{Binding P2,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="p3Column" Width="*" MinWidth="50" Header="P3" Binding="{Binding P3,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="p4Column" Width="*" MinWidth="50" Header="P4" Binding="{Binding P4,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="p5Column" Width="*" MinWidth="50" Header="P5" Binding="{Binding P5,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="p6Column" Width="*" MinWidth="50" Header="P6" Binding="{Binding P6,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridTextColumn x:Name="fIXTURIDColumn" Width="*" MinWidth="50" Header="FIXTURID" Binding="{Binding FixturId,IsAsync=True,TargetNullValue=''}" />
+                                <DataGridCheckBoxColumn x:Name="externTestColumn" Width="*" MinWidth="50" Header="Extern Test" Binding="{Binding ExternTest,IsAsync=True,FallbackValue=false}" />
+                                <DataGridCheckBoxColumn x:Name="enableTOColumn" Width="*" MinWidth="50" Header="EnableTO" Binding="{Binding EnableTO,IsAsync=True,FallbackValue=false}" />
+                                <DataGridTextColumn x:Name="tOnrColumn" Width="*" MinWidth="50" Header="TOnr" Binding="{Binding TOnr,IsAsync=True,TargetNullValue=''}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="WeekCode">
+                    <DataGrid  x:Name="weekCodeDataGrid" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            ScrollViewer.HorizontalScrollBarVisibility="Auto" RowDetailsVisibilityMode="VisibleWhenSelected"
+                            Margin="57,20,60,37" ItemsSource="{Binding}" EnableRowVirtualization="True" AutoGenerateColumns="False"
+                            SelectionUnit="Cell" SelectionMode="Single"
+                               HorizontalAlignment="Left"
+                            DataContext="{StaticResource weekCodeViewSource}">
+
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Style.Triggers>
+
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Foreground" Value="Black" />
+                                        <Setter Property="Background" Value="White" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn IsReadOnly="True" x:Name="weekNoColumn" Width="50"  Header="Week No" Binding="{Binding WeekNo ,IsAsync=True,TargetNullValue=''}" />
+                            <DataGridTextColumn x:Name="codeColumn" Width="50" Header="Code" Binding="{Binding Code,IsAsync=True,TargetNullValue=''}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="QuarterCode">
+                    <DataGrid  x:Name="quarterCodeDataGrid" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            ScrollViewer.HorizontalScrollBarVisibility="Auto" RowDetailsVisibilityMode="VisibleWhenSelected"
+                            Margin="57,20,60,37" ItemsSource="{Binding}" EnableRowVirtualization="True" AutoGenerateColumns="False"
+                            SelectionUnit="Cell" SelectionMode="Single"
+                            DataContext="{StaticResource quarterCodeViewSource}">
+
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Style.Triggers>
+
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Foreground" Value="Black" />
+                                        <Setter Property="Background" Value="White" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="qYearColumn" Width="*"  Header="Year" Binding="{Binding QYear,IsAsync=True,TargetNullValue=''}" />
+                            <DataGridTextColumn x:Name="q1Column" Width="*"  Header="Quarter 1" Binding="{Binding Q1,IsAsync=True,TargetNullValue=''}" />
+                            <DataGridTextColumn x:Name="q12olumn" Width="*"  Header="Quarter 2" Binding="{Binding Q2,IsAsync=True,TargetNullValue=''}" />
+                            <DataGridTextColumn x:Name="q3Column" Width="*"  Header="Quarter 3" Binding="{Binding Q3,IsAsync=True,TargetNullValue=''}" />
+                            <DataGridTextColumn x:Name="q4Column" Width="*"  Header="Quarter 4" Binding="{Binding Q4,IsAsync=True,TargetNullValue=''}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="Fixture">
+                    <DataGrid Grid.Row="2" x:Name="fixtureDataGrid" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            ScrollViewer.HorizontalScrollBarVisibility="Auto" RowDetailsVisibilityMode="VisibleWhenSelected"
+                            Margin="57,20,60,37" ItemsSource="{Binding}" EnableRowVirtualization="True" AutoGenerateColumns="False"
+                            SelectionUnit="Cell" SelectionMode="Single"
+                              HorizontalAlignment="Left"
+                            DataContext="{StaticResource fixtureViewSource}">
+
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Style.Triggers>
+
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Foreground" Value="Black" />
+                                        <Setter Property="Background" Value="White" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="FixturIdColumn" Width="*"  Header="Fixtur Id" Binding="{Binding FixturId,IsAsync=True,TargetNullValue=''}" />
+                            <DataGridTextColumn x:Name="XdistanceColumn" Width="*"  Header="X distance" Binding="{Binding Xdistance,IsAsync=True,TargetNullValue=''}" />
+                            <DataGridTextColumn x:Name="Ydistance2olumn" Width="*"  Header="Y distance" Binding="{Binding Ydistance,IsAsync=True,TargetNullValue=''}" />
+                            <DataGridTextColumn x:Name="XcountColumn" Width="*"  Header="X count" Binding="{Binding Xcount,IsAsync=True,TargetNullValue=''}" />
+                            <DataGridTextColumn x:Name="YcountColumn" Width="*"  Header="Y count" Binding="{Binding Ycount,IsAsync=True,TargetNullValue=''}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </Grid>
+</Window>
