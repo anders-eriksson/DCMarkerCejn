@@ -25,11 +25,37 @@
                     <Separator />
                     <MenuItem x:Name="Delete" Header="_Delete" Click="Delete_Click" />
                     <Separator />
+                    <MenuItem x:Name="Refresh" Header="_Refresh" Click="Refresh_Click" />
+                    <Separator />
                     <MenuItem x:Name="Exit" Header="_Exit" Click="Exit_Click" />
+                </MenuItem>
+                <MenuItem Header="_Edit">
+                    <MenuItem x:Name="Cut" Header="_Cut" Click="Cut_Click">
+                    </MenuItem>
+                    <MenuItem x:Name="Copy" Header="_Copy" Click="Copy_Click">
+                    </MenuItem>
+                    <MenuItem x:Name="Paste" Header="_Paste" Click="Paste_Click">
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="_Window">
+                    <MenuItem x:Name="OnTop" Header="_OnTop" Click="OnTop_Click" />
+                </MenuItem>
+                <MenuItem Header="_Help">
+                    <MenuItem x:Name="About" Header="_About" Click="About_Click" />
                 </MenuItem>
             </Menu>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
+                    <Button ToolTip="Cut" Click="Cut_Click">
+                        <Image Source="Images\Cut_16x.png" Width="20" Height="20" />
+                    </Button>
+                    <Button ToolTip="Copy" Click="Copy_Click">
+                        <Image Source="Images\Copy_16x.png" Width="20" Height="20" />
+                    </Button>
+                    <Button ToolTip="Paste" Click="Paste_Click">
+                        <Image Source="Images\Paste_16x.png" Width="20" Height="20" />
+                    </Button>
+                    <Separator />
                     <Button ToolTip="Create New article number" Click="New_Click">
                         <Image Source="Images\Add_16x.png" Width="20" Height="20" />
                     </Button>
@@ -37,8 +63,12 @@
                         <Image Source="Images\Save_16x.png" Width="20" Height="20" />
                     </Button>
                     <Separator />
-                    <Button  ToolTip="Delect selected article number." Click="Delete_Click">
+                    <Button  ToolTip="Delete selected article number." Click="Delete_Click">
                         <Image Source="Images\Cancel_16x.png" Width="20" Height="20" />
+                    </Button>
+                    <Separator />
+                    <Button  ToolTip="Refresh database." Click="Refresh_Click">
+                        <Image Source="Images\Refresh_16x.png" Width="20" Height="20" />
                     </Button>
                 </ToolBar>
             </ToolBarTray>
@@ -59,29 +89,8 @@
                             ScrollViewer.HorizontalScrollBarVisibility="Auto" RowDetailsVisibilityMode="VisibleWhenSelected"
                             Margin="57,20,60,37" ItemsSource="{Binding}" EnableRowVirtualization="True" AutoGenerateColumns="False"
                             SelectionUnit="FullRow" SelectionMode="Single"
-                                  CanUserAddRows="false"
+                            CanUserAddRows="false"
                             DataContext="{StaticResource laserDataViewSource}">
-                            <!--<DataGrid.CellStyle>
-                                <Style TargetType="DataGridCell">
-                                    <Style.Triggers>
-
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Foreground" Value="Black" />
-                                            <Setter Property="Background" Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </DataGrid.CellStyle>
-                            <DataGrid.RowStyle>
-                                <Style TargetType="DataGridRow">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Foreground" Value="Black" />
-                                            <Setter Property="Background" Value="White" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </DataGrid.RowStyle>-->
 
                             <DataGrid.Columns>
 
@@ -117,21 +126,11 @@
                     <DataGrid  x:Name="weekCodeDataGrid" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
                             ScrollViewer.HorizontalScrollBarVisibility="Auto" RowDetailsVisibilityMode="VisibleWhenSelected"
                             Margin="57,20,60,37" ItemsSource="{Binding}" EnableRowVirtualization="True" AutoGenerateColumns="False"
-                            SelectionUnit="Cell" SelectionMode="Single"
-                               HorizontalAlignment="Left"
+                            SelectionUnit="FullRow" SelectionMode="Single"
+                            HorizontalAlignment="Left"
+                            CanUserAddRows="false"
                             DataContext="{StaticResource weekCodeViewSource}">
 
-                        <DataGrid.CellStyle>
-                            <Style TargetType="DataGridCell">
-                                <Style.Triggers>
-
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Foreground" Value="Black" />
-                                        <Setter Property="Background" Value="White" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGrid.CellStyle>
                         <DataGrid.Columns>
                             <DataGridTextColumn IsReadOnly="True" x:Name="weekNoColumn" Width="50"  Header="Week No" Binding="{Binding WeekNo ,IsAsync=True,TargetNullValue=''}" />
                             <DataGridTextColumn x:Name="codeColumn" Width="50" Header="Code" Binding="{Binding Code,IsAsync=True,TargetNullValue=''}" />
@@ -142,20 +141,10 @@
                     <DataGrid  x:Name="quarterCodeDataGrid" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
                             ScrollViewer.HorizontalScrollBarVisibility="Auto" RowDetailsVisibilityMode="VisibleWhenSelected"
                             Margin="57,20,60,37" ItemsSource="{Binding}" EnableRowVirtualization="True" AutoGenerateColumns="False"
-                            SelectionUnit="Cell" SelectionMode="Single"
+                            SelectionUnit="FullRow" SelectionMode="Single"
+                            CanUserAddRows="false"
                             DataContext="{StaticResource quarterCodeViewSource}">
 
-                        <DataGrid.CellStyle>
-                            <Style TargetType="DataGridCell">
-                                <Style.Triggers>
-
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Foreground" Value="Black" />
-                                        <Setter Property="Background" Value="White" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGrid.CellStyle>
                         <DataGrid.Columns>
                             <DataGridTextColumn x:Name="qYearColumn" Width="*"  Header="Year" Binding="{Binding QYear,IsAsync=True,TargetNullValue=''}" />
                             <DataGridTextColumn x:Name="q1Column" Width="*"  Header="Quarter 1" Binding="{Binding Q1,IsAsync=True,TargetNullValue=''}" />
@@ -166,24 +155,14 @@
                     </DataGrid>
                 </TabItem>
                 <TabItem Header="Fixture">
-                    <DataGrid Grid.Row="2" x:Name="fixtureDataGrid" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    <DataGrid x:Name="fixtureDataGrid" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
                             ScrollViewer.HorizontalScrollBarVisibility="Auto" RowDetailsVisibilityMode="VisibleWhenSelected"
                             Margin="57,20,60,37" ItemsSource="{Binding}" EnableRowVirtualization="True" AutoGenerateColumns="False"
-                            SelectionUnit="Cell" SelectionMode="Single"
-                              HorizontalAlignment="Left"
+                            SelectionUnit="FullRow" SelectionMode="Single"
+                            HorizontalAlignment="Left"
+                            CanUserAddRows="false"
                             DataContext="{StaticResource fixtureViewSource}">
 
-                        <DataGrid.CellStyle>
-                            <Style TargetType="DataGridCell">
-                                <Style.Triggers>
-
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Foreground" Value="Black" />
-                                        <Setter Property="Background" Value="White" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGrid.CellStyle>
                         <DataGrid.Columns>
                             <DataGridTextColumn x:Name="FixturIdColumn" Width="*"  Header="Fixtur Id" Binding="{Binding FixturId,IsAsync=True,TargetNullValue=''}" />
                             <DataGridTextColumn x:Name="XdistanceColumn" Width="*"  Header="X distance" Binding="{Binding Xdistance,IsAsync=True,TargetNullValue=''}" />

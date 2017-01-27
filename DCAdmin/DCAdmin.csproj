@@ -88,6 +88,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DB.cs" />
     <Compile Include="ItemsControlExtensions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -121,7 +122,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\DCMarkerEF.Fixture.datasource" />
     <None Include="Properties\DataSources\DCMarkerEF.LaserData.datasource" />
+    <None Include="Properties\DataSources\DCMarkerEF.QuarterCode.datasource" />
     <None Include="Properties\DataSources\DCMarkerEF.WeekCode.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -154,15 +157,17 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Add_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\Cancel_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Images\Save_16x.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Images\Add_16x.png" />
+    <Resource Include="Images\Cancel_16x.png" />
+    <Resource Include="Images\Save_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Copy_16x.png" />
+    <Resource Include="Images\Cut_16x.png" />
+    <Resource Include="Images\Paste_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Refresh_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

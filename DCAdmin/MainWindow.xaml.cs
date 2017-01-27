@@ -1,4 +1,5 @@
 ﻿using DCMarkerEF;
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Windows;
@@ -11,11 +12,15 @@ namespace DCAdmin
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DCLasermarkContext _context;
+        private DB db;
+        private const int LASERDATADATAGRID = 0;
+        private const int WEEKCODEDATAGRID = 1;
+        private const int QUARTERCODEDATAGRID = 2;
+        private const int FIXTUREDATAGRID = 3;
 
         public MainWindow()
         {
-            _context = new DCLasermarkContext();
+            db = new DB();
             InitializeComponent();
 
             Services.Tracker.Configure(this)//the object to track
@@ -33,28 +38,19 @@ namespace DCAdmin
             }
         }
 
-        private bool IsChangesPending()
-        {
-            return _context.ChangeTracker.HasChanges();
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             System.Windows.Data.CollectionViewSource laserDataViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("laserDataViewSource")));
-            _context.LaserData.OrderBy(x => x.F1).Load();
-            laserDataViewSource.Source = _context.LaserData.Local;
+            laserDataViewSource.Source = db.LoadLaserData();
 
             System.Windows.Data.CollectionViewSource weekCodeViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("weekCodeViewSource")));
-            _context.WeekCode.Load();
-            weekCodeViewSource.Source = _context.WeekCode.Local;
+            weekCodeViewSource.Source = db.LoadWeekCode();
 
             System.Windows.Data.CollectionViewSource quarterCodeViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("quarterCodeViewSource")));
-            _context.QuarterCode.Load();
-            quarterCodeViewSource.Source = _context.QuarterCode.Local;
+            quarterCodeViewSource.Source = db.LoadQuarterCode();
 
             System.Windows.Data.CollectionViewSource fixtureViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("fixtureViewSource")));
-            _context.Fixture.Load();
-            fixtureViewSource.Source = _context.Fixture.Local;
+            fixtureViewSource.Source = db.LoadFixture();
         }
 
         private void CenterWindowOnScreen()
@@ -78,7 +74,7 @@ namespace DCAdmin
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (IsChangesPending())
+            if (db.IsChangesPending())
             {
                 var result = MessageBox.Show("Changes exists! Do you want to save them?", "Pending Changes", MessageBoxButton.YesNoCancel);
                 if (result == MessageBoxResult.Cancel)
@@ -89,16 +85,16 @@ namespace DCAdmin
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    _context.SaveChanges();
+                    db.SaveChanges();
                 }
             }
-            _context.Dispose();
+            db.Dispose();
         }
 
         private void Window_ContentRendered(object sender, System.EventArgs e)
         {
             //CenterWindowOnScreen();
-            SetColumnWidthToCell(laserDataDataGrid);
+            //SetColumnWidthToCell(laserDataDataGrid);
         }
 
         private void New_Click(object sender, RoutedEventArgs e)
@@ -113,7 +109,7 @@ namespace DCAdmin
             {
                 case 0:
                     {
-                        var entity = AddNewLaserDataRecord();
+                        var entity = db.AddNewLaserDataRecord();
                         if (entity != null)
                         {
                             laserDataDataGrid.SelectedItem = entity;
@@ -128,19 +124,9 @@ namespace DCAdmin
             }
         }
 
-        private LaserData AddNewLaserDataRecord()
-        {
-            LaserData result;
-            LaserData entity = new LaserData();
-
-            result = _context.LaserData.Add(entity);
-
-            return result;
-        }
-
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            _context.SaveChanges();
+            db.SaveChanges();
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -155,26 +141,15 @@ namespace DCAdmin
             {
                 case 0:
                     {
-                        DeleteLaserDataRecord();
+                        var selectedItems = laserDataDataGrid.SelectedCells;
+
+                        db.DeleteLaserDataRecord(selectedItems);
                         break;
                     }
                 default:
                     {
                         break;
                     }
-            }
-        }
-
-        private void DeleteLaserDataRecord()
-        {
-            var selectedItems = laserDataDataGrid.SelectedCells;
-            if (selectedItems != null)
-            {
-                var selectedItem = selectedItems[0];
-                var item = (LaserData)selectedItem.Item;
-                var id = item.Id;
-                var entity = _context.LaserData.Find(id);
-                _context.LaserData.Remove(entity);
             }
         }
 
@@ -188,20 +163,23 @@ namespace DCAdmin
             if (e.Key == System.Windows.Input.Key.Enter)
             {
                 e.Handled = true;
-                FindArticle();
+                FindArticleAndScrollIntoView();
             }
         }
 
         private void FindButton_Click(object sender, RoutedEventArgs e)
         {
-            FindArticle();
+            FindArticleAndScrollIntoView();
         }
 
-        private void FindArticle()
+        private void FindArticleAndScrollIntoView()
         {
-            SearchError.Text = "";
-            string articleNumber = SearchArticleNumber.Text.Trim();
-            var entity = _context.LaserData.FirstOrDefault<LaserData>(e => e.F1 == articleNumber);
+            var entity = db.FindArticle(SearchArticleNumber.Text);
+            ScrollToView(entity);
+        }
+
+        private void ScrollToView(LaserData entity)
+        {
             if (entity != null)
             {
                 laserDataDataGrid.SelectedItem = entity;
@@ -216,6 +194,64 @@ namespace DCAdmin
         private void SearchArticleNumber_LostFocus(object sender, RoutedEventArgs e)
         {
             SearchError.Text = "";
+        }
+
+        private void Cut_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Copy_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Paste_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnTop_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            int index = tcControl.SelectedIndex;
+            RefreshDataGrid(index);
+        }
+
+        private void RefreshDataGrid(int index)
+        {
+            if (index == LASERDATADATAGRID)
+            {
+                laserDataDataGrid.Items.Refresh();
+            }
+            else if (index == WEEKCODEDATAGRID)
+            {
+                weekCodeDataGrid.Items.Refresh();
+            }
+            else if (index == QUARTERCODEDATAGRID)
+            {
+                quarterCodeDataGrid.Items.Refresh();
+            }
+            else if (index == FIXTUREDATAGRID)
+            {
+                fixtureDataGrid.Items.Refresh();
+            }
+            else
+            {
+                laserDataDataGrid.Items.Refresh();
+                weekCodeDataGrid.Items.Refresh();
+                quarterCodeDataGrid.Items.Refresh();
+                fixtureDataGrid.Items.Refresh();
+            }
         }
     }
 }
