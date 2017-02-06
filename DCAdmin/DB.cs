@@ -1,10 +1,10 @@
 ﻿using DCMarkerEF;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Windows.Controls;
-using System;
 
 namespace DCAdmin
 {
@@ -78,7 +78,16 @@ namespace DCAdmin
 
         public void SaveChanges()
         {
-            _context.SaveChanges();
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                var errors = _context.GetValidationErrors();
+                Console.WriteLine(ex);
+                throw;
+            }
         }
 
         internal void Dispose()
@@ -86,7 +95,46 @@ namespace DCAdmin
             _context.Dispose();
         }
 
+        //internal object AddNewRecord<T>()
+        //{
+        //    <T> entity = new <T>();
+
+        //    var result = _context.LaserData.Add(entity);
+
+        //    return result;
+        //}
+
         internal object AddNewLaserDataRecord()
+        {
+            LaserData result;
+            LaserData entity = new LaserData();
+
+            result = _context.LaserData.Add(entity);
+
+            return result;
+        }
+
+        internal object AddNewWeekCodeRecord()
+        {
+            WeekCode result;
+            WeekCode entity = new WeekCode();
+
+            result = _context.WeekCode.Add(entity);
+
+            return result;
+        }
+
+        internal object AddNewQuartalCodeRecord()
+        {
+            QuarterCode result;
+            QuarterCode entity = new QuarterCode();
+
+            result = _context.QuarterCode.Add(entity);
+
+            return result;
+        }
+
+        internal object AddNewFixtureRecord()
         {
             LaserData result;
             LaserData entity = new LaserData();
@@ -108,6 +156,16 @@ namespace DCAdmin
             }
         }
 
-        
+        internal void Refresh()
+        {
+            if (IsChangesPending())
+            {
+                SaveChanges();
+            }
+
+            Dispose();
+            _context = new DCLasermarkContext();
+            Context = _context;
+        }
     }
 }

@@ -88,6 +88,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Consts.cs" />
     <Compile Include="DB.cs" />
     <Compile Include="ItemsControlExtensions.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -142,7 +143,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <SplashScreen Include="LoadingDatabase.png" />
+    <Resource Include="LoadingDatabase.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">

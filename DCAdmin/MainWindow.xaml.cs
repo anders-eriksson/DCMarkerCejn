@@ -1,9 +1,9 @@
 ﻿using DCMarkerEF;
 using System;
-using System.Data.Entity;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Threading;
 
 namespace DCAdmin
 {
@@ -13,10 +13,10 @@ namespace DCAdmin
     public partial class MainWindow : Window
     {
         private DB db;
-        private const int LASERDATADATAGRID = 0;
-        private const int WEEKCODEDATAGRID = 1;
-        private const int QUARTERCODEDATAGRID = 2;
-        private const int FIXTUREDATAGRID = 3;
+        private CollectionViewSource fixtureViewSource;
+        private CollectionViewSource laserDataViewSource;
+        private CollectionViewSource quarterCodeViewSource;
+        private CollectionViewSource weekCodeViewSource;
 
         public MainWindow()
         {
@@ -38,31 +38,6 @@ namespace DCAdmin
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Data.CollectionViewSource laserDataViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("laserDataViewSource")));
-            laserDataViewSource.Source = db.LoadLaserData();
-
-            System.Windows.Data.CollectionViewSource weekCodeViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("weekCodeViewSource")));
-            weekCodeViewSource.Source = db.LoadWeekCode();
-
-            System.Windows.Data.CollectionViewSource quarterCodeViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("quarterCodeViewSource")));
-            quarterCodeViewSource.Source = db.LoadQuarterCode();
-
-            System.Windows.Data.CollectionViewSource fixtureViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("fixtureViewSource")));
-            fixtureViewSource.Source = db.LoadFixture();
-        }
-
-        private void CenterWindowOnScreen()
-        {
-            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
-            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
-            double windowWidth = this.Width;
-            double windowHeight = this.Height;
-            this.Left = (screenWidth / 2) - (windowWidth / 2);
-            this.Top = (screenHeight / 2) - (windowHeight / 2);
-        }
-
         private static void SetColumnWidthToCell(DataGrid dgrid)
         {
             var columns = dgrid.Columns;
@@ -72,35 +47,9 @@ namespace DCAdmin
             }
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void About_Click(object sender, RoutedEventArgs e)
         {
-            if (db.IsChangesPending())
-            {
-                var result = MessageBox.Show("Changes exists! Do you want to save them?", "Pending Changes", MessageBoxButton.YesNoCancel);
-                if (result == MessageBoxResult.Cancel)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    db.SaveChanges();
-                }
-            }
-            db.Dispose();
-        }
-
-        private void Window_ContentRendered(object sender, System.EventArgs e)
-        {
-            //CenterWindowOnScreen();
-            //SetColumnWidthToCell(laserDataDataGrid);
-        }
-
-        private void New_Click(object sender, RoutedEventArgs e)
-        {
-            int index = tcControl.SelectedIndex;
-            AddNewRecord(index);
+            throw new NotImplementedException();
         }
 
         private void AddNewRecord(int index)
@@ -124,9 +73,24 @@ namespace DCAdmin
             }
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
+        private void CenterWindowOnScreen()
         {
-            db.SaveChanges();
+            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+            double windowWidth = this.Width;
+            double windowHeight = this.Height;
+            this.Left = (screenWidth / 2) - (windowWidth / 2);
+            this.Top = (screenHeight / 2) - (windowHeight / 2);
+        }
+
+        private void Copy_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Cut_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -158,13 +122,10 @@ namespace DCAdmin
             this.Close();
         }
 
-        private void SearchArticleNumber_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        private void FindArticleAndScrollIntoView()
         {
-            if (e.Key == System.Windows.Input.Key.Enter)
-            {
-                e.Handled = true;
-                FindArticleAndScrollIntoView();
-            }
+            var entity = db.FindArticle(SearchArticleNumber.Text);
+            ScrollToView(entity);
         }
 
         private void FindButton_Click(object sender, RoutedEventArgs e)
@@ -172,10 +133,114 @@ namespace DCAdmin
             FindArticleAndScrollIntoView();
         }
 
-        private void FindArticleAndScrollIntoView()
+        private void laserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            var entity = db.FindArticle(SearchArticleNumber.Text);
-            ScrollToView(entity);
+            DataGrid dataGrid = sender as DataGrid;
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                ListCollectionView view = CollectionViewSource.GetDefaultView(dataGrid.ItemsSource) as ListCollectionView;
+                if (view.IsAddingNew || view.IsEditingItem)
+                {
+                    this.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
+                    {
+                        // This callback will be called after the CollectionView
+                        // has pushed the changes back to the DataGrid.ItemSource.
+
+                        if (db.IsChangesPending())
+                        {
+                            db.SaveChanges();
+                        }
+                        return null;
+                    }), DispatcherPriority.Background, new object[] { null });
+                }
+            }
+        }
+
+        private void LoadFixture()
+        {
+            fixtureViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("fixtureViewSource")));
+            fixtureViewSource.Source = db.LoadFixture();
+        }
+
+        private void LoadLaserData()
+        {
+            laserDataViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("laserDataViewSource")));
+            laserDataViewSource.Source = db.LoadLaserData();
+        }
+
+        private void LoadQuarterCode()
+        {
+            quarterCodeViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("quarterCodeViewSource")));
+            quarterCodeViewSource.Source = db.LoadQuarterCode();
+        }
+
+        private void LoadWeekCode()
+        {
+            weekCodeViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("weekCodeViewSource")));
+            weekCodeViewSource.Source = db.LoadWeekCode();
+        }
+
+        private void New_Click(object sender, RoutedEventArgs e)
+        {
+            int index = tcControl.SelectedIndex;
+            AddNewRecord(index);
+        }
+
+        private void OnTop_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Paste_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshDatabase();
+        }
+
+        private void RefreshDatabase()
+        {
+            db.Refresh();
+            LoadLaserData();
+            LoadWeekCode();
+            LoadQuarterCode();
+            LoadFixture();
+        }
+
+        private void RefreshDataGrid(int index)
+        {
+            if (index == Consts.LASERDATADATAGRID)
+            {
+                laserDataViewSource.View.Refresh();
+            }
+            else if (index == Consts.WEEKCODEDATAGRID)
+            {
+                weekCodeViewSource.View.Refresh();
+            }
+            else if (index == Consts.QUARTERCODEDATAGRID)
+            {
+                quarterCodeViewSource.View.Refresh();
+            }
+            else if (index == Consts.FIXTUREDATAGRID)
+            {
+                fixtureViewSource.View.Refresh();
+            }
+            else
+            {
+                laserDataViewSource.View.Refresh();
+                weekCodeViewSource.View.Refresh();
+                quarterCodeViewSource.View.Refresh();
+                fixtureViewSource.View.Refresh();
+            }
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            db.SaveChanges();
+            RefreshDataGrid(0); // TODO change this so it handles all the tables!
         }
 
         private void ScrollToView(LaserData entity)
@@ -191,67 +256,58 @@ namespace DCAdmin
             }
         }
 
+        private void SearchArticleNumber_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                e.Handled = true;
+                FindArticleAndScrollIntoView();
+            }
+        }
+
         private void SearchArticleNumber_LostFocus(object sender, RoutedEventArgs e)
         {
             SearchError.Text = "";
         }
 
-        private void Cut_Click(object sender, RoutedEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        private void Copy_Click(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Paste_Click(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void OnTop_Click(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void About_Click(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Refresh_Click(object sender, RoutedEventArgs e)
-        {
-            int index = tcControl.SelectedIndex;
-            RefreshDataGrid(index);
-        }
-
-        private void RefreshDataGrid(int index)
-        {
-            if (index == LASERDATADATAGRID)
+            if (db.IsChangesPending())
             {
-                laserDataDataGrid.Items.Refresh();
+                var result = MessageBox.Show("Changes exists! Do you want to save them?", "Pending Changes", MessageBoxButton.YesNoCancel);
+                if (result == MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    db.SaveChanges();
+                }
             }
-            else if (index == WEEKCODEDATAGRID)
-            {
-                weekCodeDataGrid.Items.Refresh();
-            }
-            else if (index == QUARTERCODEDATAGRID)
-            {
-                quarterCodeDataGrid.Items.Refresh();
-            }
-            else if (index == FIXTUREDATAGRID)
-            {
-                fixtureDataGrid.Items.Refresh();
-            }
-            else
-            {
-                laserDataDataGrid.Items.Refresh();
-                weekCodeDataGrid.Items.Refresh();
-                quarterCodeDataGrid.Items.Refresh();
-                fixtureDataGrid.Items.Refresh();
-            }
+            db.Dispose();
+        }
+
+        private void Window_ContentRendered(object sender, System.EventArgs e)
+        {
+            //CenterWindowOnScreen();
+            SetColumnWidthToCell(laserDataDataGrid);
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadLaserData();
+            LoadWeekCode();
+
+            LoadQuarterCode();
+
+            LoadFixture();
+        }
+
+        private void OnDataGridUpdate(object sender, System.Windows.Data.DataTransferEventArgs e)
+        {
+            db.SaveChanges();
         }
     }
 }

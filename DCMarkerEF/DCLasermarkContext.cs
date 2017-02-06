@@ -1,12 +1,13 @@
+using System.Data.Entity;
+
 namespace DCMarkerEF
 {
-    using System.Data.Entity;
-
     public partial class DCLasermarkContext : DbContext
     {
         public DCLasermarkContext()
             : base("name=DCLasermarkContext")
         {
+            // Without this line, the compiler will optimize away  System.Data.Entity.SqlServer
             var type = typeof(System.Data.Entity.SqlServer.SqlProviderServices);
         }
 

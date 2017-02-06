@@ -13,5 +13,10 @@ namespace DCAdmin
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            SplashScreen splash = new SplashScreen("./LoadingDatabase.png");
+            splash.Show(autoClose: true, topMost: true);
+        }
     }
 }
