@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C32736B8-267F-4DCA-AAAA-7D781855D141}</ProjectGuid>
+    <ProjectGuid>{3C3A0FA4-C9A4-4B85-A1BC-428A399F6B24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Contracts</RootNamespace>
-    <AssemblyName>Contracts</AssemblyName>
+    <RootNamespace>DCWorkFlow</RootNamespace>
+    <AssemblyName>DCWorkFlow</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,15 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArticleArgs.cs" />
-    <Compile Include="ArticleData.cs" />
-    <Compile Include="IoSignals.cs" />
-    <Compile Include="IArticleInput.cs" />
-    <Compile Include="IAxis.cs" />
-    <Compile Include="IDigitalIo.cs" />
-    <Compile Include="ILaser.cs" />
-    <Compile Include="LaserObjectData.cs" />
-    <Compile Include="MachineTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -12,6 +12,6 @@ namespace Contracts
 
         void Release();
 
-        bool Update(List<LaserObjects> objectList);
+        bool Update(List<LaserObjectData> objectList);
     }
 }

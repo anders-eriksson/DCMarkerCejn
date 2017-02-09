@@ -17,6 +17,9 @@ namespace LaserWrapper
         private IoPort _ioPort;
         private LaserAxApp _laser;
         private laserengineLib.System _laserSystem;
+        private DCConfig cfg;
+        private IoSignals sig;
+        private int currentBits = 0;
 
         #region Configurable variables
 
@@ -31,7 +34,7 @@ namespace LaserWrapper
 
         public Laser()
         {
-            DCConfig cfg = DCConfig.Instance;
+            cfg = DCConfig.Instance;
 
             _deviceAddress = cfg.DeviceAddress;
             _deviceTimeout = cfg.DeviceTimeout;
@@ -40,7 +43,21 @@ namespace LaserWrapper
             _executeTimeout = cfg.ExecuteTimeout;
             _isIoEnabled = cfg.IsIoEnabled;
 
+            sig = new IoSignals();
+            UpdateIoMasks();
+
             InitLaser();
+        }
+
+        private void UpdateIoMasks()
+        {
+            sig.MASK_READYTOMARK = cfg.ReadyToMark;
+
+            sig.MASK_MARKINGDONE = cfg.MarkingDone;
+            sig.MASK_ERROR = cfg.Error;
+
+            sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
+            sig.MASK_EMERGENCY = cfg.EmergencyError;
         }
 
         public int ErrorCode { get; set; }
@@ -120,28 +137,28 @@ namespace LaserWrapper
             }
         }
 
-        public bool Update(List<LaserObjects> objectList)
+        public bool Update(List<LaserObjectData> objectList)
         {
             bool result = true;
             string objIDs = _doc.getObjectIDs();
             string[] objArr = objIDs.Split(new char[] { ',' });
             foreach (var id in objArr)
             {
-                var updateObject = objectList.Find(o => o.ID == id);
+                var updateObject = objectList.Find(o => o.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
                 if (updateObject != null)
                 {
-                    LaserObject obj = _doc.getLaserObject(id);
-                    if (obj.getType() == (int)_GraphObjectTypes.CODE_OBJ)
+                    int objType = _doc.getObjectType(id);
+                    if (objType == (int)_GraphObjectTypes.CODE_OBJ)
                     {
                         LaserCode code = _doc.getLaserCode(id);
                         code.text = updateObject.Value;
                     }
-                    else if (obj.getType() == (int)_GraphObjectTypes.STRING_OBJ)
+                    else if (objType == (int)_GraphObjectTypes.STRING_OBJ)
                     {
                         LaserString str = _doc.getLaserString(id);
                         str.text = updateObject.Value;
                     }
-                    else if (obj.getType() == (int)_GraphObjectTypes.IMPORTED_OBJ)
+                    else if (objType == (int)_GraphObjectTypes.IMPORTED_OBJ)
                     {
                         LaserImported imp = _doc.getLaserImported(id);
                         string imgPath = Path.Combine(_imagePath, updateObject.Value);
@@ -153,11 +170,6 @@ namespace LaserWrapper
             }
 
             return result;
-        }
-
-        private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
-        {
-            throw new NotImplementedException();
         }
 
         private void _laserSystem_sigDeviceConnected()
@@ -183,6 +195,7 @@ namespace LaserWrapper
             lock (lockObj)
             {
                 Monitor.Pulse(lockObj);
+                RaiseLaserErrorEvent(p_message);
             }
         }
 
@@ -192,6 +205,7 @@ namespace LaserWrapper
             lock (lockObj)
             {
                 Monitor.Pulse(lockObj);
+                RaiseLaserEndEvent();
             }
         }
 
@@ -250,7 +264,7 @@ namespace LaserWrapper
 
         public int GetPort(int port)
         {
-            throw new NotImplementedException();
+            return _ioPort.getPort(port);
         }
 
         public bool ResetPort(int port, int mask)
@@ -265,8 +279,86 @@ namespace LaserWrapper
 
         public bool SetReady(bool OnOff)
         {
-            throw new NotImplementedException();
+            return _ioPort.setReady(OnOff);
         }
+
+        private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
+        {
+            if ((p_nBits & sig.MASK_ITEMINPLACE) == sig.MASK_ITEMINPLACE)
+            {
+                // bit is set
+                if ((currentBits & sig.MASK_ITEMINPLACE) != sig.MASK_ITEMINPLACE)
+                {
+                    currentBits |= sig.MASK_ITEMINPLACE;
+                    RaiseItemInPositionEvent();
+                }
+            }
+            else
+            {
+                currentBits &= ~sig.MASK_ITEMINPLACE;
+            }
+        }
+
+        #region LaserEnd Event
+
+        public delegate void LaserEndHandler();
+
+        public event LaserEndHandler LaserEndEvent;
+
+        internal void RaiseLaserEndEvent()
+        {
+            LaserEndHandler handler = LaserEndEvent;
+            if (handler != null)
+            {
+                handler();
+            }
+        }
+
+        #endregion LaserEnd Event
+
+        #region LaserError Event
+
+        public delegate void LaserErrorHandler(string msg);
+
+        public event LaserErrorHandler LaserErrorEvent;
+
+        internal void RaiseLaserErrorEvent(string msg)
+        {
+            LaserErrorHandler handler = LaserErrorEvent;
+            if (handler != null)
+            {
+                handler(msg);
+            }
+        }
+
+        public class LaserErrorArgs : EventArgs
+        {
+            public LaserErrorArgs(string s)
+            {
+                Text = s;
+            }
+
+            public string Text { get; private set; } // readonly
+        }
+
+        #endregion LaserError Event
+
+        #region Item in Position Event
+
+        public delegate void ItemInPositionHandler();
+
+        public event ItemInPositionHandler ItemInPositionEvent;
+
+        internal void RaiseItemInPositionEvent()
+        {
+            ItemInPositionHandler handler = ItemInPositionEvent;
+            if (handler != null)
+            {
+                handler();
+            }
+        }
+
+        #endregion Item in Position Event
 
         #endregion Digital IO
 
