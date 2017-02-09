@@ -1,4 +1,5 @@
-﻿using DCMarker.Model;
+﻿using Configuration;
+using System.Globalization;
 using System.Threading;
 using System.Windows;
 
@@ -13,6 +14,12 @@ namespace DCMarker
 
         public MainWindow()
         {
+            DCConfig cfg = DCConfig.Instance;
+            string language = cfg.GuiLanguage;
+            if (!string.IsNullOrWhiteSpace(language))
+            {
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
+            }
             InitializeComponent();
             mainViewModel = new MainViewModel();
             DataContext = mainViewModel;

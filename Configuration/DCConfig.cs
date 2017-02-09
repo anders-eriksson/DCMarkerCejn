@@ -65,6 +65,7 @@ namespace Configuration
             {
                 // Machine
                 TypeOfMachine = _profile.GetValue("Machine", nameof(TypeOfMachine), 1);
+                GuiLanguage = _profile.GetValue("Machine", nameof(GuiLanguage), "sv-SE");
                 // Laser
                 DeviceAddress = _profile.GetValue("Laser", nameof(DeviceAddress), "127.0.0.1");
                 DeviceTimeout = _profile.GetValue("Laser", nameof(DeviceTimeout), 10);
@@ -95,6 +96,7 @@ namespace Configuration
             {
                 // Machine
                 _profile.SetValue("Machine", nameof(TypeOfMachine), TypeOfMachine);
+                _profile.SetValue("Machine", nameof(GuiLanguage), GuiLanguage);
                 // Laser
                 _profile.SetValue("Laser", nameof(DeviceAddress), DeviceAddress);
                 _profile.SetValue("Laser", nameof(DeviceTimeout), DeviceTimeout);
@@ -146,6 +148,7 @@ namespace Configuration
 
         public int TcpPort { get; private set; }
         public int BufferLength { get; private set; }
+        public string GuiLanguage { get; private set; }
 
         #endregion TcpServer properties
     }
