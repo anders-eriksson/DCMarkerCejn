@@ -43,14 +43,19 @@
   <ItemGroup>
     <Compile Include="ArticleArgs.cs" />
     <Compile Include="ArticleData.cs" />
+    <Compile Include="ErrorArgs.cs" />
     <Compile Include="IoSignals.cs" />
     <Compile Include="IArticleInput.cs" />
     <Compile Include="IAxis.cs" />
     <Compile Include="IDigitalIo.cs" />
     <Compile Include="ILaser.cs" />
+    <Compile Include="IWorkFlow.cs" />
     <Compile Include="LaserObjectData.cs" />
     <Compile Include="MachineTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StatusArgs.cs" />
+    <Compile Include="UpdateMainViewModelArgs.cs" />
+    <Compile Include="UpdateViewModelData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

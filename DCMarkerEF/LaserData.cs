@@ -1,10 +1,7 @@
 namespace DCMarkerEF
 {
-    using System;
-    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
 
     [Table("LaserData")]
     public partial class LaserData
@@ -73,7 +70,7 @@ namespace DCMarkerEF
         public string P6 { get; set; }
 
         [StringLength(50)]
-        public string FixturId { get; set; }
+        public string FixtureId { get; set; }
 
         public bool? ExternTest { get; set; }
 

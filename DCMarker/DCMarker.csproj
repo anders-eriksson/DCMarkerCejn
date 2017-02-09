@@ -82,7 +82,7 @@
     <Compile Include="Model\DB.cs" />
     <Compile Include="Model\ManualArticleInput.cs" />
     <Compile Include="Model\TcpArticleInput.cs" />
-    <Compile Include="Model\UpdateViewModelData.cs" />
+    <Compile Include="Model\ManualWorkFlow.cs" />
     <Compile Include="Model\WorkFlow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

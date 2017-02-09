@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -17,7 +18,7 @@ namespace DCTcpServer
             _port = port;
             _bufferLength = bufferLength;
 
-            ThreadStart childref = new ThreadStart(Listener);
+            var childref = new ThreadStart(Listener);
             listeningThread = new Thread(childref)
             {
                 Name = "ServerListeningThread"
@@ -36,7 +37,7 @@ namespace DCTcpServer
                     var client = _listener.AcceptTcpClient();       // Blocking!
 
                     // We have connection...
-                    NetworkStream stream = client.GetStream();
+                    var stream = client.GetStream();
                     var buffer = new byte[_bufferLength];
                     var receivedLength = 0;
 
@@ -75,7 +76,7 @@ namespace DCTcpServer
 
         private static bool IsAbort(byte[] buffer, int receivedLength)
         {
-            string msg = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedLength);
+            var msg = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedLength);
             return msg.Trim() == "ABORT" ? true : false;
         }
 
@@ -92,7 +93,8 @@ namespace DCTcpServer
 
         private void UpdateWF(byte[] buffer)
         {
-            string articleNumber = System.Text.Encoding.ASCII.GetString(buffer);
+            int count = buffer.Count(bt => bt != 0); // find the first null
+            string articleNumber = System.Text.Encoding.ASCII.GetString(buffer, 0, count);
             RaiseNewArticleNumberEvent(articleNumber);
         }
 

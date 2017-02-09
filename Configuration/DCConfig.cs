@@ -64,7 +64,7 @@ namespace Configuration
             try
             {
                 // Machine
-                MarkingDone = _profile.GetValue("Machine", nameof(MarkingDone), 1);
+                TypeOfMachine = _profile.GetValue("Machine", nameof(TypeOfMachine), 1);
                 // Laser
                 DeviceAddress = _profile.GetValue("Laser", nameof(DeviceAddress), "127.0.0.1");
                 DeviceTimeout = _profile.GetValue("Laser", nameof(DeviceTimeout), 10);
@@ -94,7 +94,7 @@ namespace Configuration
             try
             {
                 // Machine
-                _profile.SetValue("Machine", nameof(MarkingDone), MarkingDone);
+                _profile.SetValue("Machine", nameof(TypeOfMachine), TypeOfMachine);
                 // Laser
                 _profile.SetValue("Laser", nameof(DeviceAddress), DeviceAddress);
                 _profile.SetValue("Laser", nameof(DeviceTimeout), DeviceTimeout);
@@ -122,7 +122,7 @@ namespace Configuration
 
         #region Machine properties
 
-        public int MarkingDone { get; set; }
+        public int TypeOfMachine { get; set; }
 
         #endregion Machine properties
 
@@ -135,6 +135,7 @@ namespace Configuration
         public int ExecuteTimeout { get; set; }
         public bool IsIoEnabled { get; set; }
         public int ReadyToMark { get; set; }
+        public int MarkingDone { get; set; }
         public int Error { get; set; }
         public int ItemInPlace { get; set; }
         public int EmergencyError { get; set; }

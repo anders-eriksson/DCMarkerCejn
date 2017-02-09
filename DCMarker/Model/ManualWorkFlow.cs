@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace DCMarker.Model
 {
-    public class WorkFlow : IWorkFlow
+    public class ManualWorkFlow : IWorkFlow
     {
         private IArticleInput _articleInput;
         private DB _db;
@@ -21,7 +21,7 @@ namespace DCMarker.Model
         private IoSignals sig;
         private string _articleNumber;
 
-        public WorkFlow()
+        public ManualWorkFlow()
         {
             cfg = DCConfig.Instance;
             cfg.WriteConfig();
@@ -55,12 +55,6 @@ namespace DCMarker.Model
             }
 
             return result;
-        }
-
-        public void TestFunction()
-        {
-            UpdateLayout();
-            _laser.Execute();
         }
 
         private static string GetLayoutname(List<LaserObjectData> laserObjects)
@@ -114,13 +108,31 @@ namespace DCMarker.Model
         private void _laser_LaserEndEvent()
         {
             _laser.SetPort(0, sig.MASK_MARKINGDONE);
-            RaiseStatusEvent("Marking is done!");
         }
 
         private void _laser_LaserErrorEvent(string msg)
         {
             _laser.SetPort(0, sig.MASK_ERROR);
-            RaiseErrorEvent(msg);
+        }
+
+        private void _server_NewArticleNumberEvent(string msg)
+        {
+            // Get article data from LaserData table
+        }
+
+        private bool GetUserInput(ref List<LaserObjectData> laserObjects)
+        {
+            bool result = true;
+
+            // TODO how will we wait for TOnr to be specified!
+            //      easiest is to use a Modal Dialog ...
+
+            //// TOnr
+            //string tmp = GetObjectValue(laserObjects, "enableTO");
+            //bool enableTO = Convert.ToBoolean(tmp);
+            //RaiseUpdateEnableTO(enableTO);
+
+            return result;
         }
 
         private void InitializeDatabase()
@@ -131,20 +143,14 @@ namespace DCMarker.Model
         private void InitializeLaser()
         {
             _laser = new Laser();
-            _laser.QueryStartEvent += _laser_QueryStartEvent;
             _laser.LaserEndEvent += _laser_LaserEndEvent;
             _laser.LaserErrorEvent += _laser_LaserErrorEvent;
             _laser.ItemInPositionEvent += _laser_ItemInPositionEvent;
         }
 
-        private void _laser_QueryStartEvent(string msg)
-        {
-            RaiseStatusEvent(msg);
-        }
-
         private void InitializeMachine()
         {
-            _articleInput = new TcpArticleInput();
+            _articleInput = new ManualArticleInput();
             _articleInput.ArticleEvent += _articleInput_ArticleEvent;
         }
 
@@ -159,11 +165,6 @@ namespace DCMarker.Model
         //    {
         //        throw;
         //    }
-        //}
-
-        //private void _server_NewArticleNumberEvent(string msg)
-        //{
-        //    throw new NotImplementedException();
         //}
 
         private string NormalizeLayoutName(string layoutname)
@@ -235,18 +236,21 @@ namespace DCMarker.Model
 
         private void UpdateViewModel(List<LaserObjectData> laserObjects)
         {
-            var data = new UpdateViewModelData();
-            data.ArticleNumber = GetObjectValue(laserObjects, "F1");
-            data.Kant = GetObjectValue(laserObjects, "Kant");
-            data.Fixture = GetObjectValue(laserObjects, "FixtureId");
-
-            data.HasKant = string.IsNullOrWhiteSpace(data.Kant) ? false : Convert.ToBoolean(data.Kant);
-            data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
-
+            var data = new UpdateViewModelData
+            {
+                ArticleNumber = GetObjectValue(laserObjects, "F1"),
+                Kant = GetObjectValue(laserObjects, "Kant")
+            };
+            if (string.IsNullOrWhiteSpace(data.Kant))
+            {
+                data.HasKant = false;
+            }
+            else
+            {
+                data.HasKant = true;
+            }
             var tmp = GetObjectValue(laserObjects, "TOnr");
-            data.HasTOnr = string.IsNullOrWhiteSpace(tmp) ? false : Convert.ToBoolean(tmp);
-
-            data.Status = string.Format("Waiting for start signal ({0}.xlp)", data.ArticleNumber);
+            data.HasTOnr = Convert.ToBoolean(tmp);
 
             RaiseUpdateMainViewModelEvent(data);
         }
@@ -301,6 +305,11 @@ namespace DCMarker.Model
                 var arg = new StatusArgs(msg);
                 handler(null, arg);
             }
+        }
+
+        public void TestFunction()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion Status Event

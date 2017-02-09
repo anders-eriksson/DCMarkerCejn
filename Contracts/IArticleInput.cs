@@ -6,6 +6,6 @@ namespace Contracts
     {
         event EventHandler<ArticleArgs> ArticleEvent;
 
-        void Abort();
+        void Close();
     }
 }

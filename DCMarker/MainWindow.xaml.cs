@@ -36,5 +36,10 @@ namespace DCMarker
         {
             mainViewModel.Abort();
         }
+
+        private void TestButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainViewModel.Test();
+        }
     }
 }

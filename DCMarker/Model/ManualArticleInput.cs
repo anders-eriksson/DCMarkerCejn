@@ -31,9 +31,8 @@ namespace DCMarker.Model
             }
         }
 
-        public void Abort()
+        public void Close()
         {
-            throw new NotImplementedException();
         }
 
         #endregion Article Event

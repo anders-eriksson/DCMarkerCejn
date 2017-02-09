@@ -1,4 +1,7 @@
-﻿using DCMarker.Model;
+﻿using Configuration;
+using Contracts;
+using DCMarker.Model;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -7,8 +10,9 @@ namespace DCMarker
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private WorkFlow _wf;
+        private IWorkFlow _wf;
         private Thread _workflowThread;
+        private DCConfig cfg;
 
         public MainViewModel()
         {
@@ -25,46 +29,74 @@ namespace DCMarker
             TOnr = string.Empty;
             Status = string.Empty;
             Error = string.Empty;
+            NeedUserInput = false;
 
-            _workflowThread = new Thread(ExecuteWorkflow);
+            cfg = DCConfig.Instance;
+            InitializeMachine();
+
+            _workflowThread = new Thread(ExecuteWorkflow)
+            {
+                Name = "WorkFlow"
+            };
             _workflowThread.Start();
+        }
+
+        internal void Test()
+        {
+            // will run in the GUI thread and block the UI....
+            _wf.TestFunction();
+        }
+
+        private void InitializeMachine()
+        {
+            switch (cfg.TypeOfMachine)
+            {
+                case 1:
+                    _wf = new WorkFlow();
+                    break;
+
+                case 2:
+                    _wf = new ManualWorkFlow();
+                    break;
+
+                default:
+                    throw new Exception(string.Format("Type of machine not available! Type={0}", cfg.TypeOfMachine));
+                    break;
+            }
         }
 
         private void ExecuteWorkflow()
         {
-            _wf = new WorkFlow();
             _wf.ErrorEvent += _wf_ErrorEvent;
             _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;
             _wf.StatusEvent += _wf_StatusEvent;
         }
 
-        private void _wf_StatusEvent(string msg)
+        private void _wf_StatusEvent(object sender, StatusArgs e)
         {
-            Status = msg;
+            Status = e.Text;
         }
 
         internal void Abort()
         {
-            _wf.Abort();
+            _wf.Close();
         }
 
-        private void _wf_ErrorEvent(string msg)
+        private void _wf_ErrorEvent(object sender, ErrorArgs e)
         {
-            Error = msg;
+            Error = e.Text;
         }
 
-        private void _wf_UpdateMainViewModelEvent(UpdateViewModelData data)
+        private void _wf_UpdateMainViewModelEvent(object sender, UpdateMainViewModelArgs e)
         {
-            ArticleNumber = data.ArticleNumber;
-            Kant = data.Kant;
-            if (string.IsNullOrWhiteSpace(Kant))
-            {
-                HasKant = false;
-            }
-            else
-            {
-                HasKant = true;
-            }
+            Fixture = e.Data.Fixture;
+            HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
+            ArticleNumber = e.Data.ArticleNumber;
+            Kant = e.Data.Kant;
+            HasKant = string.IsNullOrWhiteSpace(Kant) ? false : true;
+            HasTOnr = e.Data.HasTOnr;
+            HasBatchSize = e.Data.HasBatchSize;
+            NeedUserInput = e.Data.NeedUserInput;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -186,6 +218,19 @@ namespace DCMarker
             }
         }
 
+        public bool NeedUserInput
+        {
+            get
+            {
+                return _needUserInput;
+            }
+            set
+            {
+                _needUserInput = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         public string Kant
         {
             get
@@ -251,6 +296,7 @@ namespace DCMarker
         private string _status;
         private string _testItem;
         private string _TOnr;
+        private bool _needUserInput;
 
         // This method is called by the Set accessor of each property.
         // The CallerMemberName attribute that is applied to the optional propertyName

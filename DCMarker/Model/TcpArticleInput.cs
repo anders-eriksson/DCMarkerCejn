@@ -45,7 +45,7 @@ namespace DCMarker.Model
             }
         }
 
-        public void Abort()
+        public void Close()
         {
             if (_server != null)
             {

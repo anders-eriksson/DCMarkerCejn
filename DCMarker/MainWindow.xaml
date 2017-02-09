@@ -88,6 +88,15 @@
             Content="Cancel"
             IsEnabled="{Binding HasKant}"
             Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
+
+        <Button
+            x:Name="TestButton"
+            Width="75"
+            Margin="375,229,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="Test"
+            Click="TestButton_Click" />
         <Label
             x:Name="BatchSizeLabel"
             Margin="37,137,0,0"

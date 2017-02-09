@@ -224,6 +224,7 @@ namespace LaserWrapper
             {
                 _laser = new LaserAxApp();
                 _laserSystem = _laser.System;
+                _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
                 _laserSystem.sigLaserEnd += _laserSystem_sigLaserEnd;
                 _laserSystem.sigLaserError += _laserSystem_sigLaserError;
                 if (_isIoEnabled)
@@ -258,6 +259,11 @@ namespace LaserWrapper
                 Log.Error(ex, "Laser: Error initializing");
                 throw;
             }
+        }
+
+        private void _laserSystem_sigQueryStart()
+        {
+            RaiseQueryStartEvent("Marking...");
         }
 
         #region Digital IO
@@ -359,6 +365,33 @@ namespace LaserWrapper
         }
 
         #endregion Item in Position Event
+
+        #region LaserQueryStart Event
+
+        public delegate void QueryStartHandler(string msg);
+
+        public event QueryStartHandler QueryStartEvent;
+
+        internal void RaiseQueryStartEvent(string msg)
+        {
+            QueryStartHandler handler = QueryStartEvent;
+            if (handler != null)
+            {
+                handler(msg);
+            }
+        }
+
+        public class QueryStartArgs : EventArgs
+        {
+            public QueryStartArgs(string s)
+            {
+                Text = s;
+            }
+
+            public string Text { get; private set; } // readonly
+        }
+
+        #endregion LaserQueryStart Event
 
         #endregion Digital IO
 
