@@ -61,6 +61,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Article not defined in database! Article={0}.
+        /// </summary>
+        public static string Article_not_defined_in_database_Article0 {
+            get {
+                return ResourceManager.GetString("Article_not_defined_in_database_Article0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Article Number.
         /// </summary>
         public static string ArticleNumber {
@@ -88,6 +97,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error loading layout: {0}.
+        /// </summary>
+        public static string Error_loading_layout_0 {
+            get {
+                return ResourceManager.GetString("Error_loading_layout_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fixture.
         /// </summary>
         public static string Fixture {
@@ -102,6 +120,24 @@ namespace DCMarker.Properties {
         public static string Kant {
             get {
                 return ResourceManager.GetString("Kant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Layout not defined for this article! Article={0}.
+        /// </summary>
+        public static string Layout_not_defined_for_this_article_Article0 {
+            get {
+                return ResourceManager.GetString("Layout_not_defined_for_this_article_Article0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marking is done!.
+        /// </summary>
+        public static string Marking_is_done {
+            get {
+                return ResourceManager.GetString("Marking_is_done", resourceCulture);
             }
         }
         
@@ -138,6 +174,51 @@ namespace DCMarker.Properties {
         public static string ToNumber {
             get {
                 return ResourceManager.GetString("ToNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type of machine not available! Type={0}.
+        /// </summary>
+        public static string Type_of_machine_not_available_Type0 {
+            get {
+                return ResourceManager.GetString("Type_of_machine_not_available_Type0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update didn&apos;t work on this article and layout! Article={0}, Layout={1}.
+        /// </summary>
+        public static string Update_didnt_work_on_this_article_and_layout_Article0_Layout1 {
+            get {
+                return ResourceManager.GetString("Update_didnt_work_on_this_article_and_layout_Article0_Layout1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting for start signal ({0}).
+        /// </summary>
+        public static string Waiting_for_start_signal_0 {
+            get {
+                return ResourceManager.GetString("Waiting_for_start_signal_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting for start signal ({0}.xlp).
+        /// </summary>
+        public static string Waiting_for_start_signal_0xlp {
+            get {
+                return ResourceManager.GetString("Waiting_for_start_signal_0xlp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .xlp.
+        /// </summary>
+        public static string xlp {
+            get {
+                return ResourceManager.GetString("xlp", resourceCulture);
             }
         }
     }

@@ -19,7 +19,7 @@ namespace LaserWrapper
         private laserengineLib.System _laserSystem;
         private DCConfig cfg;
         private IoSignals sig;
-        private int currentBits = 0;
+        private int currentBits;
 
         #region Configurable variables
 
@@ -64,26 +64,39 @@ namespace LaserWrapper
 
         public bool Execute()
         {
-            bool result;
-            result = _doc.execute(true, true);
-            if (result)
+            bool result = false;
+            try
             {
-                try
+                result = _doc.execute(true, true);
+                if (result)
                 {
-                    lock (lockObj)
+                    try
                     {
-                        Monitor.Wait(lockObj, _executeTimeout);
-                        if (ErrorCode > 0)
+                        lock (lockObj)
                         {
-                            result = false;
+                            Monitor.Wait(lockObj, _executeTimeout);
+                            if (ErrorCode > 0)
+                            {
+                                result = false;
+                            }
                         }
                     }
+                    catch (ThreadInterruptedException ex)
+                    {
+                        Log.Error(ex, "Laser: Execute was interrupted"); ;
+                        result = false;
+                    }
                 }
-                catch (ThreadInterruptedException ex)
-                {
-                    Log.Error(ex, "Laser: Execute was interrupted"); ;
-                    result = false;
-                }
+            }
+            catch (NullReferenceException ex)
+            {
+                Log.Error(ex, "Laser: Executing but no document is loaded!");
+                result = false;
+            }
+            catch (COMException ex)
+            {
+                Log.Error(ex, "Laser: Error executing document");
+                result = false;
             }
             return result;
         }

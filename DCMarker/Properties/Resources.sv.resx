@@ -36,4 +36,25 @@
   <data name="Title" xml:space="preserve">
     <value>DCMarker</value>
   </data>
+  <data name="Article_not_defined_in_database_Article0" xml:space="preserve">
+    <value>Artikel finns inte definierat i databasen! Artikel = {0}</value>
+  </data>
+  <data name="Error_loading_layout_0" xml:space="preserve">
+    <value>Kan inte öppna layout: {0}</value>
+  </data>
+  <data name="Layout_not_defined_for_this_article_Article0" xml:space="preserve">
+    <value>Layout inte definierad för denna artikel! Artikel = {0}</value>
+  </data>
+  <data name="Marking_is_done" xml:space="preserve">
+    <value>Märkningen är klar!</value>
+  </data>
+  <data name="Update_didnt_work_on_this_article_and_layout_Article0_Layout1" xml:space="preserve">
+    <value>Uppdatering fungerade inte på denna artikel och layout! Artikel = {0}, Layout = {1}</value>
+  </data>
+  <data name="Waiting_for_start_signal_0" xml:space="preserve">
+    <value>Väntar på startsignal ({0})</value>
+  </data>
+  <data name="Waiting_for_start_signal_0xlp" xml:space="preserve">
+    <value>Väntar på startsignal ({0} .xlp)</value>
+  </data>
 </root>

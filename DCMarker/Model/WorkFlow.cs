@@ -1,11 +1,12 @@
 ﻿using Configuration;
 using Contracts;
-using DCTcpServer;
+using DCMarkerEF;
 using LaserWrapper;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using WorkFlow_Res = global::DCMarker.Properties.Resources;
 
 namespace DCMarker.Model
 {
@@ -14,12 +15,16 @@ namespace DCMarker.Model
         private IArticleInput _articleInput;
         private DB _db;
         private Laser _laser;
-        private List<LaserObjectData> _laserObjects;
-        private Server _server;
+
+        private List<Article> _articles;
+
         private DCConfig cfg;
-        private volatile bool IsInitialized = false;
+
         private IoSignals sig;
+
         private string _articleNumber;
+        private int _currentEdge;
+        private bool _hasEdges;
 
         public WorkFlow()
         {
@@ -39,18 +44,18 @@ namespace DCMarker.Model
         public bool Initialize()
         {
             bool result = true;
-            IsInitialized = false;
+            //IsInitialized = false;
             try
             {
                 InitializeMachine();
                 //InitializeTcpServer();
                 InitializeDatabase();
                 InitializeLaser();
-                IsInitialized = true;
+                //IsInitialized = true;
             }
             catch (Exception)
             {
-                IsInitialized = false;
+                //IsInitialized = false;
                 throw;
             }
 
@@ -63,46 +68,21 @@ namespace DCMarker.Model
             _laser.Execute();
         }
 
-        private static string GetLayoutname(List<LaserObjectData> laserObjects)
-        {
-            return GetObjectValue(laserObjects, "Template");
-        }
-
-        private static string GetObjectValue(List<LaserObjectData> laserObjects, string key)
-        {
-            string result = null;
-
-            try
-            {
-                var obj = laserObjects.SingleOrDefault(s => s.ID == key);
-                if (obj != null)
-                {
-                    result = obj.Value;
-                }
-            }
-            catch (Exception)
-            {
-                // TODO Add log!
-                result = null;
-            }
-
-            return result;
-        }
-
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
         {
             RaiseErrorEvent(string.Empty);
             _laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
-            _laserObjects = _db.GetLaserDataAsObjects(_articleNumber);
-            if (_laserObjects != null)
+            _articles = _db.GetArticle(_articleNumber);
+
+            if (_articles != null)
             {
-                UpdateViewModel(_laserObjects);
+                UpdateViewModel(_articles[0]);
             }
             else
             {
                 // Can't find article in database.
-                RaiseErrorEvent(string.Format("Article not defined in database! Article={0}", _articleNumber));
+                RaiseErrorEvent(string.Format(WorkFlow_Res.Article_not_defined_in_database_Article0, _articleNumber));
             }
         }
 
@@ -114,7 +94,7 @@ namespace DCMarker.Model
         private void _laser_LaserEndEvent()
         {
             _laser.SetPort(0, sig.MASK_MARKINGDONE);
-            RaiseStatusEvent("Marking is done!");
+            RaiseStatusEvent(WorkFlow_Res.Marking_is_done);
         }
 
         private void _laser_LaserErrorEvent(string msg)
@@ -148,31 +128,13 @@ namespace DCMarker.Model
             _articleInput.ArticleEvent += _articleInput_ArticleEvent;
         }
 
-        //private void InitializeTcpServer()
-        //{
-        //    try
-        //    {
-        //        _server = new Server(cfg.TcpPort, cfg.BufferLength);
-        //        _server.NewArticleNumberEvent += _server_NewArticleNumberEvent;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
-
-        //private void _server_NewArticleNumberEvent(string msg)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         private string NormalizeLayoutName(string layoutname)
         {
             string result = string.Empty;
 
-            if (layoutname.IndexOf(".xlp") < 0)
+            if (layoutname.IndexOf(WorkFlow_Res.xlp) < 0)
             {
-                layoutname += ".xlp";
+                layoutname += WorkFlow_Res.xlp;
             }
             if (cfg.LayoutPath.Length > 1)
             {
@@ -197,56 +159,103 @@ namespace DCMarker.Model
             sig.MASK_EMERGENCY = cfg.EmergencyError;
         }
 
+        /// <summary>
+        /// Loads and updates the Layout when we have gotten an ItemInPlace signal from PLC
+        /// </summary>
         private void UpdateLayout()
         {
-            string layoutname = GetLayoutname(_laserObjects);
+            Article article = null;
+
+            if (_hasEdges && _currentEdge >= _articles.Count())
+            {
+                _hasEdges = false;
+                _currentEdge = 1;
+            }
+
+            if (_hasEdges)
+            {
+                _currentEdge++;
+                article = _articles[_currentEdge - 1];
+            }
+            else
+            {
+                _currentEdge = 0;
+
+                article = _articles[_currentEdge];
+                _currentEdge++;
+            }
+
+            string layoutname = article.Template;
             if (!string.IsNullOrEmpty(layoutname))
             {
                 layoutname = NormalizeLayoutName(layoutname);
                 bool brc = _laser.Load(layoutname);
                 if (brc)
                 {
-                    brc = _laser.Update(_laserObjects);
-                    if (brc)
+                    HistoryData historyData = GetHistoryData(_articleNumber, article.Kant, _hasEdges);
+                    if (_articles.Count > 1)
                     {
-                        // we are ready to mark...
-                        RaiseStatusEvent(string.Format("Waiting for start signal ({0})", layoutname));
-                        _laser.ResetPort(0, sig.MASK_MARKINGDONE);
-                        _laser.SetPort(0, sig.MASK_READYTOMARK);
+                        _hasEdges = true;
                     }
-                    else
+
+                    if (historyData != null)
                     {
-                        RaiseErrorEvent(string.Format("Update didn't work on this article and layout! Article={0}, Layout={1}", _articleNumber, layoutname));
-                        _laser.SetPort(0, sig.MASK_ERROR);
+                        List<LaserObjectData> historyObjectData = ConvertToLaserObjectData(historyData);
+                        brc = _laser.Update(historyObjectData);
+                        if (brc)
+                        {
+                            // update HistoryData table
+                            _db.AddHistoryDataToDB(historyData);
+                            // we are ready to mark...
+                            RaiseStatusEvent(string.Format(WorkFlow_Res.Waiting_for_start_signal_0, layoutname));
+                            _laser.ResetPort(0, sig.MASK_MARKINGDONE);
+                            _laser.SetPort(0, sig.MASK_READYTOMARK);
+                        }
+                        else
+                        {
+                            RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                            _laser.SetPort(0, sig.MASK_ERROR);
+                        }
                     }
                 }
                 else
                 {
-                    RaiseErrorEvent(string.Format("Error loading layout: {0}", layoutname));
+                    RaiseErrorEvent(string.Format(WorkFlow_Res.Error_loading_layout_0, layoutname));
                     _laser.SetPort(0, sig.MASK_ERROR);
                 }
             }
             else
             {
-                RaiseErrorEvent(string.Format("Layout not defined for this article! Article={0}", _articleNumber));
+                RaiseErrorEvent(string.Format(WorkFlow_Res.Layout_not_defined_for_this_article_Article0, _articleNumber));
                 _laser.SetPort(0, sig.MASK_ERROR);
             }
         }
 
-        private void UpdateViewModel(List<LaserObjectData> laserObjects)
+        private List<LaserObjectData> ConvertToLaserObjectData(HistoryData historyData)
+        {
+            List<LaserObjectData> result;
+            result = DB.ConvertHistoryDataToList(historyData);
+
+            return result;
+        }
+
+        private HistoryData GetHistoryData(string _articleNumber, string kant, bool hasEdges = false)
+        {
+            HistoryData result = null;
+
+            result = _db.CreateHistoryData(_articleNumber, kant, hasEdges);
+            return result;
+        }
+
+        private void UpdateViewModel(Article article)
         {
             var data = new UpdateViewModelData();
-            data.ArticleNumber = GetObjectValue(laserObjects, "F1");
-            data.Kant = GetObjectValue(laserObjects, "Kant");
-            data.Fixture = GetObjectValue(laserObjects, "FixtureId");
-
-            data.HasKant = string.IsNullOrWhiteSpace(data.Kant) ? false : Convert.ToBoolean(data.Kant);
+            data.ArticleNumber = article.F1;
+            data.Kant = article.Kant;
+            data.HasKant = string.IsNullOrWhiteSpace(data.Kant) ? false : true;
+            data.Fixture = article.FixtureId;
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
-
-            var tmp = GetObjectValue(laserObjects, "TOnr");
-            data.HasTOnr = string.IsNullOrWhiteSpace(tmp) ? false : Convert.ToBoolean(tmp);
-
-            data.Status = string.Format("Waiting for start signal ({0}.xlp)", data.ArticleNumber);
+            data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
 
             RaiseUpdateMainViewModelEvent(data);
         }

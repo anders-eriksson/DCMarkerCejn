@@ -1,196 +1,183 @@
-﻿using Contracts;
+﻿using AutoMapper;
+using Contracts;
 using DCMarkerEF;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Controls;
 
 namespace DCMarker.Model
 {
+    public interface ITimestamp
+    {
+        DateTime Now { get; }
+    }
+
     public class DB
     {
-        private DCLasermarkContext _context;
-
-        public DCLasermarkContext Context { get; internal set; }
-
-        public DB()
+        public static List<LaserObjectData> ConvertHistoryDataToList(HistoryData historyData)
         {
-            _context = new DCLasermarkContext();
-            Context = _context;
+            List<LaserObjectData> result = new List<LaserObjectData>();
+            Type historyDataType = historyData.GetType();
+            PropertyInfo[] pinfoArr = historyDataType.GetProperties();
+            foreach (var pinfo in pinfoArr)
+            {
+                LaserObjectData hrec = new LaserObjectData();
+                hrec.ID = pinfo.Name.ToString();
+                hrec.Value = pinfo.GetValue(historyData).ToString();
+                result.Add(hrec);
+            }
+
+            return result;
         }
 
-        public LaserData FindArticle(string articleNumber)
+        public HistoryData AddHistoryDataToDB(HistoryData historyData)
         {
-            var entity = _context.LaserData.FirstOrDefault<LaserData>(e => e.F1 == articleNumber);
+            HistoryData result = null;
 
-            return entity;
+            using (var _context = new DCLasermarkContext())
+            {
+                result = _context.HistoryData.Add(historyData);
+                _context.SaveChanges();
+            }
+
+            return result;
+        }
+
+        public HistoryData CreateHistoryData(string article, string kant, bool hasEdges = false)
+        {
+            HistoryData result = new HistoryData();
+            SerialNumber snr;
+
+            if (hasEdges)
+            {
+                snr = GetLastSerialNumber();
+            }
+            else
+            {
+                snr = CreateSerialNumber();
+            }
+            LaserData ldata = GetLaserData(article, kant);
+            result = FillHistoryData(ldata, snr);
+
+            return result;
+        }
+
+        public HistoryData CreateHistoryData(LaserData laserDta)
+        {
+            var snr = CreateSerialNumber();
+            var historyData = FillHistoryData(laserDta, snr);
+            return historyData;
+        }
+
+        public LaserData GetLaserData(string articleNumber, string kant)
+        {
+            LaserData result = null;
+
+            using (var context = new DCLasermarkContext())
+            {
+                result = context.LaserData
+                    // .Where(r => r.F1 == articleNumber && r.Kant == kant)
+                    .FirstOrDefault(r => r.F1 == articleNumber && r.Kant == kant);
+            }
+            return result;
         }
 
         public List<LaserObjectData> GetLaserDataAsObjects(string articleNumber)
         {
             List<LaserObjectData> result = null;
-            var entity = _context.LaserData.FirstOrDefault<LaserData>(e => e.F1 == articleNumber);
-            if (entity != null)
+            using (var _context = new DCLasermarkContext())
             {
-                result = new List<LaserObjectData>();
-                Type entityType = entity.GetType();
-                PropertyInfo[] pinfoArr = entityType.GetProperties();
-
-                foreach (var pinfo in pinfoArr)
+                var entity = _context.LaserData.FirstOrDefault<LaserData>(e => e.F1 == articleNumber);
+                if (entity != null)
                 {
-                    var rec = new LaserObjectData
+                    result = new List<LaserObjectData>();
+                    Type entityType = entity.GetType();
+                    PropertyInfo[] pinfoArr = entityType.GetProperties();
+
+                    foreach (var pinfo in pinfoArr)
                     {
-                        ID = pinfo.Name.ToString(),
-                        Value = pinfo.GetValue(entity).ToString()
-                    };
-                    result.Add(rec);
+                        var rec = new LaserObjectData
+                        {
+                            ID = pinfo.Name.ToString(),
+                            Value = pinfo.GetValue(entity).ToString()
+                        };
+                        result.Add(rec);
+                    }
                 }
             }
             return result;
         }
 
-        public ObservableCollection<WeekCode> LoadWeekCode()
+        internal List<Article> GetArticle(string articleNumber)
         {
-            ObservableCollection<WeekCode> result;
+            List<Article> result = null;
 
-            _context.WeekCode.Load();
-            result = _context.WeekCode.Local;
-
-            return result;
-        }
-
-        public ObservableCollection<QuarterCode> LoadQuarterCode()
-        {
-            ObservableCollection<QuarterCode> result;
-
-            _context.QuarterCode.Load();
-            result = _context.QuarterCode.Local;
-
-            return result;
-        }
-
-        public ObservableCollection<Fixture> LoadFixture()
-        {
-            ObservableCollection<Fixture> result;
-
-            _context.Fixture.Load();
-            result = _context.Fixture.Local;
-
-            return result;
-        }
-
-        /// <summary>
-        /// Load data from LaserData table
-        /// </summary>
-        /// <returns>All the data in table sorted by column F1 (Article number)</returns>
-        public ObservableCollection<LaserData> LoadLaserData()
-        {
-            ObservableCollection<LaserData> result;
-
-            _context.LaserData.OrderBy(x => x.F1).Load();
-            result = _context.LaserData.Local;
-
-            return result;
-        }
-
-        public bool IsChangesPending()
-        {
-            return _context.ChangeTracker.HasChanges();
-        }
-
-        public void SaveChanges()
-        {
-            try
+            using (var context = new DCLasermarkContext())
             {
-                _context.SaveChanges();
+                result = context.LaserData
+                    .OrderBy(x => x.F1).ThenBy(x => x.Kant).Where(r => r.F1 == articleNumber)
+                  .Select(x => new Article
+                  {
+                      Id = x.Id,
+                      F1 = x.F1,
+                      Kant = x.Kant,
+                      FixtureId = x.FixtureId,
+                      EnableTO = x.EnableTO,
+                      Template = x.Template,
+                  }).ToList();
             }
-            catch (Exception ex)
+            return result;
+        }
+
+        private SerialNumber CreateSerialNumber()
+        {
+            SerialNumber result = null;
+
+            using (var context = new DCLasermarkContext())
             {
-                var errors = _context.GetValidationErrors();
-                Console.WriteLine(ex);
-                throw;
+                var currentTime = DateTime.Now;
+                var snr = new SerialNumber
+                {
+                    Issued = currentTime
+                };
+                result = context.SerialNumber.Add(snr);
+                context.SaveChanges();
             }
-        }
-
-        internal void Dispose()
-        {
-            _context.Dispose();
-        }
-
-        //internal object AddNewRecord<T>()
-        //{
-        //    <T> entity = new <T>();
-
-        //    var result = _context.LaserData.Add(entity);
-
-        //    return result;
-        //}
-
-        internal object AddNewLaserDataRecord()
-        {
-            LaserData result;
-            LaserData entity = new LaserData();
-
-            result = _context.LaserData.Add(entity);
-
             return result;
         }
 
-        internal object AddNewWeekCodeRecord()
+        private HistoryData FillHistoryData(LaserData laserDta, SerialNumber snr)
         {
-            WeekCode result;
-            WeekCode entity = new WeekCode();
-
-            result = _context.WeekCode.Add(entity);
-
-            return result;
-        }
-
-        internal object AddNewQuartalCodeRecord()
-        {
-            QuarterCode result;
-            QuarterCode entity = new QuarterCode();
-
-            result = _context.QuarterCode.Add(entity);
-
-            return result;
-        }
-
-        internal object AddNewFixtureRecord()
-        {
-            LaserData result;
-            LaserData entity = new LaserData();
-
-            result = _context.LaserData.Add(entity);
-
-            return result;
-        }
-
-        internal void DeleteLaserDataRecord(IList<DataGridCellInfo> selectedItems)
-        {
-            if (selectedItems != null)
+            Mapper.Initialize(cfg =>
             {
-                var selectedItem = selectedItems[0];
-                var item = (LaserData)selectedItem.Item;
-                var id = item.Id;
-                var entity = _context.LaserData.Find(id);
-                _context.LaserData.Remove(entity);
-            }
+                cfg.CreateMap<LaserData, HistoryData>();
+            });
+
+            var dtMark = new DateMark(snr.Issued);
+            HistoryData result = Mapper.Map<LaserData, HistoryData>(laserDta);
+            result.Snr = snr.Snr.ToString();
+            result.Issued = DateTime.Now;
+            result.DateMark = dtMark.Mark;
+            result.DateMarkLong = dtMark.MarkLong;
+            result.DateMarkShort = dtMark.MarkShort;
+
+            return result;
         }
 
-        internal void Refresh()
+        private SerialNumber GetLastSerialNumber()
         {
-            if (IsChangesPending())
+            SerialNumber result = null;
+            using (var context = new DCLasermarkContext())
             {
-                SaveChanges();
+                result = context.SerialNumber
+                        .OrderByDescending(s => s.Snr)
+                       .First();
+
+                result.Issued = DateTime.Now;
             }
 
-            Dispose();
-            _context = new DCLasermarkContext();
-            Context = _context;
+            return result;
         }
     }
 }

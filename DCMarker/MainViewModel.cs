@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
 {
@@ -60,8 +61,8 @@ namespace DCMarker
                     break;
 
                 default:
-                    throw new Exception(string.Format("Type of machine not available! Type={0}", cfg.TypeOfMachine));
-                    break;
+                    throw new Exception(string.Format(GlblRes.Type_of_machine_not_available_Type0, cfg.TypeOfMachine));
+                    // break;       // Leaving this as a reminder if we change throw to something else... 2017-02-10 AME
             }
         }
 
@@ -84,6 +85,8 @@ namespace DCMarker
 
         private void _wf_ErrorEvent(object sender, ErrorArgs e)
         {
+            // Clear Status since we have an error
+            Status = string.Empty;
             Error = e.Text;
         }
 
@@ -97,6 +100,7 @@ namespace DCMarker
             HasTOnr = e.Data.HasTOnr;
             HasBatchSize = e.Data.HasBatchSize;
             NeedUserInput = e.Data.NeedUserInput;
+            Status = e.Data.Status;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

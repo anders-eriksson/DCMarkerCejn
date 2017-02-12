@@ -45,6 +45,42 @@
           <source>DCMarker</source>
           <target state="translated" state-qualifier="mt-suggestion">DCMarker</target>
         </trans-unit>
+        <trans-unit id="Article_not_defined_in_database_Article0" translate="yes" xml:space="preserve">
+          <source>Article not defined in database! Article={0}</source>
+          <target state="translated">Artikel finns inte definierat i databasen! Artikel = {0}</target>
+        </trans-unit>
+        <trans-unit id="Error_loading_layout_0" translate="yes" xml:space="preserve">
+          <source>Error loading layout: {0}</source>
+          <target state="translated">Kan inte öppna layout: {0}</target>
+        </trans-unit>
+        <trans-unit id="Layout_not_defined_for_this_article_Article0" translate="yes" xml:space="preserve">
+          <source>Layout not defined for this article! Article={0}</source>
+          <target state="translated">Layout inte definierad för denna artikel! Artikel = {0}</target>
+        </trans-unit>
+        <trans-unit id="Marking_is_done" translate="yes" xml:space="preserve">
+          <source>Marking is done!</source>
+          <target state="translated" state-qualifier="mt-suggestion">Märkningen är klar!</target>
+        </trans-unit>
+        <trans-unit id="Update_didnt_work_on_this_article_and_layout_Article0_Layout1" translate="yes" xml:space="preserve">
+          <source>Update didn't work on this article and layout! Article={0}, Layout={1}</source>
+          <target state="translated" state-qualifier="mt-suggestion">Uppdatering fungerade inte på denna artikel och layout! Artikel = {0}, Layout = {1}</target>
+        </trans-unit>
+        <trans-unit id="Waiting_for_start_signal_0" translate="yes" xml:space="preserve">
+          <source>Waiting for start signal ({0})</source>
+          <target state="translated" state-qualifier="mt-suggestion">Väntar på startsignal ({0})</target>
+        </trans-unit>
+        <trans-unit id="Waiting_for_start_signal_0xlp" translate="yes" xml:space="preserve">
+          <source>Waiting for start signal ({0}.xlp)</source>
+          <target state="translated" state-qualifier="mt-suggestion">Väntar på startsignal ({0} .xlp)</target>
+        </trans-unit>
+        <trans-unit id="xlp" translate="no" xml:space="preserve">
+          <source>.xlp</source>
+          <target state="final">.xlp</target>
+        </trans-unit>
+        <trans-unit id="Type_of_machine_not_available_Type0" translate="yes" xml:space="preserve">
+          <source>Type of machine not available! Type={0}</source>
+          <target state="new">Type of machine not available! Type={0}</target>
+        </trans-unit>
       </group>
     </body>
   </file>

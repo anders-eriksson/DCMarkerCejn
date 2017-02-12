@@ -120,17 +120,29 @@
   <data name="ArticleNumber" xml:space="preserve">
     <value>Article Number</value>
   </data>
+  <data name="Article_not_defined_in_database_Article0" xml:space="preserve">
+    <value>Article not defined in database! Article={0}</value>
+  </data>
   <data name="BatchSize" xml:space="preserve">
     <value>Batch Size</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="Error_loading_layout_0" xml:space="preserve">
+    <value>Error loading layout: {0}</value>
+  </data>
   <data name="Fixture" xml:space="preserve">
     <value>Fixture</value>
   </data>
   <data name="Kant" xml:space="preserve">
     <value>Edge</value>
+  </data>
+  <data name="Layout_not_defined_for_this_article_Article0" xml:space="preserve">
+    <value>Layout not defined for this article! Article={0}</value>
+  </data>
+  <data name="Marking_is_done" xml:space="preserve">
+    <value>Marking is done!</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -143,5 +155,20 @@
   </data>
   <data name="ToNumber" xml:space="preserve">
     <value>TO</value>
+  </data>
+  <data name="Update_didnt_work_on_this_article_and_layout_Article0_Layout1" xml:space="preserve">
+    <value>Update didn't work on this article and layout! Article={0}, Layout={1}</value>
+  </data>
+  <data name="Waiting_for_start_signal_0" xml:space="preserve">
+    <value>Waiting for start signal ({0})</value>
+  </data>
+  <data name="Waiting_for_start_signal_0xlp" xml:space="preserve">
+    <value>Waiting for start signal ({0}.xlp)</value>
+  </data>
+  <data name="xlp" xml:space="preserve">
+    <value>.xlp</value>
+  </data>
+  <data name="Type_of_machine_not_available_Type0" xml:space="preserve">
+    <value>Type of machine not available! Type={0}</value>
   </data>
 </root>
