@@ -25,8 +25,8 @@
           <note from="MultilingualEditor" annotates="source" priority="4">Technical</note>
         </trans-unit>
         <trans-unit id="Kant" translate="yes" xml:space="preserve">
-          <source>Edge</source>
-          <target state="translated">Kant</target>
+          <source>Edges</source>
+          <target state="translated">Kanter</target>
         </trans-unit>
         <trans-unit id="OK" translate="yes" xml:space="preserve">
           <source>OK</source>
