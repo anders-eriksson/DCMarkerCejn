@@ -330,6 +330,11 @@ namespace DCMarker.Model
             throw new NotImplementedException();
         }
 
+        public void ResetAllIoSignals()
+        {
+            throw new NotImplementedException();
+        }
+
         public void TestFunction()
         {
             throw new NotImplementedException();

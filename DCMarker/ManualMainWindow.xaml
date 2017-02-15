@@ -1,5 +1,5 @@
 ﻿<Window
-    x:Class="DCMarker.MainWindow"
+    x:Class="DCMarker.ManualMainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -17,7 +17,6 @@
     </Window.Resources>
 
     <Grid>
-
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
@@ -75,26 +74,27 @@
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.ArticleNumber}"
             TextWrapping="Wrap" />
-        <TextBlock
+        <TextBox
             x:Name="ArticleTextBlock"
-            Margin="139,60,0,0"
+            Width="132"
+            Margin="139,58,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{Binding ArticleNumber}"
             TextWrapping="Wrap" />
         <TextBlock
             x:Name="KantLabel"
-            Margin="315,63,0,0"
+            Margin="276,60,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasKant}"
             Text="{x:Static p:Resources.Kant}"
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
-        <TextBlock
+        <TextBox
             x:Name="KantTextBlock"
-            Width="27"
-            Margin="358,63,0,0"
+            Width="143"
+            Margin="307,58,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasKant}"
@@ -130,8 +130,27 @@
             Click="TestButton_Click"
             Content="Test" />
         <Label
+            x:Name="BatchSizeLabel"
+            Margin="37,76,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="{x:Static p:Resources.BatchSize}"
+            IsEnabled="{Binding HasBatchSize}"
+            Visibility="{Binding Path=HasBatchSize, Converter={StaticResource BoolToVis}}" />
+        <TextBox
+            x:Name="BatchSizeTextbox"
+            Width="132"
+            Height="18"
+            Margin="139,84,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            IsEnabled="{Binding HasBatchSize}"
+            Text="{Binding BatchSize}"
+            TextWrapping="Wrap"
+            Visibility="{Binding Path=HasBatchSize, Converter={StaticResource BoolToVis}}" />
+        <Label
             x:Name="TOnrLabel"
-            Margin="37,172,0,0"
+            Margin="37,99,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{x:Static p:Resources.ToNumber}"
@@ -139,9 +158,9 @@
             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
         <TextBox
             x:Name="TOnrTextbox"
-            Width="120"
-            Height="23"
-            Margin="116,175,0,0"
+            Width="132"
+            Height="18"
+            Margin="139,107,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasTOnr}"

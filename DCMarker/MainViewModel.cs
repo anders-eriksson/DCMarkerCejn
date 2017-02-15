@@ -4,15 +4,15 @@ using DCMarker.Model;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private IWorkFlow _wf;
-        private Thread _workflowThread;
+        private IWorkFlow _wf = null;
+
+        //private Thread _workflowThread;
         private DCConfig cfg;
 
         public MainViewModel()
@@ -34,12 +34,12 @@ namespace DCMarker
 
             cfg = DCConfig.Instance;
             InitializeMachine();
-
-            _workflowThread = new Thread(ExecuteWorkflow)
-            {
-                Name = "WorkFlow"
-            };
-            _workflowThread.Start();
+            InitializeWorkflow();
+            //_workflowThread = new Thread(ExecuteWorkflow)
+            //{
+            //    Name = "WorkFlow"
+            //};
+            //_workflowThread.Start();
         }
 
         internal void Test()
@@ -66,7 +66,15 @@ namespace DCMarker
             }
         }
 
-        private void ExecuteWorkflow()
+        internal void ResetAllIoSignals()
+        {
+            if (_wf != null)
+            {
+                _wf.ResetAllIoSignals();
+            }
+        }
+
+        private void InitializeWorkflow()
         {
             _wf.ErrorEvent += _wf_ErrorEvent;
             _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;

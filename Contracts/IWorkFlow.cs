@@ -16,5 +16,7 @@
         bool Initialize();
 
         void TestFunction();
+
+        void ResetAllIoSignals();
     }
 }

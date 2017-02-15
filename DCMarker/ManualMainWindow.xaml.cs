@@ -6,13 +6,13 @@ using System.Windows;
 namespace DCMarker
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ManualMainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ManualMainWindow : Window
     {
         private MainViewModel mainViewModel;
 
-        public MainWindow()
+        public ManualMainWindow()
         {
             DCConfig cfg = DCConfig.Instance;
             string language = cfg.GuiLanguage;
@@ -23,10 +23,6 @@ namespace DCMarker
             InitializeComponent();
             mainViewModel = new MainViewModel();
             DataContext = mainViewModel;
-
-#if DEBUGx
-            InitViewModel();
-#endif
         }
 
         private void InitViewModel()

@@ -115,7 +115,7 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edge.
+        ///   Looks up a localized string similar to Edges.
         /// </summary>
         public static string Kant {
             get {

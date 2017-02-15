@@ -68,25 +68,25 @@ namespace LaserWrapper
             try
             {
                 result = _doc.execute(true, true);
-                if (result)
-                {
-                    try
-                    {
-                        lock (lockObj)
-                        {
-                            Monitor.Wait(lockObj, _executeTimeout);
-                            if (ErrorCode > 0)
-                            {
-                                result = false;
-                            }
-                        }
-                    }
-                    catch (ThreadInterruptedException ex)
-                    {
-                        Log.Error(ex, "Laser: Execute was interrupted"); ;
-                        result = false;
-                    }
-                }
+                //if (result)
+                //{
+                //    try
+                //    {
+                //        lock (lockObj)
+                //        {
+                //            Monitor.Wait(lockObj, _executeTimeout);
+                //            if (ErrorCode > 0)
+                //            {
+                //                result = false;
+                //            }
+                //        }
+                //    }
+                //    catch (ThreadInterruptedException ex)
+                //    {
+                //        Log.Error(ex, "Laser: Execute was interrupted"); ;
+                //        result = false;
+                //    }
+                //}
             }
             catch (NullReferenceException ex)
             {
@@ -187,55 +187,63 @@ namespace LaserWrapper
 
         private void _laserSystem_sigDeviceConnected()
         {
+            Log.Trace("Connected to remote device");
             if (_isIoEnabled)
             {
                 _ioPort.checkPort(0);
+                Log.Trace("checkPort(0)");
             }
 
-            lock (lockObj)
-            {
-                Monitor.Pulse(lockObj);
-            }
+            //lock (lockObj)
+            //{
+            //    Monitor.Pulse(lockObj);
+            //}
         }
 
         private void _laserSystem_sigDeviceDisconnected()
         {
-            Log.Trace("sigDeviceDisconnected");
+            Log.Trace("Disconnected from remote device");
         }
 
         private void _laserSystem_sigDeviceError(string p_message)
         {
-            lock (lockObj)
-            {
-                Monitor.Pulse(lockObj);
-                RaiseLaserErrorEvent(p_message);
-            }
+            Log.Error(string.Format("Laser error: {0}", p_message));
+            RaiseLaserErrorEvent(p_message);
+            //lock (lockObj)
+            //{
+            //    Monitor.Pulse(lockObj);
+            //    RaiseLaserErrorEvent(p_message);
+            //}
         }
 
         private void _laserSystem_sigLaserEnd()
         {
+            Log.Trace("Laser End");
             ErrorCode = 0;
-            lock (lockObj)
-            {
-                Monitor.Pulse(lockObj);
-                RaiseLaserEndEvent();
-            }
+            //lock (lockObj)
+            //{
+            // Monitor.Pulse(lockObj);
+            RaiseLaserEndEvent();
+            //}
         }
 
         private void _laserSystem_sigLaserError(int p_errCode)
         {
             ErrorCode = p_errCode;
-            lock (lockObj)
-            {
-                Monitor.Pulse(lockObj);
-            }
+            Log.Error(string.Format("Laser error: {0}", p_errCode));
+            //lock (lockObj)
+            //{
+            //    Monitor.Pulse(lockObj);
+            //}
         }
 
         private void InitLaser()
         {
+            Log.Trace("InitLaser");
             try
             {
                 _laser = new LaserAxApp();
+                Log.Debug("LaserAxApp instance created");
                 _laserSystem = _laser.System;
                 _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
                 _laserSystem.sigLaserEnd += _laserSystem_sigLaserEnd;
@@ -261,10 +269,10 @@ namespace LaserWrapper
                     _laserSystem.sigDeviceDisconnected += _laserSystem_sigDeviceDisconnected;
 
                     _laserSystem.connectToDevice(_deviceAddress, _deviceTimeout);
-                    lock (lockObj)
-                    {
-                        Monitor.Wait(lockObj);
-                    }
+                    //lock (lockObj)
+                    //{
+                    //    Monitor.Wait(lockObj);
+                    //}
                 }
             }
             catch (COMException ex)

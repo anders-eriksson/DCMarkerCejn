@@ -9,6 +9,7 @@
         public int MASK_READYTOMARK = 0x01;
         public int MASK_MARKINGDONE = 0x02;
         public int MASK_ERROR = 0x10;
+        public int MASK_ALL = 0Xffff;
 
         // In signals
 
