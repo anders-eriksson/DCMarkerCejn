@@ -61,6 +61,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Article {0} received.
+        /// </summary>
+        public static string Article_0_received {
+            get {
+                return ResourceManager.GetString("Article_0_received", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Article not defined in database! Article={0}.
         /// </summary>
         public static string Article_not_defined_in_database_Article0 {
@@ -111,6 +120,15 @@ namespace DCMarker.Properties {
         public static string Fixture {
             get {
                 return ResourceManager.GetString("Fixture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ItemInPlace signal received before Article Number is set.
+        /// </summary>
+        public static string ItemInPlace_received_before_Article_Number_is_set {
+            get {
+                return ResourceManager.GetString("ItemInPlace_received_before_Article_Number_is_set", resourceCulture);
             }
         }
         

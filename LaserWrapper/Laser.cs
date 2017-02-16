@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using GlblRes = global::LaserWrapper.Properties.Resources;
 
 namespace LaserWrapper
 {
@@ -284,7 +285,7 @@ namespace LaserWrapper
 
         private void _laserSystem_sigQueryStart()
         {
-            RaiseQueryStartEvent("Marking...");
+            RaiseQueryStartEvent(GlblRes.Marking);
         }
 
         #region Digital IO

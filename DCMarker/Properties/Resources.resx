@@ -171,4 +171,10 @@
   <data name="Type_of_machine_not_available_Type0" xml:space="preserve">
     <value>Type of machine not available! Type={0}</value>
   </data>
+  <data name="Article_0_received" xml:space="preserve">
+    <value>Article {0} received</value>
+  </data>
+  <data name="ItemInPlace_received_before_Article_Number_is_set" xml:space="preserve">
+    <value>ItemInPlace signal received before Article Number is set</value>
+  </data>
 </root>

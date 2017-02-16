@@ -57,4 +57,10 @@
   <data name="Waiting_for_start_signal_0xlp" xml:space="preserve">
     <value>Väntar på startsignal ({0} .xlp)</value>
   </data>
+  <data name="Article_0_received" xml:space="preserve">
+    <value>Artikel {0} mottagen</value>
+  </data>
+  <data name="ItemInPlace_received_before_Article_Number_is_set" xml:space="preserve">
+    <value>ItemInPlace signal mottagen innan Artikelnummer angetts</value>
+  </data>
 </root>

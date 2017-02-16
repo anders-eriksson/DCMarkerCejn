@@ -81,6 +81,14 @@
           <source>Type of machine not available! Type={0}</source>
           <target state="new">Type of machine not available! Type={0}</target>
         </trans-unit>
+        <trans-unit id="Article_0_received" translate="yes" xml:space="preserve">
+          <source>Article {0} received</source>
+          <target state="translated">Artikel {0} mottagen</target>
+        </trans-unit>
+        <trans-unit id="ItemInPlace_received_before_Article_Number_is_set" translate="yes" xml:space="preserve">
+          <source>ItemInPlace signal received before Article Number is set</source>
+          <target state="translated">ItemInPlace signal mottagen innan Artikelnummer angetts</target>
+        </trans-unit>
       </group>
     </body>
   </file>

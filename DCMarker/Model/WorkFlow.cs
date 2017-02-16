@@ -44,19 +44,14 @@ namespace DCMarker.Model
         public bool Initialize()
         {
             bool result = true;
-            //IsInitialized = false;
             try
             {
                 InitializeMachine();
-                //InitializeTcpServer();
                 InitializeDatabase();
                 InitializeLaser();
-                //IsInitialized = true;
             }
             catch (Exception)
             {
-                //IsInitialized = false;
-
                 throw;
             }
 
@@ -78,7 +73,7 @@ namespace DCMarker.Model
             RaiseErrorEvent(string.Empty);
             _laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
-            RaiseStatusEvent(string.Format("Article {0} received", _articleNumber));
+            RaiseStatusEvent(string.Format(WorkFlow_Res.Article_0_received, _articleNumber));
 
             _articles = _db.GetArticle(_articleNumber);
 
@@ -240,7 +235,7 @@ namespace DCMarker.Model
             }
             else
             {
-                RaiseErrorEvent("ItemInPlace received before Article Number is set!");
+                RaiseErrorEvent(WorkFlow_Res.ItemInPlace_received_before_Article_Number_is_set);
             }
         }
 
