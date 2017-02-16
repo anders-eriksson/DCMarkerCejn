@@ -63,9 +63,13 @@ namespace DCMarker.Model
             return result;
         }
 
-        public void TestFunction()
+        public void SimulateItemInPlace()
         {
             UpdateLayout();
+        }
+
+        public void Execute()
+        {
             _laser.Execute();
         }
 
@@ -74,9 +78,11 @@ namespace DCMarker.Model
             RaiseErrorEvent(string.Empty);
             _laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
+            RaiseStatusEvent(string.Format("Article {0} received", _articleNumber));
+
             _articles = _db.GetArticle(_articleNumber);
 
-            if (_articles != null)
+            if (_articles != null && _articles.Count > 0)
             {
                 UpdateViewModel(_articles);
             }
@@ -272,6 +278,7 @@ namespace DCMarker.Model
             data.Fixture = article.FixtureId;
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
             data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
+            data.Template = article.Template;
 
             RaiseUpdateMainViewModelEvent(data);
         }

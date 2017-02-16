@@ -7,11 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:p="clr-namespace:DCMarker.Properties"
     Title="DCMarker"
-    Width="525"
-    Height="350"
+    Width="594"
+    Height="308"
+    d:DataContext="{d:DesignInstance local:StaticMainViewModel,
+                                     IsDesignTimeCreatable=True}"
     Closing="Window_Closing"
     Icon="dclasersystem.ico"
-    mc:Ignorable="d">
+    mc:Ignorable="d" ResizeMode="CanMinimize">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
@@ -48,112 +50,130 @@
                 </MenuItem>
             </Menu>
         </DockPanel>
-        <TextBlock
-            x:Name="FixtureLabel"
-            Margin="37,18,0,0"
-            HorizontalAlignment="Left"
+        <GroupBox
+            Height="170"
+            Margin="10,30,10,0"
             VerticalAlignment="Top"
-            FontSize="20"
-            IsEnabled="{Binding HasFixture}"
-            Text="{x:Static p:Resources.Fixture}"
-            TextWrapping="Wrap"
-            Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
-        <TextBlock
-            x:Name="FixtureTextBlock"
-            Margin="139,18,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            FontSize="20"
-            IsEnabled="{Binding HasFixture}"
-            Text="{Binding Fixture}"
-            TextWrapping="Wrap"
-            Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
-        <TextBlock
-            x:Name="ArticleLabel"
-            Margin="37,60,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="{x:Static p:Resources.ArticleNumber}"
-            TextWrapping="Wrap" />
-        <TextBlock
-            x:Name="ArticleTextBlock"
-            Margin="139,60,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="{Binding ArticleNumber}"
-            TextWrapping="Wrap" />
-        <TextBlock
-            x:Name="KantLabel"
-            Margin="315,63,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            IsEnabled="{Binding HasKant}"
-            Text="{x:Static p:Resources.Kant}"
-            TextWrapping="Wrap"
-            Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
-        <TextBlock
-            x:Name="KantTextBlock"
-            Width="27"
-            Margin="358,63,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            IsEnabled="{Binding HasKant}"
-            Text="{Binding Kant}"
-            TextWrapping="Wrap"
-            Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
+            BorderBrush="Black"
+            BorderThickness="1"
+            Header="Loaded">
+            <Grid Margin="0,0,0,2">
+                <TextBlock
+                    x:Name="FixtureLabel"
+                    Margin="37,10,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    FontSize="20"
+                    IsEnabled="{Binding HasFixture}"
+                    Text="{x:Static p:Resources.Fixture}"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
+                <TextBlock
+                    x:Name="FixtureTextBlock"
+                    Margin="139,10,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    FontSize="20"
+                    IsEnabled="{Binding HasFixture}"
+                    Text="{Binding Fixture}"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
+                <TextBlock
+                    x:Name="ArticleLabel"
+                    Margin="37,42,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{x:Static p:Resources.ArticleNumber}"
+                    TextWrapping="Wrap" />
+                <TextBlock
+                    x:Name="ArticleTextBlock"
+                    Margin="139,42,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{Binding ArticleNumber}"
+                    TextWrapping="Wrap" />
+                <TextBlock
+                    x:Name="KantLabel"
+                    Margin="297,42,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    IsEnabled="{Binding HasKant}"
+                    Text="{x:Static p:Resources.Kant}"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
+                <TextBlock
+                    x:Name="KantTextBlock"
+                    Width="27"
+                    Margin="334,42,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    IsEnabled="{Binding HasKant}"
+                    Text="{Binding Kant}"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
 
-        <Button
-            x:Name="OkButton"
-            Width="75"
-            Margin="161,229,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="{x:Static p:Resources.OK}"
-            IsEnabled="{Binding HasKant}"
-            Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
-        <Button
-            x:Name="CancelButton"
-            Width="75"
-            Margin="241,229,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="{x:Static p:Resources.Cancel}"
-            IsEnabled="{Binding HasKant}"
-            Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
+                <Button
+                    x:Name="OkButton"
+                    Width="75"
+                    Margin="139,101,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Content="{x:Static p:Resources.OK}"
+                    IsEnabled="{Binding HasKant}"
+                    Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
+                <Button
+                    x:Name="CancelButton"
+                    Width="75"
+                    Margin="219,101,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Content="{x:Static p:Resources.Cancel}"
+                    IsEnabled="{Binding HasKant}"
+                    Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
 
-        <Button
-            x:Name="TestButton"
-            Width="75"
-            Margin="375,229,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Click="TestButton_Click"
-            Content="Test" />
-        <Label
-            x:Name="TOnrLabel"
-            Margin="37,172,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="{x:Static p:Resources.ToNumber}"
-            IsEnabled="{Binding HasTOnr}"
-            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
-        <TextBox
-            x:Name="TOnrTextbox"
-            Width="120"
-            Height="23"
-            Margin="116,175,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            IsEnabled="{Binding HasTOnr}"
-            Text="{Binding TOnr}"
-            TextWrapping="Wrap"
-            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+                <Button
+                    x:Name="TestButton"
+                    Width="75"
+                    Margin="469,96,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Click="TestButton_Click"
+                    Content="Load" />
+                <Button
+                    x:Name="ExecuteButton"
+                    Width="75"
+                    Margin="469,121,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Click="ExecuteButton_Click"
+                    Content="Execute" />
+                <Label
+                    x:Name="TOnrLabel"
+                    Margin="37,63,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Content="{x:Static p:Resources.ToNumber}"
+                    IsEnabled="{Binding HasTOnr}"
+                    Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+                <TextBox
+                    x:Name="TOnrTextbox"
+                    Width="120"
+                    Height="23"
+                    Margin="139,63,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    IsEnabled="{Binding HasTOnr}"
+                    Text="{Binding TOnr}"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+            </Grid>
+        </GroupBox>
         <StackPanel VerticalAlignment="Bottom">
             <TextBlock
                 x:Name="textBlock"
                 Foreground="Red"
                 Text="{Binding Error}"
-                TextWrapping="Wrap" />
+                TextWrapping="Wrap" Height="44" />
             <StatusBar Margin="0,0,0,0" VerticalAlignment="Bottom">
                 <StatusBarItem>
                     <TextBlock Text="{x:Static p:Resources.Status}" />
