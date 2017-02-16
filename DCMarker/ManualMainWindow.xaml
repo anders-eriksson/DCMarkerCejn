@@ -8,7 +8,7 @@
     xmlns:p="clr-namespace:DCMarker.Properties"
     Title="DCMarker"
     Width="525"
-    Height="350"
+    Height="287.829"
     Closing="Window_Closing"
     Icon="dclasersystem.ico"
     mc:Ignorable="d">
@@ -49,7 +49,7 @@
         </DockPanel>
         <TextBlock
             x:Name="FixtureLabel"
-            Margin="37,18,0,0"
+            Margin="37,36,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             FontSize="20"
@@ -59,7 +59,7 @@
             Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
         <TextBlock
             x:Name="FixtureTextBlock"
-            Margin="139,18,0,0"
+            Margin="139,36,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             FontSize="20"
@@ -69,7 +69,7 @@
             Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
         <TextBlock
             x:Name="ArticleLabel"
-            Margin="37,60,0,0"
+            Margin="37,78,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.ArticleNumber}"
@@ -77,14 +77,14 @@
         <TextBox
             x:Name="ArticleTextBlock"
             Width="132"
-            Margin="139,58,0,0"
+            Margin="139,76,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{Binding ArticleNumber}"
             TextWrapping="Wrap" />
         <TextBlock
             x:Name="KantLabel"
-            Margin="276,60,0,0"
+            Margin="276,78,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasKant}"
@@ -94,7 +94,7 @@
         <TextBox
             x:Name="KantTextBlock"
             Width="143"
-            Margin="307,58,0,0"
+            Margin="313,76,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasKant}"
@@ -105,7 +105,7 @@
         <Button
             x:Name="OkButton"
             Width="75"
-            Margin="161,229,0,0"
+            Margin="143,172,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{x:Static p:Resources.OK}"
@@ -114,7 +114,7 @@
         <Button
             x:Name="CancelButton"
             Width="75"
-            Margin="241,229,0,0"
+            Margin="223,172,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{x:Static p:Resources.Cancel}"
@@ -124,14 +124,14 @@
         <Button
             x:Name="TestButton"
             Width="75"
-            Margin="375,229,0,0"
+            Margin="381,172,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Click="TestButton_Click"
             Content="Test" />
         <Label
             x:Name="BatchSizeLabel"
-            Margin="37,76,0,0"
+            Margin="37,94,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{x:Static p:Resources.BatchSize}"
@@ -141,7 +141,7 @@
             x:Name="BatchSizeTextbox"
             Width="132"
             Height="18"
-            Margin="139,84,0,0"
+            Margin="139,102,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasBatchSize}"
@@ -150,7 +150,7 @@
             Visibility="{Binding Path=HasBatchSize, Converter={StaticResource BoolToVis}}" />
         <Label
             x:Name="TOnrLabel"
-            Margin="37,99,0,0"
+            Margin="37,117,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{x:Static p:Resources.ToNumber}"
@@ -160,7 +160,7 @@
             x:Name="TOnrTextbox"
             Width="132"
             Height="18"
-            Margin="139,107,0,0"
+            Margin="139,125,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasTOnr}"

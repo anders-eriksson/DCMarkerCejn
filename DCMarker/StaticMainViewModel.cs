@@ -1,118 +1,26 @@
-﻿using Configuration;
-using Contracts;
-using DCMarker.Model;
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class StaticMainViewModel : INotifyPropertyChanged
     {
-        private IWorkFlow _wf = null;
-
-        //private Thread _workflowThread;
-        private DCConfig cfg;
-
-        public MainViewModel()
+        public StaticMainViewModel()
         {
-            ArticleNumber = string.Empty;
-            Fixture = string.Empty;
-            HasFixture = false;
-            HasKant = false;
-            Kant = string.Empty;
-            HasTestItem = false;
+            ArticleNumber = "123456789012";
+            Fixture = "120, 130, 140";
+            HasFixture = true;
+            HasKant = true;
+            Kant = "3";
+            HasTestItem = true;
             TestItem = string.Empty;
-            HasBatchSize = false;
-            BatchSize = string.Empty;
-            HasTOnr = false;
-            TOnr = string.Empty;
-            Status = string.Empty;
-            Error = string.Empty;
-            NeedUserInput = false;
-
-            cfg = DCConfig.Instance;
-            InitializeMachine();
-            InitializeWorkflow();
-            //_workflowThread = new Thread(ExecuteWorkflow)
-            //{
-            //    Name = "WorkFlow"
-            //};
-            //_workflowThread.Start();
-        }
-
-        internal void Test()
-        {
-            _wf.SimulateItemInPlace();
-        }
-
-        internal void Execute()
-        {
-            _wf.Execute();
-        }
-
-        private void InitializeMachine()
-        {
-            switch (cfg.TypeOfMachine)
-            {
-                case 1:
-                    _wf = new WorkFlow();
-                    break;
-
-                case 2:
-                    _wf = new ManualWorkFlow();
-                    break;
-
-                default:
-                    throw new Exception(string.Format(GlblRes.Type_of_machine_not_available_Type0, cfg.TypeOfMachine));
-                    // break;       // Leaving this as a reminder if we change throw to something else... 2017-02-10 AME
-            }
-        }
-
-        internal void ResetAllIoSignals()
-        {
-            if (_wf != null)
-            {
-                _wf.ResetAllIoSignals();
-            }
-        }
-
-        private void InitializeWorkflow()
-        {
-            _wf.ErrorEvent += _wf_ErrorEvent;
-            _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;
-            _wf.StatusEvent += _wf_StatusEvent;
-        }
-
-        private void _wf_StatusEvent(object sender, StatusArgs e)
-        {
-            Status = e.Text;
-        }
-
-        internal void Abort()
-        {
-            _wf.Close();
-        }
-
-        private void _wf_ErrorEvent(object sender, ErrorArgs e)
-        {
-            // Clear Status since we have an error
-            Status = string.Empty;
-            Error = e.Text;
-        }
-
-        private void _wf_UpdateMainViewModelEvent(object sender, UpdateMainViewModelArgs e)
-        {
-            Fixture = e.Data.Fixture;
-            HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
-            ArticleNumber = e.Data.ArticleNumber;
-            Kant = e.Data.Kant;
-            HasKant = string.IsNullOrWhiteSpace(Kant) ? false : true;
-            HasTOnr = e.Data.HasTOnr;
-            HasBatchSize = e.Data.HasBatchSize;
-            NeedUserInput = e.Data.NeedUserInput;
-            Status = e.Data.Status;
+            HasBatchSize = true;
+            BatchSize = "1";
+            HasTOnr = true;
+            TOnr = "123456789";
+            Status = "Not available";
+            Error = "No Error";
+            NeedUserInput = true;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

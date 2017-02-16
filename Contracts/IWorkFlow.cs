@@ -1,7 +1,7 @@
 ﻿namespace DCMarker.Model
 {
-    using System;
     using Contracts;
+    using System;
 
     public interface IWorkFlow
     {
@@ -15,7 +15,9 @@
 
         bool Initialize();
 
-        void TestFunction();
+        void SimulateItemInPlace();
+
+        void Execute();
 
         void ResetAllIoSignals();
     }

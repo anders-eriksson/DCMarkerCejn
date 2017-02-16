@@ -21,32 +21,19 @@ namespace DCMarker
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
             InitializeComponent();
+            Services.Tracker.Configure(this)//the object to track
+                                           .IdentifyAs("MainWindow")                                                                           //a string by which to identify the target object
+                                           .AddProperties<Window>(w => w.Height, w => w.Width, w => w.Top, w => w.Left, w => w.WindowState)     //properties to track
+                                           .RegisterPersistTrigger(nameof(SizeChanged))                                                         //when to persist data to the store
+                                           .Apply();                                                                                            //apply any previously stored data
+
             mainViewModel = new MainViewModel();
             DataContext = mainViewModel;
-
-#if DEBUGx
-            InitViewModel();
-#endif
-        }
-
-        private void InitViewModel()
-        {
-            mainViewModel.ArticleNumber = "123456789012";
-            mainViewModel.Kant = "1";
-            mainViewModel.HasKant = true;
-            mainViewModel.Fixture = "999888777555";
-            mainViewModel.HasFixture = true;
-            mainViewModel.Status = "OffLine";
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             mainViewModel.Abort();
-        }
-
-        private void TestButton_Click(object sender, RoutedEventArgs e)
-        {
-            mainViewModel.Test();
         }
 
         private void ResetSignals_Click(object sender, RoutedEventArgs e)
@@ -69,6 +56,16 @@ namespace DCMarker
         {
             WPFAboutBox1 dlg = new WPFAboutBox1(this);
             dlg.ShowDialog();
+        }
+
+        private void TestButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainViewModel.Test();
+        }
+
+        private void ExecuteButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainViewModel.Execute();
         }
     }
 }

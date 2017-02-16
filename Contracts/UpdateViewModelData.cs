@@ -11,5 +11,6 @@
         public bool HasTOnr { get; set; }
         public bool NeedUserInput { get; set; }
         public string Status { get; set; }
+        public string Template { get; set; }
     }
 }

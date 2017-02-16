@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 
 namespace DCMarkerEF
 {
@@ -18,6 +20,22 @@ namespace DCMarkerEF
         public virtual DbSet<QuarterCode> QuarterCode { get; set; }
         public virtual DbSet<SerialNumber> SerialNumber { get; set; }
         public virtual DbSet<WeekCode> WeekCode { get; set; }
+
+        protected override System.Data.Entity.Validation.DbEntityValidationResult ValidateEntity(DbEntityEntry entityEntry, System.Collections.Generic.IDictionary<object, object> items)
+        {
+            if (entityEntry.Entity is LaserData)
+            {
+                if (string.IsNullOrWhiteSpace(entityEntry.CurrentValues.GetValue<string>("F1")))
+                {
+                    var list = new List<System.Data.Entity.Validation.DbValidationError>();
+                    list.Add(new System.Data.Entity.Validation.DbValidationError("F1", "Article(F1) is required"));
+
+                    return new System.Data.Entity.Validation.DbEntityValidationResult(entityEntry, list);
+                }
+            }
+
+            return base.ValidateEntity(entityEntry, items);
+        }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

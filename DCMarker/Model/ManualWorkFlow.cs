@@ -325,6 +325,11 @@ namespace DCMarker.Model
             throw new NotImplementedException();
         }
 
+        public void Execute()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Initialize()
         {
             throw new NotImplementedException();
@@ -335,7 +340,7 @@ namespace DCMarker.Model
             throw new NotImplementedException();
         }
 
-        public void TestFunction()
+        public void SimulateItemInPlace()
         {
             throw new NotImplementedException();
         }
