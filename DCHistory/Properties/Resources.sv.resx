@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AboutMenuHeader" xml:space="preserve">
+    <value>_Om</value>
+  </data>
+  <data name="ArticleNumber" xml:space="preserve">
+    <value>Artikelnummer (F1)</value>
+  </data>
+  <data name="DeleteMenuHeader" xml:space="preserve">
+    <value>_Radera</value>
+  </data>
+  <data name="DeleteToolTip" xml:space="preserve">
+    <value>Radera valt artikelnummer</value>
+  </data>
+  <data name="ExitMenuHeader" xml:space="preserve">
+    <value>_Avsluta</value>
+  </data>
+  <data name="FileMenuHeader" xml:space="preserve">
+    <value>_Arkiv</value>
+  </data>
+  <data name="FilterMenuHeader" xml:space="preserve">
+    <value>_Filter</value>
+  </data>
+  <data name="FindButtonHeader" xml:space="preserve">
+    <value>Sök</value>
+  </data>
+  <data name="HelpMenuHeader" xml:space="preserve">
+    <value>_Hjälp</value>
+  </data>
+  <data name="NewMenuHeader" xml:space="preserve">
+    <value>_Nytt</value>
+  </data>
+  <data name="NewToolTip" xml:space="preserve">
+    <value>Skapa nytt artikelnummer</value>
+  </data>
+  <data name="OnTopMenuHeader" xml:space="preserve">
+    <value>_Överst</value>
+  </data>
+  <data name="RefreshMenuHeader" xml:space="preserve">
+    <value>_Uppdatera</value>
+  </data>
+  <data name="RefreshToolTip" xml:space="preserve">
+    <value>Uppdatera databasen</value>
+  </data>
+  <data name="SaveMenuHeader" xml:space="preserve">
+    <value>_Spara</value>
+  </data>
+  <data name="SaveToolTip" xml:space="preserve">
+    <value>Spara ändringar till databasen</value>
+  </data>
+  <data name="WindowMenuHeader" xml:space="preserve">
+    <value>_Fönster</value>
+  </data>
+</root>

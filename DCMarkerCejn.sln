@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCWorkFlow", "DCWorkFlow\DC
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SetupProject1", "SetupProject1\SetupProject1.wixproj", "{992FA754-4575-41A7-B2B6-96A509F35C9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCHistory", "DCHistory\DCHistory.csproj", "{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +120,14 @@ Global
 		{992FA754-4575-41A7-B2B6-96A509F35C9B}.Release|Any CPU.ActiveCfg = Release|x86
 		{992FA754-4575-41A7-B2B6-96A509F35C9B}.Release|x86.ActiveCfg = Release|x86
 		{992FA754-4575-41A7-B2B6-96A509F35C9B}.Release|x86.Build.0 = Release|x86
+		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Debug|x86.Build.0 = Debug|Any CPU
+		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Release|x86.ActiveCfg = Release|Any CPU
+		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
