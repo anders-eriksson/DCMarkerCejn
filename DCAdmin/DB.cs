@@ -1,8 +1,10 @@
-﻿using DCMarkerEF;
+﻿using DCLog;
+using DCMarkerEF;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Windows.Controls;
 
@@ -17,6 +19,7 @@ namespace DCAdmin
         public DB()
         {
             _context = new DCLasermarkContext();
+            Log.Trace("Created Context");
             Context = _context;
         }
 
@@ -31,7 +34,7 @@ namespace DCAdmin
         {
             ObservableCollection<WeekCode> result;
 
-            _context.WeekCode.Load();
+            _context.WeekCode.OrderBy(x => x.WeekNo).Load();
             result = _context.WeekCode.Local;
 
             return result;
@@ -41,7 +44,7 @@ namespace DCAdmin
         {
             ObservableCollection<QuarterCode> result;
 
-            _context.QuarterCode.Load();
+            _context.QuarterCode.OrderBy(x => x.QYear).Load();
             result = _context.QuarterCode.Local;
 
             return result;
@@ -51,7 +54,7 @@ namespace DCAdmin
         {
             ObservableCollection<Fixture> result;
 
-            _context.Fixture.Load();
+            _context.Fixture.OrderBy(x => x.FixturId).Load();
             result = _context.Fixture.Local;
 
             return result;
@@ -65,7 +68,7 @@ namespace DCAdmin
         {
             ObservableCollection<LaserData> result;
 
-            _context.LaserData.OrderBy(x => x.F1).Load();
+            _context.LaserData.OrderBy(x => x.F1).ThenBy(x => x.Kant).Load();
             result = _context.LaserData.Local;
 
             return result;
@@ -82,10 +85,21 @@ namespace DCAdmin
             {
                 _context.SaveChanges();
             }
+            catch (DbEntityValidationException dbEx)
+            {
+                foreach (DbEntityValidationResult entityErr in dbEx.EntityValidationErrors)
+                {
+                    foreach (DbValidationError error in entityErr.ValidationErrors)
+                    {
+                        Log.Error(string.Format("Error Property Name {0} : Error Message: {1}",
+                                            error.PropertyName, error.ErrorMessage));
+                    }
+                }
+            }
             catch (Exception ex)
             {
                 var errors = _context.GetValidationErrors();
-                Console.WriteLine(ex);
+                Log.Error(ex, "SaveChanges Exception");
                 throw;
             }
         }

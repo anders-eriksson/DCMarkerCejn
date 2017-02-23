@@ -1,5 +1,8 @@
-﻿using DCMarkerEF;
+﻿using Configuration;
+using DCMarkerEF;
 using System;
+using System.Globalization;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,8 +21,16 @@ namespace DCAdmin
         private CollectionViewSource quarterCodeViewSource;
         private CollectionViewSource weekCodeViewSource;
 
+        public string ErrorMsg { get; set; }
+
         public MainWindow()
         {
+            DCConfig cfg = DCConfig.Instance;
+            string language = cfg.GuiLanguage;
+            if (!string.IsNullOrWhiteSpace(language))
+            {
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
+            }
             db = new DB();
             InitializeComponent();
 
@@ -28,6 +39,7 @@ namespace DCAdmin
                                            .AddProperties<Window>(w => w.Height, w => w.Width, w => w.Top, w => w.Left, w => w.WindowState)     //properties to track
                                            .RegisterPersistTrigger(nameof(SizeChanged))                                                         //when to persist data to the store
                                            .Apply();                                                                                            //apply any previously stored data
+            ErrorMsg = "ERROR Hello Workd!";
         }
 
         public static double MaxScreenSize
@@ -49,7 +61,8 @@ namespace DCAdmin
 
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var dlg = new WPFAboutBox1(this);
+            dlg.ShowDialog();
         }
 
         private void AddNewRecord(int index)

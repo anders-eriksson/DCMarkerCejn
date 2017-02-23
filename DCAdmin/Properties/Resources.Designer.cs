@@ -22,7 +22,7 @@ namespace DCAdmin.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace DCAdmin.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DCAdmin.Properties.Resources", typeof(Resources).Assembly);
@@ -51,12 +51,156 @@ namespace DCAdmin.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _About.
+        /// </summary>
+        public static string AboutMenuHeader {
+            get {
+                return ResourceManager.GetString("AboutMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Article Number (F1).
+        /// </summary>
+        public static string ArticleNumber {
+            get {
+                return ResourceManager.GetString("ArticleNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Delete.
+        /// </summary>
+        public static string DeleteMenuHeader {
+            get {
+                return ResourceManager.GetString("DeleteMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete selected article number.
+        /// </summary>
+        public static string DeleteToolTip {
+            get {
+                return ResourceManager.GetString("DeleteToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Exit.
+        /// </summary>
+        public static string ExitMenuHeader {
+            get {
+                return ResourceManager.GetString("ExitMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _File.
+        /// </summary>
+        public static string FileMenuHeader {
+            get {
+                return ResourceManager.GetString("FileMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Find.
+        /// </summary>
+        public static string FindButtonHeader {
+            get {
+                return ResourceManager.GetString("FindButtonHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Help.
+        /// </summary>
+        public static string HelpMenuHeader {
+            get {
+                return ResourceManager.GetString("HelpMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _New.
+        /// </summary>
+        public static string NewMenuHeader {
+            get {
+                return ResourceManager.GetString("NewMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create New article number.
+        /// </summary>
+        public static string NewToolTip {
+            get {
+                return ResourceManager.GetString("NewToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _OnTop.
+        /// </summary>
+        public static string OnTopMenuHeader {
+            get {
+                return ResourceManager.GetString("OnTopMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Refresh.
+        /// </summary>
+        public static string RefreshMenuHeader {
+            get {
+                return ResourceManager.GetString("RefreshMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh database.
+        /// </summary>
+        public static string RefreshToolTip {
+            get {
+                return ResourceManager.GetString("RefreshToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Save.
+        /// </summary>
+        public static string SaveMenuHeader {
+            get {
+                return ResourceManager.GetString("SaveMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Changes to database.
+        /// </summary>
+        public static string SaveToolTip {
+            get {
+                return ResourceManager.GetString("SaveToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Window.
+        /// </summary>
+        public static string WindowMenuHeader {
+            get {
+                return ResourceManager.GetString("WindowMenuHeader", resourceCulture);
             }
         }
     }
