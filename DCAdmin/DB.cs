@@ -1,4 +1,4 @@
-﻿using DCLog;
+using DCLog;
 using DCMarkerEF;
 using System;
 using System.Collections.Generic;
@@ -6,15 +6,16 @@ using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
+using System.Linq.Dynamic;
 using System.Windows.Controls;
 
 namespace DCAdmin
 {
     public class DB
     {
+        private static readonly object mutex = new object();
+        private static volatile DB instance;
         private DCLasermarkContext _context;
-
-        public DCLasermarkContext Context { get; internal set; }
 
         public DB()
         {
@@ -23,31 +24,43 @@ namespace DCAdmin
             Context = _context;
         }
 
+        public static string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Instanciate the one and only object!
+        /// </summary>
+        public static DB Instance
+        {
+            get
+            {
+                if (instance == null)
+
+                {
+                    lock (mutex)
+                    {
+                        if (instance == null)
+                        {
+                            // Call constructor
+                            instance = new DB();
+                        }
+                    }
+                }
+                return instance;
+            }
+        }
+
+        public DCLasermarkContext Context { get; internal set; }
+
         public LaserData FindArticle(string articleNumber)
         {
-            var entity = _context.LaserData.FirstOrDefault<LaserData>(e => e.F1 == articleNumber);
+            var entity = _context.LaserData.FirstOrDefault<LaserData>(e => e.F1.StartsWith(articleNumber));
 
             return entity;
         }
 
-        public ObservableCollection<WeekCode> LoadWeekCode()
+        public bool IsChangesPending()
         {
-            ObservableCollection<WeekCode> result;
-
-            _context.WeekCode.OrderBy(x => x.WeekNo).Load();
-            result = _context.WeekCode.Local;
-
-            return result;
-        }
-
-        public ObservableCollection<QuarterCode> LoadQuarterCode()
-        {
-            ObservableCollection<QuarterCode> result;
-
-            _context.QuarterCode.OrderBy(x => x.QYear).Load();
-            result = _context.QuarterCode.Local;
-
-            return result;
+            return _context.ChangeTracker.HasChanges();
         }
 
         public ObservableCollection<Fixture> LoadFixture()
@@ -56,6 +69,15 @@ namespace DCAdmin
 
             _context.Fixture.OrderBy(x => x.FixturId).Load();
             result = _context.Fixture.Local;
+
+            return result;
+        }
+
+        public ObservableCollection<string> GetLaserDataColumns()
+        {
+            var query = (from t in typeof(LaserData).GetProperties()
+                         select t.Name);
+            var result = new ObservableCollection<string>(query);
 
             return result;
         }
@@ -74,9 +96,50 @@ namespace DCAdmin
             return result;
         }
 
-        public bool IsChangesPending()
+        public ObservableCollection<LaserData> LoadLaserDataFiltered(string key, string value)
         {
-            return _context.ChangeTracker.HasChanges();
+            ObservableCollection<LaserData> result = null;
+
+            try
+            {
+                var query = _context.LaserData
+                    .Where("@0==@1", key, value)
+                    .OrderByDescending(x => x.F1)
+                    ;
+                result = new ObservableCollection<LaserData>(query);
+            }
+            catch (OutOfMemoryException ex)
+            {
+                // To many rows in select!
+                ErrorMessage = "Out of memory! Please use a filter to make selection smaller!";
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "GetAllHistory exception");
+                throw;
+            }
+
+            return result;
+        }
+
+        public ObservableCollection<QuarterCode> LoadQuarterCode()
+        {
+            ObservableCollection<QuarterCode> result;
+
+            _context.QuarterCode.OrderBy(x => x.QYear).Load();
+            result = _context.QuarterCode.Local;
+
+            return result;
+        }
+
+        public ObservableCollection<WeekCode> LoadWeekCode()
+        {
+            ObservableCollection<WeekCode> result;
+
+            _context.WeekCode.OrderBy(x => x.WeekNo).Load();
+            result = _context.WeekCode.Local;
+
+            return result;
         }
 
         public void SaveChanges()
@@ -104,21 +167,7 @@ namespace DCAdmin
             }
         }
 
-        internal void Dispose()
-        {
-            _context.Dispose();
-        }
-
-        //internal object AddNewRecord<T>()
-        //{
-        //    <T> entity = new <T>();
-
-        //    var result = _context.LaserData.Add(entity);
-
-        //    return result;
-        //}
-
-        internal object AddNewLaserDataRecord()
+        internal object AddNewFixtureRecord()
         {
             LaserData result;
             LaserData entity = new LaserData();
@@ -128,12 +177,12 @@ namespace DCAdmin
             return result;
         }
 
-        internal object AddNewWeekCodeRecord()
+        internal object AddNewLaserDataRecord()
         {
-            WeekCode result;
-            WeekCode entity = new WeekCode();
+            LaserData result;
+            LaserData entity = new LaserData();
 
-            result = _context.WeekCode.Add(entity);
+            result = _context.LaserData.Add(entity);
 
             return result;
         }
@@ -148,12 +197,12 @@ namespace DCAdmin
             return result;
         }
 
-        internal object AddNewFixtureRecord()
+        internal object AddNewWeekCodeRecord()
         {
-            LaserData result;
-            LaserData entity = new LaserData();
+            WeekCode result;
+            WeekCode entity = new WeekCode();
 
-            result = _context.LaserData.Add(entity);
+            result = _context.WeekCode.Add(entity);
 
             return result;
         }
@@ -168,6 +217,11 @@ namespace DCAdmin
                 var entity = _context.LaserData.Find(id);
                 _context.LaserData.Remove(entity);
             }
+        }
+
+        internal void Dispose()
+        {
+            _context.Dispose();
         }
 
         internal void Refresh()

@@ -120,6 +120,9 @@
   <data name="AboutMenuHeader" xml:space="preserve">
     <value>_About</value>
   </data>
+  <data name="AboutToolTip" xml:space="preserve">
+    <value>About program</value>
+  </data>
   <data name="ArticleNumber" xml:space="preserve">
     <value>Article Number (F1)</value>
   </data>
@@ -132,8 +135,14 @@
   <data name="ExitMenuHeader" xml:space="preserve">
     <value>_Exit</value>
   </data>
+  <data name="ExitToolTip" xml:space="preserve">
+    <value>Exit program</value>
+  </data>
   <data name="FileMenuHeader" xml:space="preserve">
     <value>_File</value>
+  </data>
+  <data name="FilterHeader" xml:space="preserve">
+    <value>Filter</value>
   </data>
   <data name="FindButtonHeader" xml:space="preserve">
     <value>Find</value>
@@ -150,6 +159,9 @@
   <data name="OnTopMenuHeader" xml:space="preserve">
     <value>_OnTop</value>
   </data>
+  <data name="OnTopToolTip" xml:space="preserve">
+    <value>Window Always On Top</value>
+  </data>
   <data name="RefreshMenuHeader" xml:space="preserve">
     <value>_Refresh</value>
   </data>
@@ -161,6 +173,9 @@
   </data>
   <data name="SaveToolTip" xml:space="preserve">
     <value>Save Changes to database</value>
+  </data>
+  <data name="SearchHeader" xml:space="preserve">
+    <value>Search</value>
   </data>
   <data name="WindowMenuHeader" xml:space="preserve">
     <value>_Window</value>

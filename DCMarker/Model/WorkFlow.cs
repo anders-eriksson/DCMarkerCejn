@@ -1,4 +1,4 @@
-﻿using Configuration;
+using Configuration;
 using Contracts;
 using DCMarkerEF;
 using LaserWrapper;

@@ -1,4 +1,4 @@
-﻿using Contracts;
+using Contracts;
 using DCMarkerEF;
 using System;
 using System.Collections.Generic;

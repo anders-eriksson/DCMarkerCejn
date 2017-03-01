@@ -1,4 +1,4 @@
-﻿using Configuration;
+using Configuration;
 using Contracts;
 using DCTcpServer;
 using LaserWrapper;

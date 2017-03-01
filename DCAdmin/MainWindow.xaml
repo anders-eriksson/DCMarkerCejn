@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:DCAdmin"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:p="clr-namespace:DCAdmin.Properties"
+    xmlns:view="clr-namespace:DCAdmin.View"
     Title="MainWindow"
     Width="611"
     Height="401"
@@ -15,12 +16,7 @@
     ContentRendered="Window_ContentRendered"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
-    <Window.Resources>
-        <CollectionViewSource x:Key="laserDataViewSource" d:DesignSource="{d:DesignInstance {x:Type DCMarkerEF:LaserData}, CreateList=True}" />
-        <CollectionViewSource x:Key="weekCodeViewSource" d:DesignSource="{d:DesignInstance {x:Type DCMarkerEF:WeekCode}, CreateList=True}" />
-        <CollectionViewSource x:Key="quarterCodeViewSource" d:DesignSource="{d:DesignInstance {x:Type DCMarkerEF:QuarterCode}, CreateList=True}" />
-        <CollectionViewSource x:Key="fixtureViewSource" d:DesignSource="{d:DesignInstance {x:Type DCMarkerEF:Fixture}, CreateList=True}" />
-    </Window.Resources>
+
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
@@ -28,69 +24,77 @@
                     <MenuItem
                         x:Name="New"
                         Click="New_Click"
-                        Header="{x:Static p:Resources.NewMenuHeader}" />
+                        Header="{x:Static p:Resources.NewMenuHeader}"
+                        ToolTip="{x:Static p:Resources.NewToolTip}" />
                     <MenuItem
                         x:Name="Save"
                         Click="Save_Click"
-                        Header="{x:Static p:Resources.SaveMenuHeader}" />
+                        Header="{x:Static p:Resources.SaveMenuHeader}"
+                        ToolTip="{x:Static p:Resources.SaveToolTip}" />
                     <Separator />
                     <MenuItem
                         x:Name="Delete"
                         Click="Delete_Click"
-                        Header="{x:Static p:Resources.DeleteMenuHeader}" />
+                        Header="{x:Static p:Resources.DeleteMenuHeader}"
+                        ToolTip="{x:Static p:Resources.DeleteToolTip}" />
                     <Separator />
                     <MenuItem
                         x:Name="Refresh"
                         Click="Refresh_Click"
-                        Header="{x:Static p:Resources.RefreshMenuHeader}" />
+                        Header="{x:Static p:Resources.RefreshMenuHeader}"
+                        ToolTip="{x:Static p:Resources.RefreshToolTip}" />
                     <Separator />
                     <MenuItem
                         x:Name="Exit"
                         Click="Exit_Click"
-                        Header="{x:Static p:Resources.ExitMenuHeader}" />
+                        Header="{x:Static p:Resources.ExitMenuHeader}"
+                        ToolTip="{x:Static p:Resources.ExitToolTip}" />
                 </MenuItem>
                 <MenuItem Header="_Edit">
                     <MenuItem
                         x:Name="Cut"
-                        Click="Cut_Click"
+                        Command="ApplicationCommands.Cut"
                         Header="_Cut" />
                     <MenuItem
                         x:Name="Copy"
-                        Click="Copy_Click"
+                        Command="ApplicationCommands.Copy"
                         Header="_Copy" />
                     <MenuItem
                         x:Name="Paste"
-                        Click="Paste_Click"
+                        Command="ApplicationCommands.Paste"
                         Header="_Paste" />
                 </MenuItem>
                 <MenuItem Header="{x:Static p:Resources.WindowMenuHeader}">
                     <MenuItem
                         x:Name="OnTop"
                         Click="OnTop_Click"
-                        Header="{x:Static p:Resources.OnTopMenuHeader}" />
+                        Header="{x:Static p:Resources.OnTopMenuHeader}"
+                        ToolTip="{x:Static p:Resources.OnTopToolTip}" />
                 </MenuItem>
                 <MenuItem Header="{x:Static p:Resources.HelpMenuHeader}">
                     <MenuItem
                         x:Name="About"
                         Click="About_Click"
-                        Header="{x:Static p:Resources.AboutMenuHeader}" />
+                        Header="{x:Static p:Resources.AboutMenuHeader}"
+                        ToolTip="{x:Static p:Resources.AboutToolTip}" />
                 </MenuItem>
             </Menu>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
-                    <Button Click="Cut_Click" ToolTip="Cut">
+                    <Button Command="ApplicationCommands.Cut" ToolTip="Cut">
+
                         <Image
                             Width="20"
                             Height="20"
                             Source="Images\Cut_16x.png" />
                     </Button>
-                    <Button Click="Copy_Click" ToolTip="Copy">
+                    <Button Command="ApplicationCommands.Copy" ToolTip="Copy">
                         <Image
                             Width="20"
                             Height="20"
                             Source="Images\Copy_16x.png" />
                     </Button>
-                    <Button Click="Paste_Click" ToolTip="Paste">
+                    <Button Command="ApplicationCommands.Paste" ToolTip="Paste">
                         <Image
                             Width="20"
                             Height="20"
@@ -127,208 +131,12 @@
             </ToolBarTray>
             <TabControl x:Name="tcControl" DockPanel.Dock="Top">
                 <TabItem Header="LaserData">
-                    <Grid>
-                        <DockPanel>
-                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                                <TextBlock Width="10" Text=" " />
-                                <TextBlock Text="{x:Static p:Resources.ArticleNumber}" />
-                                <TextBlock Width="5" Text=" " />
-                                <TextBox
-                                    x:Name="SearchArticleNumber"
-                                    Width="100"
-                                    KeyUp="SearchArticleNumber_KeyUp"
-                                    LostFocus="SearchArticleNumber_LostFocus" />
-                                <TextBlock Width="10" Text=" " />
-                                <Button
-                                    x:Name="FindButton"
-                                    Click="FindButton_Click"
-                                    Content="{x:Static p:Resources.FindButtonHeader}" />
-                            </StackPanel>
-                            <TextBlock
-                                x:Name="SearchError"
-                                DockPanel.Dock="Top"
-                                Foreground="Red"
-                                Text="" />
-
-                            <DataGrid
-                                x:Name="laserDataDataGrid"
-                                Margin="57,20,60,37"
-                                AutoGenerateColumns="False"
-                                CanUserAddRows="false"
-                                DataContext="{StaticResource laserDataViewSource}"
-                                DockPanel.Dock="Top"
-                                EnableRowVirtualization="True"
-                                ItemsSource="{Binding}"
-                                RowDetailsVisibilityMode="VisibleWhenSelected"
-                                RowEditEnding="laserDataDataGrid_RowEditEnding"
-                                ScrollViewer.CanContentScroll="True"
-                                ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                SelectionMode="Single"
-                                SelectionUnit="FullRow">
-
-                                <DataGrid.Columns>
-
-                                    <DataGridTextColumn
-                                        x:Name="f1Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding F1, IsAsync=True, TargetNullValue=''}"
-                                        Header="F1" />
-                                    <DataGridTextColumn
-                                        x:Name="kantColumn"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding Kant, IsAsync=True, TargetNullValue=''}"
-                                        Header="Kant" />
-                                    <DataGridTextColumn
-                                        x:Name="avdelningColumn"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding Avdelning, IsAsync=True, TargetNullValue=''}"
-                                        Header="Avdelning" />
-                                    <DataGridTextColumn
-                                        x:Name="laserColumn"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding Laser, IsAsync=True, TargetNullValue=''}"
-                                        Header="Laser" />
-
-                                    <DataGridTextColumn
-                                        x:Name="f2Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding F2, IsAsync=True, TargetNullValue=''}"
-                                        Header="F2" />
-                                    <DataGridTextColumn
-                                        x:Name="f3Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding F3, IsAsync=True, TargetNullValue=''}"
-                                        Header="F3" />
-                                    <DataGridTextColumn
-                                        x:Name="f4Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding F4, IsAsync=True, TargetNullValue=''}"
-                                        Header="F4" />
-                                    <DataGridTextColumn
-                                        x:Name="f5Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding F5, IsAsync=True, TargetNullValue=''}"
-                                        Header="F5" />
-                                    <DataGridTextColumn
-                                        x:Name="f6Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding F6, IsAsync=True, TargetNullValue=''}"
-                                        Header="F6" />
-                                    <DataGridTextColumn
-                                        x:Name="f7Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding F7, IsAsync=True, TargetNullValue=''}"
-                                        Header="F7" />
-                                    <DataGridTextColumn
-                                        x:Name="f8Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding F8, IsAsync=True, TargetNullValue=''}"
-                                        Header="F8" />
-                                    <DataGridTextColumn
-                                        x:Name="f9Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding F9, IsAsync=True, TargetNullValue=''}"
-                                        Header="F9" />
-                                    <DataGridTextColumn
-                                        x:Name="f10Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding F10, IsAsync=True, TargetNullValue=''}"
-                                        Header="F10" />
-                                    <DataGridTextColumn
-                                        x:Name="bC1Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding BC1, IsAsync=True, TargetNullValue=''}"
-                                        Header="BC1" />
-                                    <DataGridTextColumn
-                                        x:Name="bC2Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding BC2, IsAsync=True, TargetNullValue=''}"
-                                        Header="BC2" />
-                                    <DataGridTextColumn
-                                        x:Name="templateColumn"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding Template, IsAsync=True, TargetNullValue=''}"
-                                        Header="Template" />
-                                    <DataGridTextColumn
-                                        x:Name="p1Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding P1, IsAsync=True, TargetNullValue=''}"
-                                        Header="P1" />
-                                    <DataGridTextColumn
-                                        x:Name="p2Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding P2, IsAsync=True, TargetNullValue=''}"
-                                        Header="P2" />
-                                    <DataGridTextColumn
-                                        x:Name="p3Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding P3, IsAsync=True, TargetNullValue=''}"
-                                        Header="P3" />
-                                    <DataGridTextColumn
-                                        x:Name="p4Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding P4, IsAsync=True, TargetNullValue=''}"
-                                        Header="P4" />
-                                    <DataGridTextColumn
-                                        x:Name="p5Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding P5, IsAsync=True, TargetNullValue=''}"
-                                        Header="P5" />
-                                    <DataGridTextColumn
-                                        x:Name="p6Column"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding P6, IsAsync=True, TargetNullValue=''}"
-                                        Header="P6" />
-                                    <DataGridTextColumn
-                                        x:Name="fIXTURIDColumn"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding FixtureId, IsAsync=True, TargetNullValue=''}"
-                                        Header="FIXTURID" />
-                                    <DataGridCheckBoxColumn
-                                        x:Name="externTestColumn"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding ExternTest, IsAsync=True, FallbackValue=false}"
-                                        Header="Extern Test" />
-                                    <DataGridCheckBoxColumn
-                                        x:Name="enableTOColumn"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding EnableTO, IsAsync=True, FallbackValue=false}"
-                                        Header="EnableTO" />
-                                    <DataGridTextColumn
-                                        x:Name="tOnrColumn"
-                                        Width="*"
-                                        MinWidth="50"
-                                        Binding="{Binding TOnr, IsAsync=True, TargetNullValue=''}"
-                                        Header="TOnr" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </DockPanel>
+                    <Grid x:Name="LaserDataRoot">
+                        <view:LaserDataControl
+                            x:Name="LaserDataGrid"
+                            Margin="10,0,10,28"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
                         <TextBlock
                             x:Name="ErrorMessage"
                             Height="23"
@@ -340,127 +148,19 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="WeekCode">
-                    <DataGrid
-                        x:Name="weekCodeDataGrid"
-                        Margin="57,20,60,37"
-                        HorizontalAlignment="Left"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="false"
-                        DataContext="{StaticResource weekCodeViewSource}"
-                        EnableRowVirtualization="True"
-                        ItemsSource="{Binding}"
-                        RowDetailsVisibilityMode="VisibleWhenSelected"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        SelectionMode="Single"
-                        SelectionUnit="FullRow">
-
-                        <DataGrid.Columns>
-                            <DataGridTextColumn
-                                x:Name="weekNoColumn"
-                                Width="50"
-                                Binding="{Binding WeekNo, IsAsync=True, TargetNullValue=''}"
-                                Header="Week No"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                x:Name="codeColumn"
-                                Width="50"
-                                Binding="{Binding Code, IsAsync=True, TargetNullValue=''}"
-                                Header="Code" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <Grid x:Name="WeekCodeRoot">
+                        <view:WeekCodeControl x:Name="WeekCodeGrid" />
+                    </Grid>
                 </TabItem>
                 <TabItem Header="QuarterCode">
-                    <DataGrid
-                        x:Name="quarterCodeDataGrid"
-                        Margin="57,20,60,37"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="false"
-                        DataContext="{StaticResource quarterCodeViewSource}"
-                        EnableRowVirtualization="True"
-                        ItemsSource="{Binding}"
-                        RowDetailsVisibilityMode="VisibleWhenSelected"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        SelectionMode="Single"
-                        SelectionUnit="FullRow">
-
-                        <DataGrid.Columns>
-                            <DataGridTextColumn
-                                x:Name="qYearColumn"
-                                Width="*"
-                                Binding="{Binding QYear, IsAsync=True, TargetNullValue=''}"
-                                Header="Year" />
-                            <DataGridTextColumn
-                                x:Name="q1Column"
-                                Width="*"
-                                Binding="{Binding Q1, IsAsync=True, TargetNullValue=''}"
-                                Header="Quarter 1" />
-                            <DataGridTextColumn
-                                x:Name="q12olumn"
-                                Width="*"
-                                Binding="{Binding Q2, IsAsync=True, TargetNullValue=''}"
-                                Header="Quarter 2" />
-                            <DataGridTextColumn
-                                x:Name="q3Column"
-                                Width="*"
-                                Binding="{Binding Q3, IsAsync=True, TargetNullValue=''}"
-                                Header="Quarter 3" />
-                            <DataGridTextColumn
-                                x:Name="q4Column"
-                                Width="*"
-                                Binding="{Binding Q4, IsAsync=True, TargetNullValue=''}"
-                                Header="Quarter 4" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <Grid x:Name="QuarterCodeRoot">
+                        <view:QuarterCodeControl x:Name="QuarterCodeGrid" />
+                    </Grid>
                 </TabItem>
                 <TabItem Header="Fixture">
-                    <DataGrid
-                        x:Name="fixtureDataGrid"
-                        Margin="57,20,60,37"
-                        HorizontalAlignment="Left"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="false"
-                        DataContext="{StaticResource fixtureViewSource}"
-                        EnableRowVirtualization="True"
-                        ItemsSource="{Binding}"
-                        RowDetailsVisibilityMode="VisibleWhenSelected"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        SelectionMode="Single"
-                        SelectionUnit="FullRow">
-
-                        <DataGrid.Columns>
-                            <DataGridTextColumn
-                                x:Name="FixturIdColumn"
-                                Width="*"
-                                Binding="{Binding FixturId, IsAsync=True, TargetNullValue=''}"
-                                Header="Fixtur Id" />
-                            <DataGridTextColumn
-                                x:Name="XdistanceColumn"
-                                Width="*"
-                                Binding="{Binding Xdistance, IsAsync=True, TargetNullValue=''}"
-                                Header="X distance" />
-                            <DataGridTextColumn
-                                x:Name="Ydistance2olumn"
-                                Width="*"
-                                Binding="{Binding Ydistance, IsAsync=True, TargetNullValue=''}"
-                                Header="Y distance" />
-                            <DataGridTextColumn
-                                x:Name="XcountColumn"
-                                Width="*"
-                                Binding="{Binding Xcount, IsAsync=True, TargetNullValue=''}"
-                                Header="X count" />
-                            <DataGridTextColumn
-                                x:Name="YcountColumn"
-                                Width="*"
-                                Binding="{Binding Ycount, IsAsync=True, TargetNullValue=''}"
-                                Header="Y count" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <Grid x:Name="FixtureRoot">
+                        <view:FixtureControl x:Name="FixtureGrid" />
+                    </Grid>
                 </TabItem>
             </TabControl>
         </DockPanel>

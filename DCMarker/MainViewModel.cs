@@ -1,4 +1,4 @@
-﻿using Configuration;
+using Configuration;
 using Contracts;
 using DCMarker.Model;
 using System;

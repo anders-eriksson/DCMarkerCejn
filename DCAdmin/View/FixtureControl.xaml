@@ -1,0 +1,60 @@
+﻿<UserControl
+    x:Class="DCAdmin.View.FixtureControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:l="clr-namespace:DCAdmin"
+    xmlns:local="clr-namespace:DCAdmin.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <l:StringTrimConverter x:Key="TrimString" />
+    </UserControl.Resources>
+    <Grid x:Name="FixtureGrid">
+        <DataGrid
+            x:Name="fixtureDataGrid"
+            HorizontalAlignment="Left"
+            AutoGenerateColumns="False"
+            CanUserAddRows="false"
+            EnableRowVirtualization="True"
+            ItemsSource="{Binding Path=FixtureCollection, Mode=TwoWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged}"
+            RowDetailsVisibilityMode="VisibleWhenSelected"
+            RowEditEnding="fixtureDataGrid_RowEditEnding"
+            ScrollViewer.CanContentScroll="True"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            SelectionMode="Single"
+            SelectionUnit="FullRow">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    x:Name="FixturIdColumn"
+                    Width="*"
+                    Binding="{Binding FixturId, IsAsync=True, Converter={StaticResource TrimString}}"
+                    Header="Fixtur Id" />
+                <DataGridTextColumn
+                    x:Name="XdistanceColumn"
+                    Width="*"
+                    Binding="{Binding Xdistance, IsAsync=True, Converter={StaticResource TrimString}}"
+                    Header="X distance" />
+                <DataGridTextColumn
+                    x:Name="Ydistance2olumn"
+                    Width="*"
+                    Binding="{Binding Ydistance, IsAsync=True, Converter={StaticResource TrimString}}"
+                    Header="Y distance" />
+                <DataGridTextColumn
+                    x:Name="XcountColumn"
+                    Width="*"
+                    Binding="{Binding Xcount, IsAsync=True, Converter={StaticResource TrimString}}"
+                    Header="X count" />
+                <DataGridTextColumn
+                    x:Name="YcountColumn"
+                    Width="*"
+                    Binding="{Binding Ycount, IsAsync=True, TargetNullValue='', Converter={StaticResource TrimString}}"
+                    Header="Y count" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

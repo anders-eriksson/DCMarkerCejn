@@ -1,4 +1,4 @@
-﻿namespace DCMarker.Model
+namespace DCMarker.Model
 {
     using Contracts;
     using System;

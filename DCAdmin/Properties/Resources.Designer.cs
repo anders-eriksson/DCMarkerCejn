@@ -70,6 +70,15 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About program.
+        /// </summary>
+        public static string AboutToolTip {
+            get {
+                return ResourceManager.GetString("AboutToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Article Number (F1).
         /// </summary>
         public static string ArticleNumber {
@@ -106,11 +115,29 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exit program.
+        /// </summary>
+        public static string ExitToolTip {
+            get {
+                return ResourceManager.GetString("ExitToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _File.
         /// </summary>
         public static string FileMenuHeader {
             get {
                 return ResourceManager.GetString("FileMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter.
+        /// </summary>
+        public static string FilterHeader {
+            get {
+                return ResourceManager.GetString("FilterHeader", resourceCulture);
             }
         }
         
@@ -160,6 +187,15 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Window Always On Top.
+        /// </summary>
+        public static string OnTopToolTip {
+            get {
+                return ResourceManager.GetString("OnTopToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Refresh.
         /// </summary>
         public static string RefreshMenuHeader {
@@ -192,6 +228,15 @@ namespace DCAdmin.Properties {
         public static string SaveToolTip {
             get {
                 return ResourceManager.GetString("SaveToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string SearchHeader {
+            get {
+                return ResourceManager.GetString("SearchHeader", resourceCulture);
             }
         }
         

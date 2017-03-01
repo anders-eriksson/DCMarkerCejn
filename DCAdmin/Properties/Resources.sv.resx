@@ -45,4 +45,28 @@
   <data name="OnTopMenuHeader" xml:space="preserve">
     <value>_Överst</value>
   </data>
+  <data name="RefreshMenuHeader" xml:space="preserve">
+    <value>_Uppdatera</value>
+  </data>
+  <data name="RefreshToolTip" xml:space="preserve">
+    <value>Uppdatera från database</value>
+  </data>
+  <data name="SaveMenuHeader" xml:space="preserve">
+    <value>_Spara</value>
+  </data>
+  <data name="SaveToolTip" xml:space="preserve">
+    <value>Spara ändringar till databas</value>
+  </data>
+  <data name="WindowMenuHeader" xml:space="preserve">
+    <value>_Fönster</value>
+  </data>
+  <data name="ExitToolTip" xml:space="preserve">
+    <value>Avsluta program</value>
+  </data>
+  <data name="AboutToolTip" xml:space="preserve">
+    <value>Om program</value>
+  </data>
+  <data name="OnTopToolTip" xml:space="preserve">
+    <value>Fönster alltid överst</value>
+  </data>
 </root>

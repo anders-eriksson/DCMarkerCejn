@@ -1,4 +1,4 @@
-﻿using DCMarkerEF;
+using DCMarkerEF;
 using System;
 using System.Globalization;
 

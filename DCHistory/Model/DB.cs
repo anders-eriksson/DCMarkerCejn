@@ -1,4 +1,4 @@
-﻿using DCLog;
+using DCLog;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;

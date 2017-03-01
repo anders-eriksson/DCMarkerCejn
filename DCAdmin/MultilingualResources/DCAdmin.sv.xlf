@@ -52,23 +52,43 @@
         </trans-unit>
         <trans-unit id="RefreshMenuHeader" translate="yes" xml:space="preserve">
           <source>_Refresh</source>
-          <target state="new">_Refresh</target>
+          <target state="translated">_Uppdatera</target>
         </trans-unit>
         <trans-unit id="RefreshToolTip" translate="yes" xml:space="preserve">
           <source>Refresh database</source>
-          <target state="new">Refresh database</target>
+          <target state="translated">Uppdatera från database</target>
         </trans-unit>
         <trans-unit id="SaveMenuHeader" translate="yes" xml:space="preserve">
           <source>_Save</source>
-          <target state="new">_Save</target>
+          <target state="translated">_Spara</target>
         </trans-unit>
         <trans-unit id="SaveToolTip" translate="yes" xml:space="preserve">
           <source>Save Changes to database</source>
-          <target state="new">Save Changes to database</target>
+          <target state="translated">Spara ändringar till databas</target>
         </trans-unit>
         <trans-unit id="WindowMenuHeader" translate="yes" xml:space="preserve">
           <source>_Window</source>
-          <target state="new">_Window</target>
+          <target state="translated">_Fönster</target>
+        </trans-unit>
+        <trans-unit id="ExitToolTip" translate="yes" xml:space="preserve">
+          <source>Exit program</source>
+          <target state="translated">Avsluta program</target>
+        </trans-unit>
+        <trans-unit id="AboutToolTip" translate="yes" xml:space="preserve">
+          <source>About program</source>
+          <target state="translated">Om program</target>
+        </trans-unit>
+        <trans-unit id="OnTopToolTip" translate="yes" xml:space="preserve">
+          <source>Window Always On Top</source>
+          <target state="translated">Fönster alltid överst</target>
+        </trans-unit>
+        <trans-unit id="FilterHeader" translate="yes" xml:space="preserve">
+          <source>Filter</source>
+          <target state="new">Filter</target>
+        </trans-unit>
+        <trans-unit id="SearchHeader" translate="yes" xml:space="preserve">
+          <source>Search</source>
+          <target state="new">Search</target>
         </trans-unit>
       </group>
     </body>

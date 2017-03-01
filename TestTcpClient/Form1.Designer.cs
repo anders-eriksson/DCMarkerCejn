@@ -1,4 +1,4 @@
-﻿namespace TestTcpClient
+namespace TestTcpClient
 {
     partial class Form1
     {
