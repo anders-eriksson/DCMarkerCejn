@@ -2,6 +2,7 @@ using DCMarkerEF;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System;
 
 namespace DCAdmin
 {
@@ -39,6 +40,27 @@ namespace DCAdmin
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        internal void AddNewRecord()
+        {
+            try
+            {
+                var entity = DB.Instance.AddNewQuartalCodeRecord();
+                if (entity != null)
+                {
+                    SelectedQuarterCodeRow = entity;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        internal void DeleteSelectedRecord()
+        {
+            throw new NotImplementedException();
         }
     }
 }

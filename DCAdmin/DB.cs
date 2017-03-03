@@ -1,3 +1,4 @@
+using DCAdmin.ExpressionBuilder;
 using DCLog;
 using DCMarkerEF;
 using System;
@@ -5,8 +6,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
+using System.Diagnostics;
 using System.Linq;
-using System.Linq.Dynamic;
 using System.Windows.Controls;
 
 namespace DCAdmin
@@ -22,6 +23,7 @@ namespace DCAdmin
             _context = new DCLasermarkContext();
             Log.Trace("Created Context");
             Context = _context;
+            _context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
         }
 
         public static string ErrorMessage { get; set; }
@@ -78,7 +80,8 @@ namespace DCAdmin
             var query = (from t in typeof(LaserData).GetProperties()
                          select t.Name);
             var result = new ObservableCollection<string>(query);
-
+            int pos = result.IndexOf("Id");
+            result[pos] = "";
             return result;
         }
 
@@ -90,9 +93,10 @@ namespace DCAdmin
         {
             ObservableCollection<LaserData> result;
 
-            _context.LaserData.OrderBy(x => x.F1).ThenBy(x => x.Kant).Load();
-            result = _context.LaserData.Local;
+            _context.LaserData.OrderBy(x => x.F1).ThenBy(x => x.Kant).ToList();
+            result = Context.LaserData.Local;
 
+            Debug.WriteLine("LoadLaserData: {0}", result.Count);
             return result;
         }
 
@@ -102,11 +106,26 @@ namespace DCAdmin
 
             try
             {
-                var query = _context.LaserData
-                    .Where("@0==@1", key, value)
-                    .OrderByDescending(x => x.F1)
-                    ;
-                result = new ObservableCollection<LaserData>(query);
+                List<Filter> filter = new List<Filter>()
+                {
+                    new Filter { PropertyName = key ,
+                        Operation = Op.StartsWith, Value = value},
+                };
+
+                var deleg = ExpressionBuilder.ExpressionBuilder.GetExpression<LaserData>(filter);
+
+                if (IsChangesPending())
+                {
+                    SaveChanges();
+                }
+                _context = new DCLasermarkContext();
+
+                _context.LaserData
+                    .OrderBy(x => x.F1).ThenBy(x => x.Kant)
+                    .Where(deleg).ToList();
+                //.AsQueryable()
+                //.Load();
+                result = _context.LaserData.Local;
             }
             catch (OutOfMemoryException ex)
             {
@@ -115,10 +134,10 @@ namespace DCAdmin
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "GetAllHistory exception");
+                Log.Fatal(ex, "LoadLaserDataFiltered exception");
                 throw;
             }
-
+            Debug.WriteLine("LoadLaserDataFiltered: {0}", result.Count);
             return result;
         }
 
@@ -167,7 +186,17 @@ namespace DCAdmin
             }
         }
 
-        internal object AddNewFixtureRecord()
+        internal Fixture AddNewFixtureRecord()
+        {
+            Fixture result;
+            Fixture entity = new Fixture();
+
+            result = _context.Fixture.Add(entity);
+
+            return result;
+        }
+
+        internal LaserData AddNewLaserDataRecord()
         {
             LaserData result;
             LaserData entity = new LaserData();
@@ -177,17 +206,7 @@ namespace DCAdmin
             return result;
         }
 
-        internal object AddNewLaserDataRecord()
-        {
-            LaserData result;
-            LaserData entity = new LaserData();
-
-            result = _context.LaserData.Add(entity);
-
-            return result;
-        }
-
-        internal object AddNewQuartalCodeRecord()
+        internal QuarterCode AddNewQuartalCodeRecord()
         {
             QuarterCode result;
             QuarterCode entity = new QuarterCode();
@@ -197,7 +216,7 @@ namespace DCAdmin
             return result;
         }
 
-        internal object AddNewWeekCodeRecord()
+        internal WeekCode AddNewWeekCodeRecord()
         {
             WeekCode result;
             WeekCode entity = new WeekCode();

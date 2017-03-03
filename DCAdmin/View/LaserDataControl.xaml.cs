@@ -2,6 +2,7 @@ using DCAdmin.ViewModel;
 using DCMarkerEF;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Threading;
 
@@ -50,6 +51,7 @@ namespace DCAdmin.View
         private void ScrollToView(LaserData entity)
         {
             LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            laserVM.SelectedLaserDataRow = null;
             laserVM.SelectedLaserDataRow = entity;
         }
 
@@ -74,7 +76,10 @@ namespace DCAdmin.View
 
         private void laserDataDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            laserDataDataGrid.ScrollIntoView(e.AddedItems[0]);
+            if (e.AddedItems.Count > 0)
+            {
+                laserDataDataGrid.ScrollIntoView(e.AddedItems[0]);
+            }
         }
 
         private static void SetColumnWidthToCell(DataGrid dgrid)
@@ -89,6 +94,38 @@ namespace DCAdmin.View
         private void laserDataDataGrid_Loaded(object sender, RoutedEventArgs e)
         {
             SetColumnWidthToCell(laserDataDataGrid);
+        }
+
+        private void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleButton tmp = (ToggleButton)sender;
+            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            laserVM.ErrorMessage = string.Empty;
+            if (tmp.IsChecked.Value)
+            {
+                if (laserVM.FilterKey != null && laserVM.FilterValue != null)
+                {
+                    laserVM.ExecuteFilter();
+                    laserDataDataGrid.Items.Refresh();
+                }
+                else
+                {
+                    tmp.IsChecked = false;
+                    laserVM.ErrorMessage = "Both Filter Column and Value must be entered!";
+                }
+            }
+            else
+            {
+                laserVM.ExecuteNoFilter();
+                laserDataDataGrid.Items.Refresh();
+            }
+        }
+
+        private void FilterCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string key = FilterCombobox.SelectedItem.ToString();
+            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            laserVM.FilterKey = key;
         }
     }
 }

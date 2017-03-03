@@ -82,10 +82,6 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -106,9 +102,12 @@
     </ApplicationDefinition>
     <Compile Include="Consts.cs" />
     <Compile Include="DB.cs" />
+    <Compile Include="ExpressionBuilder\Filter.cs" />
+    <Compile Include="ExpressionBuilder\Operators.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ItemsControlExtensions.cs" />
     <Compile Include="StringTrimConverter.cs" />
+    <Compile Include="ViewModelEnum.cs" />
     <Compile Include="ViewModel\FixtureViewModel.cs" />
     <Compile Include="ViewModel\LaserDataViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -127,6 +126,7 @@
     <Compile Include="View\LaserDataControl.xaml.cs">
       <DependentUpon>LaserDataControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ExpressionBuilder\LinqExpressionBuilder.cs" />
     <Compile Include="View\QuarterCodeControl.xaml.cs">
       <DependentUpon>QuarterCodeControl.xaml</DependentUpon>
     </Compile>

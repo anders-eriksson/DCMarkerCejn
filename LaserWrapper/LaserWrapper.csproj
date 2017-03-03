@@ -31,9 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DCLog, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\_LIBRARY\DCLog\bin\Release\DCLog.dll</HintPath>
+    <Reference Include="DCLog">
+      <HintPath>..\..\..\..\_LIBRARY\DCLog\bin\Release\DCLog.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
       <HintPath>..\..\..\..\_LIBRARY\DCLog\bin\Release\NLog.dll</HintPath>
@@ -57,17 +56,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="laserengineLib">
-      <Guid>{6B16E6C7-FC82-419F-9231-0772AAD1A6AC}</Guid>
-      <VersionMajor>5</VersionMajor>
-      <VersionMinor>3</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Configuration\Configuration.csproj">
       <Project>{6d98c06d-7a94-4be5-932c-733df4bfa391}</Project>
       <Name>Configuration</Name>
@@ -82,6 +70,17 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="laserengineLib">
+      <Guid>{6B16E6C7-FC82-419F-9231-0772AAD1A6AC}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

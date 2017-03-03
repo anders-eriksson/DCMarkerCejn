@@ -90,6 +90,10 @@
           <source>Search</source>
           <target state="new">Search</target>
         </trans-unit>
+        <trans-unit id="FilterButtonHeader" translate="yes" xml:space="preserve">
+          <source>Filter</source>
+          <target state="new">Filter</target>
+        </trans-unit>
       </group>
     </body>
   </file>

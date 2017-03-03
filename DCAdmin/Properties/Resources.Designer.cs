@@ -135,6 +135,15 @@ namespace DCAdmin.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Filter.
         /// </summary>
+        public static string FilterButtonHeader {
+            get {
+                return ResourceManager.GetString("FilterButtonHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter.
+        /// </summary>
         public static string FilterHeader {
             get {
                 return ResourceManager.GetString("FilterHeader", resourceCulture);

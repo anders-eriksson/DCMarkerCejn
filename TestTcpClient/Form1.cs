@@ -14,7 +14,9 @@ namespace TestTcpClient
 
         private void SendButton_Click(object sender, EventArgs e)
         {
-            using (TcpClient client = new TcpClient("127.0.0.1", 50000))
+            string ipaddress = Properties.Settings.Default.IpAddress;
+            int ipport = Properties.Settings.Default.IpPort;
+            using (TcpClient client = new TcpClient(ipaddress, ipport))
             {
                 using (NetworkStream sw = client.GetStream())
                 {

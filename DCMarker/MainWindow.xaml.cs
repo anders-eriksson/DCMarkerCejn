@@ -1,4 +1,5 @@
 using Configuration;
+using DCLog;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
@@ -16,6 +17,7 @@ namespace DCMarker
         {
             DCConfig cfg = DCConfig.Instance;
             string language = cfg.GuiLanguage;
+            Log.Debug(string.Format("GUI Language: {0}", language));
             if (!string.IsNullOrWhiteSpace(language))
             {
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);

@@ -13,8 +13,6 @@
     Height="401"
     MaxWidth="{x:Static local:MainWindow.MaxScreenSize}"
     Closing="Window_Closing"
-    ContentRendered="Window_ContentRendered"
-    Loaded="Window_Loaded"
     mc:Ignorable="d">
 
     <Grid>
@@ -131,21 +129,24 @@
             </ToolBarTray>
             <TabControl x:Name="tcControl" DockPanel.Dock="Top">
                 <TabItem Header="LaserData">
-                    <Grid x:Name="LaserDataRoot">
-                        <view:LaserDataControl
-                            x:Name="LaserDataGrid"
-                            Margin="10,0,10,28"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch" />
-                        <TextBlock
-                            x:Name="ErrorMessage"
-                            Height="23"
-                            MinWidth="500"
-                            Margin="10,0"
-                            VerticalAlignment="Bottom"
-                            Foreground="Red"
-                            Text="Hello World" />
-                    </Grid>
+                    <DockPanel>
+
+                        <Grid x:Name="LaserDataRoot">
+                            <view:LaserDataControl
+                                x:Name="LaserDataGrid"
+                                Margin="10,0,10,28"
+                                DockPanel.Dock="Top" />
+                            <TextBlock
+                                x:Name="ErrorMessage"
+                                Height="23"
+                                MinWidth="500"
+                                Margin="10,0"
+                                VerticalAlignment="Bottom"
+                                DockPanel.Dock="Top"
+                                Foreground="Red"
+                                Text="Hello World" />
+                        </Grid>
+                    </DockPanel>
                 </TabItem>
                 <TabItem Header="WeekCode">
                     <Grid x:Name="WeekCodeRoot">

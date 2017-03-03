@@ -2,12 +2,13 @@ using DCMarkerEF;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System;
 
 namespace DCAdmin
 {
     public partial class WeekCodeViewModel : INotifyPropertyChanged
     {
-        private QuarterCode _SelectedWeekCodeRow;
+        private WeekCode _SelectedWeekCodeRow;
 
         public WeekCodeViewModel()
         {
@@ -16,7 +17,7 @@ namespace DCAdmin
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public QuarterCode SelectedWeekCodeRow
+        public WeekCode SelectedWeekCodeRow
         {
             get
             {
@@ -38,6 +39,27 @@ namespace DCAdmin
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        internal void AddNewRecord()
+        {
+            try
+            {
+                var entity = DB.Instance.AddNewWeekCodeRecord();
+                if (entity != null)
+                {
+                    SelectedWeekCodeRow = entity;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        internal void DeleteSelectedRecord()
+        {
+            throw new NotImplementedException();
         }
     }
 }

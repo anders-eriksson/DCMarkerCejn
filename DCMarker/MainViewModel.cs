@@ -35,11 +35,6 @@ namespace DCMarker
             cfg = DCConfig.Instance;
             InitializeMachine();
             InitializeWorkflow();
-            //_workflowThread = new Thread(ExecuteWorkflow)
-            //{
-            //    Name = "WorkFlow"
-            //};
-            //_workflowThread.Start();
         }
 
         internal void Test()

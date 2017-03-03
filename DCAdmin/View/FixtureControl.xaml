@@ -32,27 +32,27 @@
                 <DataGridTextColumn
                     x:Name="FixturIdColumn"
                     Width="*"
-                    Binding="{Binding FixturId, IsAsync=True, Converter={StaticResource TrimString}}"
+                    Binding="{Binding FixturId, IsAsync=True}"
                     Header="Fixtur Id" />
                 <DataGridTextColumn
                     x:Name="XdistanceColumn"
                     Width="*"
-                    Binding="{Binding Xdistance, IsAsync=True, Converter={StaticResource TrimString}}"
+                    Binding="{Binding Xdistance, IsAsync=True}"
                     Header="X distance" />
                 <DataGridTextColumn
                     x:Name="Ydistance2olumn"
                     Width="*"
-                    Binding="{Binding Ydistance, IsAsync=True, Converter={StaticResource TrimString}}"
+                    Binding="{Binding Ydistance, IsAsync=True}"
                     Header="Y distance" />
                 <DataGridTextColumn
                     x:Name="XcountColumn"
                     Width="*"
-                    Binding="{Binding Xcount, IsAsync=True, Converter={StaticResource TrimString}}"
+                    Binding="{Binding Xcount, IsAsync=True}"
                     Header="X count" />
                 <DataGridTextColumn
                     x:Name="YcountColumn"
                     Width="*"
-                    Binding="{Binding Ycount, IsAsync=True, TargetNullValue='', Converter={StaticResource TrimString}}"
+                    Binding="{Binding Ycount, IsAsync=True, TargetNullValue=''}"
                     Header="Y count" />
             </DataGrid.Columns>
         </DataGrid>

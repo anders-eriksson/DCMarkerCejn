@@ -28,7 +28,6 @@ namespace DCAdmin
             {
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
-            DCConfig.Instance.WriteConfig();
 
             db = new DB();
             InitializeComponent();
@@ -51,7 +50,6 @@ namespace DCAdmin
                                            .RegisterPersistTrigger(nameof(SizeChanged))                                                         //when to persist data to the store
                                            .Apply();                                                                                            //apply any previously stored data
 
-            // TODO Remove This!
             ErrorMsg = "";
         }
 
@@ -82,14 +80,24 @@ namespace DCAdmin
         {
             switch (index)
             {
-                case 0:
+                case (int)ViewModelEnum.LaserDataViewModel:
                     {
-                        //var entity = db.AddNewLaserDataRecord();
-                        //if (entity != null)
-                        //{
-                        //    laserDataDataGrid.SelectedItem = entity;
-                        //    laserDataDataGrid.ScrollToCenterOfView(entity);
-                        //}
+                        laserVM.AddNewRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.WeekCodeViewModel:
+                    {
+                        weekVM.AddNewRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.QuarterCodeViewModel:
+                    {
+                        quarterVM.AddNewRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.FixtureViewModel:
+                    {
+                        fixtureVM.AddNewRecord();
                         break;
                     }
                 default:
@@ -98,16 +106,6 @@ namespace DCAdmin
                     }
             }
         }
-
-        //private void Copy_Click(object sender, RoutedEventArgs e)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //private void Cut_Click(object sender, RoutedEventArgs e)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
@@ -119,11 +117,24 @@ namespace DCAdmin
         {
             switch (index)
             {
-                case 0:
+                case (int)ViewModelEnum.LaserDataViewModel:
                     {
-                        //var selectedItems = laserDataDataGrid.SelectedCells;
-
-                        //db.DeleteLaserDataRecord(selectedItems);
+                        laserVM.DeleteSelectedRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.WeekCodeViewModel:
+                    {
+                        weekVM.DeleteSelectedRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.QuarterCodeViewModel:
+                    {
+                        quarterVM.DeleteSelectedRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.FixtureViewModel:
+                    {
+                        fixtureVM.AddNewRecord();
                         break;
                     }
                 default:
@@ -137,17 +148,6 @@ namespace DCAdmin
         {
             this.Close();
         }
-
-        //private void FindArticleAndScrollIntoView()
-        //{
-        //    var entity = db.FindArticle(SearchArticleNumber.Text);
-        //    ScrollToView(entity);
-        //}
-
-        //private void FindButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    //FindArticleAndScrollIntoView();
-        //}
 
         private void laserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
@@ -172,30 +172,6 @@ namespace DCAdmin
             }
         }
 
-        private void LoadFixture()
-        {
-            //fixtureViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("fixtureViewSource")));
-            //fixtureViewSource.Source = db.LoadFixture();
-        }
-
-        private void LoadLaserData()
-        {
-            //laserDataViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("laserDataViewSource")));
-            //laserDataViewSource.Source = db.LoadLaserData();
-        }
-
-        private void LoadQuarterCode()
-        {
-            //quarterCodeViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("quarterCodeViewSource")));
-            //quarterCodeViewSource.Source = db.LoadQuarterCode();
-        }
-
-        private void LoadWeekCode()
-        {
-            //weekCodeViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("weekCodeViewSource")));
-            //weekCodeViewSource.Source = db.LoadWeekCode();
-        }
-
         private void New_Click(object sender, RoutedEventArgs e)
         {
             int index = tcControl.SelectedIndex;
@@ -207,11 +183,6 @@ namespace DCAdmin
             this.Topmost = !this.Topmost;
         }
 
-        //private void Paste_Click(object sender, RoutedEventArgs e)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
             RefreshDatabase();
@@ -220,71 +191,12 @@ namespace DCAdmin
         private void RefreshDatabase()
         {
             db.Refresh();
-            LoadLaserData();
-            LoadWeekCode();
-            LoadQuarterCode();
-            LoadFixture();
-        }
-
-        private void RefreshDataGrid(int index)
-        {
-            if (index == Consts.LASERDATADATAGRID)
-            {
-                //laserDataViewSource.View.Refresh();
-            }
-            else if (index == Consts.WEEKCODEDATAGRID)
-            {
-                //weekCodeViewSource.View.Refresh();
-            }
-            else if (index == Consts.QUARTERCODEDATAGRID)
-            {
-                //quarterCodeViewSource.View.Refresh();
-            }
-            else if (index == Consts.FIXTUREDATAGRID)
-            {
-                //fixtureViewSource.View.Refresh();
-            }
-            else
-            {
-                //laserDataViewSource.View.Refresh();
-                //weekCodeViewSource.View.Refresh();
-                //quarterCodeViewSource.View.Refresh();
-                //fixtureViewSource.View.Refresh();
-            }
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             db.SaveChanges();
-            RefreshDataGrid(0); // TODO change this so it handles all the tables!
         }
-
-        //private void ScrollToView(LaserData entity)
-        //{
-        //    if (entity != null)
-        //    {
-        //        //laserDataDataGrid.SelectedItem = entity;
-        //        //laserDataDataGrid.ScrollToCenterOfView(entity);
-        //    }
-        //    else
-        //    {
-        //        SearchError.Text = "Can't find Article number!";
-        //    }
-        //}
-
-        //private void SearchArticleNumber_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        //{
-        //    if (e.Key == System.Windows.Input.Key.Enter)
-        //    {
-        //        e.Handled = true;
-        //        FindArticleAndScrollIntoView();
-        //    }
-        //}
-
-        //private void SearchArticleNumber_LostFocus(object sender, RoutedEventArgs e)
-        //{
-        //    SearchError.Text = "";
-        //}
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -303,20 +215,6 @@ namespace DCAdmin
                 }
             }
             db.Dispose();
-        }
-
-        private void Window_ContentRendered(object sender, System.EventArgs e)
-        {
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            LoadLaserData();
-            LoadWeekCode();
-
-            LoadQuarterCode();
-
-            LoadFixture();
         }
     }
 }

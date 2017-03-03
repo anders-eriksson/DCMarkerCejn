@@ -4,6 +4,10 @@ using System.Windows.Data;
 
 namespace DCAdmin
 {
+    // *********************************************************
+    // * Will not work if  UpdateSourceTrigger=PropertyChanged *
+    // *********************************************************
+
     [ValueConversion(typeof(object), typeof(string))]
     public class StringTrimConverter : ByteConverter, IValueConverter
     {

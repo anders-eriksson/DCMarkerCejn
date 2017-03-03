@@ -1,4 +1,5 @@
 using DCMarkerEF;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace DCAdmin.ViewModel
         public LaserDataViewModel()
         {
             KeyCollection = DB.Instance.GetLaserDataColumns();
+            _LaserDataCollection = new ObservableCollection<LaserData>();
             LaserDataCollection = DB.Instance.LoadLaserData();
             ErrorMessage = "Hello World!";
         }
@@ -62,7 +64,25 @@ namespace DCAdmin.ViewModel
         }
 
         public ObservableCollection<string> KeyCollection { get; set; }
+#if true
+        private ObservableCollection<LaserData> _LaserDataCollection;
+
+        public ObservableCollection<LaserData> LaserDataCollection
+        {
+            get
+            {
+                return _LaserDataCollection;
+            }
+            set
+            {
+                _LaserDataCollection = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+#else
         public ObservableCollection<LaserData> LaserDataCollection { get; set; }
+#endif
 
         public LaserData SelectedLaserDataRow
         {
@@ -106,6 +126,41 @@ namespace DCAdmin.ViewModel
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        internal void AddNewRecord()
+        {
+            try
+            {
+                var entity = DB.Instance.AddNewLaserDataRecord();
+                if (entity != null)
+                {
+                    SelectedLaserDataRow = entity;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        internal void ExecuteFilter()
+        {
+            //_LaserDataCollection.Clear();
+            _LaserDataCollection = new ObservableCollection<LaserData>();
+            LaserDataCollection = DB.Instance.LoadLaserDataFiltered(FilterKey, FilterValue);
+        }
+
+        internal void ExecuteNoFilter()
+        {
+            //_LaserDataCollection.Clear();
+            _LaserDataCollection = new ObservableCollection<LaserData>();
+            LaserDataCollection = DB.Instance.LoadLaserData();
+        }
+
+        internal void DeleteSelectedRecord()
+        {
+            throw new NotImplementedException();
         }
     }
 }

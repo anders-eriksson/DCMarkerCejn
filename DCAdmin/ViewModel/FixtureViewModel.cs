@@ -2,6 +2,7 @@ using DCMarkerEF;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System;
 
 namespace DCAdmin
 {
@@ -37,6 +38,22 @@ namespace DCAdmin
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        internal void AddNewRecord()
+        {
+            try
+            {
+                var entity = DB.Instance.AddNewFixtureRecord();
+                if (entity != null)
+                {
+                    SelectedFixtureRow = entity;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }

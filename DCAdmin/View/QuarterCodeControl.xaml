@@ -31,27 +31,27 @@
                 <DataGridTextColumn
                     x:Name="qYearColumn"
                     Width="*"
-                    Binding="{Binding QYear, Mode=TwoWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TrimString}}"
+                    Binding="{Binding QYear, Mode=TwoWay, IsAsync=True}"
                     Header="Year" />
                 <DataGridTextColumn
                     x:Name="q1Column"
                     Width="*"
-                    Binding="{Binding Q1, Mode=TwoWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TrimString}}"
+                    Binding="{Binding Q1, Mode=TwoWay, IsAsync=True}"
                     Header="Quarter 1" />
                 <DataGridTextColumn
                     x:Name="q12olumn"
                     Width="*"
-                    Binding="{Binding Q2, Mode=TwoWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TrimString}}"
+                    Binding="{Binding Q2, Mode=TwoWay, IsAsync=True}"
                     Header="Quarter 2" />
                 <DataGridTextColumn
                     x:Name="q3Column"
                     Width="*"
-                    Binding="{Binding Q3, Mode=TwoWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TrimString}}"
+                    Binding="{Binding Q3, Mode=TwoWay, IsAsync=True}"
                     Header="Quarter 3" />
                 <DataGridTextColumn
                     x:Name="q4Column"
                     Width="*"
-                    Binding="{Binding Q4, Mode=TwoWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TrimString}}"
+                    Binding="{Binding Q4, Mode=TwoWay, IsAsync=True}"
                     Header="Quarter 4" />
             </DataGrid.Columns>
         </DataGrid>

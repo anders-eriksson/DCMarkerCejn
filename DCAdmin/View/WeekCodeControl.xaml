@@ -32,13 +32,13 @@
                 <DataGridTextColumn
                     x:Name="weekNoColumn"
                     Width="50"
-                    Binding="{Binding WeekNo, IsAsync=True, Converter={StaticResource TrimString}}"
+                    Binding="{Binding WeekNo, IsAsync=True}"
                     Header="Week No"
                     IsReadOnly="True" />
                 <DataGridTextColumn
                     x:Name="codeColumn"
                     Width="50"
-                    Binding="{Binding Code, IsAsync=True, Converter={StaticResource TrimString}}"
+                    Binding="{Binding Code, IsAsync=True}"
                     Header="Code" />
             </DataGrid.Columns>
         </DataGrid>
