@@ -13,7 +13,8 @@
                                      IsDesignTimeCreatable=True}"
     Closing="Window_Closing"
     Icon="dclasersystem.ico"
-    mc:Ignorable="d" ResizeMode="CanMinimize">
+    ResizeMode="CanMinimize"
+    mc:Ignorable="d">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
@@ -22,31 +23,31 @@
 
         <DockPanel>
             <Menu DockPanel.Dock="Top">
-                <MenuItem Header="_File">
+                <MenuItem Header="{x:Static p:Resources.FileMenuHeader}">
 
                     <MenuItem
                         x:Name="Exit"
                         Click="Exit_Click"
-                        Header="_Exit" />
+                        Header="{x:Static p:Resources.ExitMenuHeader}" />
                 </MenuItem>
-                <MenuItem Header="_Tools">
+                <MenuItem Header="{x:Static p:Resources.ToolsMenuHeader}">
                     <MenuItem
                         x:Name="ResetSignals"
                         Click="ResetSignals_Click"
-                        Header="Reset IO" />
+                        Header="{x:Static p:Resources.ResetIOMenuHeader}" />
                 </MenuItem>
-                <MenuItem Header="_Window">
+                <MenuItem Header="{x:Static p:Resources.WindowMenuHeader}">
                     <MenuItem
                         x:Name="OnTop"
                         Click="OnTop_Click"
-                        Header="_OnTop"
+                        Header="{x:Static p:Resources.OnTopMenuHeader}"
                         IsCheckable="True" />
                 </MenuItem>
-                <MenuItem Header="_Help">
+                <MenuItem Header="{x:Static p:Resources.HelpMenuHeader}">
                     <MenuItem
                         x:Name="About"
                         Click="About_Click"
-                        Header="_About" />
+                        Header="{x:Static p:Resources.AboutMenuHeader}" />
                 </MenuItem>
             </Menu>
         </DockPanel>
@@ -171,9 +172,11 @@
         <StackPanel VerticalAlignment="Bottom">
             <TextBlock
                 x:Name="textBlock"
+                Height="44"
+                Margin="10,0"
                 Foreground="Red"
                 Text="{Binding Error}"
-                TextWrapping="Wrap" Height="44" />
+                TextWrapping="Wrap" />
             <StatusBar Margin="0,0,0,0" VerticalAlignment="Bottom">
                 <StatusBarItem>
                     <TextBlock Text="{x:Static p:Resources.Status}" />

@@ -1,5 +1,6 @@
 using Configuration;
 using DCAdmin.ViewModel;
+using System;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
@@ -15,11 +16,10 @@ namespace DCAdmin
     public partial class MainWindow : Window
     {
         private DB db;
+        private FixtureViewModel fixtureVM;
         private LaserDataViewModel laserVM;
         private QuarterCodeViewModel quarterVM;
         private WeekCodeViewModel weekVM;
-        private FixtureViewModel fixtureVM;
-        public string ErrorMsg { get; set; }
 
         public MainWindow()
         {
@@ -33,15 +33,7 @@ namespace DCAdmin
             InitializeComponent();
 
             // Init all datagrid view models
-            laserVM = new LaserDataViewModel();
-            quarterVM = new QuarterCodeViewModel();
-            weekVM = new WeekCodeViewModel();
-            fixtureVM = new FixtureViewModel();
-
-            this.LaserDataRoot.DataContext = laserVM;
-            this.QuarterCodeRoot.DataContext = quarterVM;
-            this.WeekCodeRoot.DataContext = weekVM;
-            this.FixtureRoot.DataContext = fixtureVM;
+            InitializeViewModels();
 
             // init save and restore window position.
             Services.Tracker.Configure(this)//the object to track
@@ -53,6 +45,19 @@ namespace DCAdmin
             ErrorMsg = "";
         }
 
+        private void InitializeViewModels()
+        {
+            laserVM = new LaserDataViewModel();
+            quarterVM = new QuarterCodeViewModel();
+            weekVM = new WeekCodeViewModel();
+            fixtureVM = new FixtureViewModel();
+
+            this.LaserDataRoot.DataContext = laserVM;
+            this.QuarterCodeRoot.DataContext = quarterVM;
+            this.WeekCodeRoot.DataContext = weekVM;
+            this.FixtureRoot.DataContext = fixtureVM;
+        }
+
         public static double MaxScreenSize
         {
             get
@@ -60,6 +65,8 @@ namespace DCAdmin
                 return System.Windows.SystemParameters.PrimaryScreenWidth;
             }
         }
+
+        public string ErrorMsg { get; set; }
 
         private static void SetColumnWidthToCell(DataGrid dgrid)
         {
@@ -115,6 +122,8 @@ namespace DCAdmin
 
         private void DeleteSelectedRecord(int index)
         {
+            // NB   All ViewModel SaveChanges will save all the changes in all the tables!
+            //      Calling in viewmodel will make it easier to handle errors...
             switch (index)
             {
                 case (int)ViewModelEnum.LaserDataViewModel:
@@ -134,7 +143,7 @@ namespace DCAdmin
                     }
                 case (int)ViewModelEnum.FixtureViewModel:
                     {
-                        fixtureVM.AddNewRecord();
+                        fixtureVM.DeleteSelectedRecord();
                         break;
                     }
                 default:
@@ -149,28 +158,36 @@ namespace DCAdmin
             this.Close();
         }
 
-        private void laserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-        {
-            DataGrid dataGrid = sender as DataGrid;
-            if (e.EditAction == DataGridEditAction.Commit)
-            {
-                ListCollectionView view = CollectionViewSource.GetDefaultView(dataGrid.ItemsSource) as ListCollectionView;
-                if (view.IsAddingNew || view.IsEditingItem)
-                {
-                    this.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
-                    {
-                        // This callback will be called after the CollectionView
-                        // has pushed the changes back to the DataGrid.ItemSource.
+        //private void laserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        //{
+        //    DataGrid dataGrid = sender as DataGrid;
+        //    if (e.EditAction == DataGridEditAction.Commit)
+        //    {
+        //        ListCollectionView view = CollectionViewSource.GetDefaultView(dataGrid.ItemsSource) as ListCollectionView;
+        //        if (view.IsAddingNew || view.IsEditingItem)
+        //        {
+        //            this.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
+        //            {
+        //                // This callback will be called after the CollectionView
+        //                // has pushed the changes back to the DataGrid.ItemSource.
 
-                        if (db.IsChangesPending())
-                        {
-                            db.SaveChanges();
-                        }
-                        return null;
-                    }), DispatcherPriority.Background, new object[] { null });
-                }
-            }
-        }
+        //                if (db.IsChangesPending())
+        //                {
+        //                    try
+        //                    {
+        //                        db.SaveChanges();
+        //                    }
+        //                    catch (System.Exception ex)
+        //                    {
+        //                        e.Cancel = true;
+        //                        ErrorMessage.Text = GetFirstExceptionMessage(ex);
+        //                    }
+        //                }
+        //                return null;
+        //            }), DispatcherPriority.Background, new object[] { null });
+        //        }
+        //    }
+        //}
 
         private void New_Click(object sender, RoutedEventArgs e)
         {
@@ -191,11 +208,44 @@ namespace DCAdmin
         private void RefreshDatabase()
         {
             db.Refresh();
+            InitializeViewModels();
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            db.SaveChanges();
+            int index = tcControl.SelectedIndex;
+            SaveChanges(index);
+        }
+
+        private void SaveChanges(int index)
+        {
+            switch (index)
+            {
+                case (int)ViewModelEnum.LaserDataViewModel:
+                    {
+                        laserVM.SaveChanges();
+                        break;
+                    }
+                case (int)ViewModelEnum.WeekCodeViewModel:
+                    {
+                        weekVM.SaveChanges();
+                        break;
+                    }
+                case (int)ViewModelEnum.QuarterCodeViewModel:
+                    {
+                        quarterVM.SaveChanges();
+                        break;
+                    }
+                case (int)ViewModelEnum.FixtureViewModel:
+                    {
+                        fixtureVM.SaveChanges();
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -211,7 +261,15 @@ namespace DCAdmin
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    db.SaveChanges();
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        e.Cancel = true;
+                        //ErrorMessage.Text = GetFirstExceptionMessage(ex);
+                    }
                 }
             }
             db.Dispose();

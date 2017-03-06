@@ -183,4 +183,34 @@
   <data name="WindowMenuHeader" xml:space="preserve">
     <value>_Window</value>
   </data>
+  <data name="SaveChanges_Exception" xml:space="preserve">
+    <value>SaveChanges Exception</value>
+  </data>
+  <data name="Created_Context" xml:space="preserve">
+    <value>Created Context</value>
+  </data>
+  <data name="LoadLaserData_0" xml:space="preserve">
+    <value>LoadLaserData: {0}</value>
+  </data>
+  <data name="Out_of_memory_Please_use_a_filter_to_make_selection_smaller" xml:space="preserve">
+    <value>Out of memory! Please use a filter to make selection smaller!</value>
+  </data>
+  <data name="LoadLaserDataFiltered_exception" xml:space="preserve">
+    <value>LoadLaserDataFiltered exception</value>
+  </data>
+  <data name="LoadLaserDataFiltered_0" xml:space="preserve">
+    <value>LoadLaserDataFiltered: {0}</value>
+  </data>
+  <data name="Error_Property_Name_0__Error_Message_1" xml:space="preserve">
+    <value>Error Property Name {0} : Error Message: {1}</value>
+  </data>
+  <data name="Adding_a_row_is_not_allowed" xml:space="preserve">
+    <value>Adding a row is not allowed</value>
+  </data>
+  <data name="Deleting_a_row_is_not_allowed" xml:space="preserve">
+    <value>Deleting a row is not allowed</value>
+  </data>
+  <data name="Error_Saving_to_Database_0" xml:space="preserve">
+    <value>Error Saving to Database: {0}</value>
+  </data>
 </root>

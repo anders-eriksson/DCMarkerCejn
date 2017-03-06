@@ -13,8 +13,17 @@
         <l:StringTrimConverter x:Key="TrimString" />
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot">
+        <TextBlock
+            x:Name="SearchError"
+            Height="30"
+            VerticalAlignment="Bottom"
+            Panel.ZIndex="1"
+            DockPanel.Dock="Bottom"
+            Foreground="Red"
+            Text="{Binding Path=ErrorMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
         <DataGrid
             x:Name="quarterCodeDataGrid"
+            Margin="10,10,10,40"
             AutoGenerateColumns="False"
             CanUserAddRows="false"
             EnableRowVirtualization="True"

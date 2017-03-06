@@ -1,8 +1,11 @@
 using DCMarkerEF;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Entity.Validation;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System;
+using GlblRes = global::DCAdmin.Properties.Resources;
 
 namespace DCAdmin
 {
@@ -13,6 +16,9 @@ namespace DCAdmin
         public WeekCodeViewModel()
         {
             WeekCodeCollection = DB.Instance.LoadWeekCode();
+#if DEBUG
+            ErrorMessage = "Hello World!";
+#endif
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -33,6 +39,21 @@ namespace DCAdmin
 
         public ObservableCollection<WeekCode> WeekCodeCollection { get; set; }
 
+        private string _ErrorMessage;
+
+        public string ErrorMessage
+        {
+            get
+            {
+                return _ErrorMessage;
+            }
+            set
+            {
+                _ErrorMessage = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             if (PropertyChanged != null)
@@ -43,6 +64,8 @@ namespace DCAdmin
 
         internal void AddNewRecord()
         {
+            ErrorMessage = GlblRes.Adding_a_row_is_not_allowed;
+#if NOT_ALLOWED
             try
             {
                 var entity = DB.Instance.AddNewWeekCodeRecord();
@@ -55,11 +78,32 @@ namespace DCAdmin
             {
                 throw;
             }
+#endif
         }
 
         internal void DeleteSelectedRecord()
         {
-            throw new NotImplementedException();
+            ErrorMessage = GlblRes.Deleting_a_row_is_not_allowed;
+#if NOT_ALLOWED
+            DB.Instance.DeleteWeekCodeRecord(SelectedWeekCodeRow);
+#endif
+        }
+
+        internal void SaveChanges()
+        {
+            try
+            {
+                DB.Instance.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var error = ex.EntityValidationErrors.First().ValidationErrors.First();
+                ErrorMessage = string.Format(GlblRes.Error_Saving_to_Database_0, error.ErrorMessage);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

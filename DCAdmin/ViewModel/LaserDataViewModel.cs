@@ -2,6 +2,7 @@ using DCMarkerEF;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -9,7 +10,6 @@ namespace DCAdmin.ViewModel
 {
     public class LaserDataViewModel : INotifyPropertyChanged
     {
-        private string _ErrorMessage;
         private string _FilterKey;
         private string _FilterValue;
         private LaserData _SelectedLaserDataRow;
@@ -19,10 +19,14 @@ namespace DCAdmin.ViewModel
             KeyCollection = DB.Instance.GetLaserDataColumns();
             _LaserDataCollection = new ObservableCollection<LaserData>();
             LaserDataCollection = DB.Instance.LoadLaserData();
+#if DEBUG
             ErrorMessage = "Hello World!";
+#endif
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private string _ErrorMessage;
 
         public string ErrorMessage
         {
@@ -103,7 +107,7 @@ namespace DCAdmin.ViewModel
             var entity = FindSerialNumber(searchText);
             if (entity == null)
             {
-                ErrorMessage = "Serial number not found";
+                ErrorMessage = "Article number not found";
             }
             else
             {
@@ -158,9 +162,26 @@ namespace DCAdmin.ViewModel
             LaserDataCollection = DB.Instance.LoadLaserData();
         }
 
+        internal void SaveChanges()
+        {
+            try
+            {
+                DB.Instance.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var error = ex.EntityValidationErrors.First().ValidationErrors.First();
+                ErrorMessage = string.Format("Error Saving to Database: {0}", error.ErrorMessage);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         internal void DeleteSelectedRecord()
         {
-            throw new NotImplementedException();
+            DB.Instance.DeleteLaserDataRecord(SelectedLaserDataRow);
         }
     }
 }

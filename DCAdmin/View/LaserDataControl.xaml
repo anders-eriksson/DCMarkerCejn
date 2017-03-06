@@ -68,15 +68,18 @@
             </StackPanel>
             <TextBlock
                 x:Name="SearchError"
-                Grid.Row="1"
-                DockPanel.Dock="top"
+                Height="30"
+                VerticalAlignment="Bottom"
+                Panel.ZIndex="1"
+                DockPanel.Dock="Bottom"
                 Foreground="Red"
-                Text="{Binding Path=ErrorMessage}" />
+                Text="{Binding Path=ErrorMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+
             <DataGrid
                 x:Name="laserDataDataGrid"
                 Grid.Row="2"
                 Height="Auto"
-                Margin="10,13,10,10"
+                Margin="10,13,10,40"
                 AutoGenerateColumns="False"
                 CanUserAddRows="false"
                 DockPanel.Dock="Top"

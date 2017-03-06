@@ -14,6 +14,7 @@ namespace DCMarker
 
         public ManualMainWindow()
         {
+
             DCConfig cfg = DCConfig.Instance;
             string language = cfg.GuiLanguage;
             if (!string.IsNullOrWhiteSpace(language))

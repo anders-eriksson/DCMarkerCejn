@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System;
+using System.Data.Entity.Validation;
+using System.Linq;
 
 namespace DCAdmin
 {
@@ -12,8 +14,10 @@ namespace DCAdmin
 
         public QuarterCodeViewModel()
         {
-            //_QuarterCodeCollection = new ObservableCollection<QuarterCode>();
             QuarterCodeCollection = DB.Instance.LoadQuarterCode();
+#if DEBUG
+            ErrorMessage = "Hello World!";
+#endif
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -30,6 +34,21 @@ namespace DCAdmin
             {
                 if (value == _SelectedQuarterCodeRow) return;
                 _SelectedQuarterCodeRow = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _ErrorMessage;
+
+        public string ErrorMessage
+        {
+            get
+            {
+                return _ErrorMessage;
+            }
+            set
+            {
+                _ErrorMessage = value;
                 NotifyPropertyChanged();
             }
         }
@@ -60,7 +79,24 @@ namespace DCAdmin
 
         internal void DeleteSelectedRecord()
         {
-            throw new NotImplementedException();
+            DB.Instance.DeleteQuarterCodeRecord(SelectedQuarterCodeRow);
+        }
+
+        internal void SaveChanges()
+        {
+            try
+            {
+                DB.Instance.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var error = ex.EntityValidationErrors.First().ValidationErrors.First();
+                ErrorMessage = string.Format("Error Saving to Database: {0}", error.ErrorMessage);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

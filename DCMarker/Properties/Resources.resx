@@ -177,4 +177,37 @@
   <data name="ItemInPlace_received_before_Article_Number_is_set" xml:space="preserve">
     <value>ItemInPlace signal received before Article Number is set</value>
   </data>
+  <data name="AboutMenuHeader" xml:space="preserve">
+    <value>_About</value>
+  </data>
+  <data name="ExitMenuHeader" xml:space="preserve">
+    <value>_Exit</value>
+  </data>
+  <data name="FileMenuHeader" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="HelpMenuHeader" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="OnTopMenuHeader" xml:space="preserve">
+    <value>On Top</value>
+  </data>
+  <data name="ResetIOMenuHeader" xml:space="preserve">
+    <value>_Reset IO</value>
+  </data>
+  <data name="ToolsMenuHeader" xml:space="preserve">
+    <value>_Tools</value>
+  </data>
+  <data name="WindowMenuHeader" xml:space="preserve">
+    <value>_Windows</value>
+  </data>
+  <data name="Error_Property_Name_0__Error_Message_1" xml:space="preserve">
+    <value>Error Property Name {0} : Error Message: {1}</value>
+  </data>
+  <data name="AddHistroyDataToDB_Exception" xml:space="preserve">
+    <value>AddHistroyDataToDB Exception</value>
+  </data>
+  <data name="CreateSerialNumber_Exception" xml:space="preserve">
+    <value>CreateSerialNumber Exception</value>
+  </data>
 </root>

@@ -28,11 +28,18 @@ namespace DCMarker.Model
 
         public WorkFlow()
         {
-            cfg = DCConfig.Instance;
-            //cfg.WriteConfig();
-            sig = new IoSignals();
-            UpdateIoMasks();
-            Initialize();
+            try
+            {
+                cfg = DCConfig.Instance;
+                //cfg.WriteConfig();
+                sig = new IoSignals();
+                UpdateIoMasks();
+                Initialize();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void Close()
@@ -52,6 +59,10 @@ namespace DCMarker.Model
             }
             catch (Exception)
             {
+                if (_articleInput != null)
+                {
+                    _articleInput.Close();
+                }
                 throw;
             }
 
@@ -65,7 +76,10 @@ namespace DCMarker.Model
 
         public void Execute()
         {
-            _laser.Execute();
+            if (_laser != null)
+            {
+                _laser.Execute();
+            }
         }
 
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
@@ -108,6 +122,7 @@ namespace DCMarker.Model
         private void InitializeDatabase()
         {
             _db = new DB();
+            _db.IsConnectionOK();
         }
 
         private void InitializeLaser()
@@ -208,11 +223,19 @@ namespace DCMarker.Model
                             if (brc)
                             {
                                 // update HistoryData table
-                                _db.AddHistoryDataToDB(historyData);
-                                // we are ready to mark...
-                                RaiseStatusEvent(string.Format(WorkFlow_Res.Waiting_for_start_signal_0, layoutname));
-                                _laser.ResetPort(0, sig.MASK_MARKINGDONE);
-                                _laser.SetPort(0, sig.MASK_READYTOMARK);
+                                var status = _db.AddHistoryDataToDB(historyData);
+                                if (status != null)
+                                {
+                                    // we are ready to mark...
+                                    RaiseStatusEvent(string.Format(WorkFlow_Res.Waiting_for_start_signal_0, layoutname));
+                                    _laser.ResetPort(0, sig.MASK_MARKINGDONE);
+                                    _laser.SetPort(0, sig.MASK_READYTOMARK);
+                                }
+                                else
+                                {
+                                    RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                    _laser.SetPort(0, sig.MASK_ERROR);
+                                }
                             }
                             else
                             {

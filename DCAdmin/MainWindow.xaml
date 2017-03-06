@@ -136,15 +136,6 @@
                                 x:Name="LaserDataGrid"
                                 Margin="10,0,10,28"
                                 DockPanel.Dock="Top" />
-                            <TextBlock
-                                x:Name="ErrorMessage"
-                                Height="23"
-                                MinWidth="500"
-                                Margin="10,0"
-                                VerticalAlignment="Bottom"
-                                DockPanel.Dock="Top"
-                                Foreground="Red"
-                                Text="Hello World" />
                         </Grid>
                     </DockPanel>
                 </TabItem>

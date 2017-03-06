@@ -8,7 +8,7 @@ using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows.Controls;
+using GlblRes = global::DCAdmin.Properties.Resources;
 
 namespace DCAdmin
 {
@@ -21,9 +21,11 @@ namespace DCAdmin
         public DB()
         {
             _context = new DCLasermarkContext();
-            Log.Trace("Created Context");
+            Log.Trace(GlblRes.Created_Context);
             Context = _context;
+#if DEBUG
             _context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
+#endif
         }
 
         public static string ErrorMessage { get; set; }
@@ -55,9 +57,19 @@ namespace DCAdmin
 
         public LaserData FindArticle(string articleNumber)
         {
-            var entity = _context.LaserData.FirstOrDefault<LaserData>(e => e.F1.StartsWith(articleNumber));
+            var entity = _context.LaserData.OrderBy(o => o.F1).ThenBy(o => o.Kant).FirstOrDefault<LaserData>(e => e.F1.StartsWith(articleNumber));
 
             return entity;
+        }
+
+        public ObservableCollection<string> GetLaserDataColumns()
+        {
+            var query = (from t in typeof(LaserData).GetProperties()
+                         select t.Name);
+            var result = new ObservableCollection<string>(query);
+            int pos = result.IndexOf("Id");
+            result[pos] = "";
+            return result;
         }
 
         public bool IsChangesPending()
@@ -75,16 +87,6 @@ namespace DCAdmin
             return result;
         }
 
-        public ObservableCollection<string> GetLaserDataColumns()
-        {
-            var query = (from t in typeof(LaserData).GetProperties()
-                         select t.Name);
-            var result = new ObservableCollection<string>(query);
-            int pos = result.IndexOf("Id");
-            result[pos] = "";
-            return result;
-        }
-
         /// <summary>
         /// Load data from LaserData table
         /// </summary>
@@ -96,7 +98,7 @@ namespace DCAdmin
             _context.LaserData.OrderBy(x => x.F1).ThenBy(x => x.Kant).ToList();
             result = Context.LaserData.Local;
 
-            Debug.WriteLine("LoadLaserData: {0}", result.Count);
+            Debug.WriteLine(GlblRes.LoadLaserData_0, result.Count);
             return result;
         }
 
@@ -130,14 +132,14 @@ namespace DCAdmin
             catch (OutOfMemoryException ex)
             {
                 // To many rows in select!
-                ErrorMessage = "Out of memory! Please use a filter to make selection smaller!";
+                ErrorMessage = GlblRes.Out_of_memory_Please_use_a_filter_to_make_selection_smaller;
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "LoadLaserDataFiltered exception");
+                Log.Fatal(ex, GlblRes.LoadLaserDataFiltered_exception);
                 throw;
             }
-            Debug.WriteLine("LoadLaserDataFiltered: {0}", result.Count);
+            Debug.WriteLine(GlblRes.LoadLaserDataFiltered_0, result.Count);
             return result;
         }
 
@@ -173,15 +175,16 @@ namespace DCAdmin
                 {
                     foreach (DbValidationError error in entityErr.ValidationErrors)
                     {
-                        Log.Error(string.Format("Error Property Name {0} : Error Message: {1}",
+                        Log.Error(string.Format(GlblRes.Error_Property_Name_0__Error_Message_1,
                                             error.PropertyName, error.ErrorMessage));
                     }
                 }
+                throw;
             }
             catch (Exception ex)
             {
                 var errors = _context.GetValidationErrors();
-                Log.Error(ex, "SaveChanges Exception");
+                Log.Error(ex, GlblRes.SaveChanges_Exception);
                 throw;
             }
         }
@@ -226,15 +229,35 @@ namespace DCAdmin
             return result;
         }
 
-        internal void DeleteLaserDataRecord(IList<DataGridCellInfo> selectedItems)
+        internal void DeleteLaserDataRecord(LaserData selectedItem)
         {
-            if (selectedItems != null)
+            if (selectedItem != null)
             {
-                var selectedItem = selectedItems[0];
-                var item = (LaserData)selectedItem.Item;
-                var id = item.Id;
-                var entity = _context.LaserData.Find(id);
-                _context.LaserData.Remove(entity);
+                _context.LaserData.Remove(selectedItem);
+            }
+        }
+
+        internal void DeleteWeekCodeRecord(WeekCode selectedItem)
+        {
+            if (selectedItem != null)
+            {
+                _context.WeekCode.Remove(selectedItem);
+            }
+        }
+
+        internal void DeleteQuarterCodeRecord(QuarterCode selectedItem)
+        {
+            if (selectedItem != null)
+            {
+                _context.QuarterCode.Remove(selectedItem);
+            }
+        }
+
+        internal void DeleteFixtureRecord(Fixture selectedItem)
+        {
+            if (selectedItem != null)
+            {
+                _context.Fixture.Remove(selectedItem);
             }
         }
 
@@ -252,6 +275,7 @@ namespace DCAdmin
 
             Dispose();
             _context = new DCLasermarkContext();
+            Log.Trace(GlblRes.Created_Context);
             Context = _context;
         }
     }

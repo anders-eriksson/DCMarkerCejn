@@ -79,11 +79,29 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding a row is not allowed.
+        /// </summary>
+        public static string Adding_a_row_is_not_allowed {
+            get {
+                return ResourceManager.GetString("Adding_a_row_is_not_allowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Article Number (F1).
         /// </summary>
         public static string ArticleNumber {
             get {
                 return ResourceManager.GetString("ArticleNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created Context.
+        /// </summary>
+        public static string Created_Context {
+            get {
+                return ResourceManager.GetString("Created_Context", resourceCulture);
             }
         }
         
@@ -102,6 +120,33 @@ namespace DCAdmin.Properties {
         public static string DeleteToolTip {
             get {
                 return ResourceManager.GetString("DeleteToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting a row is not allowed.
+        /// </summary>
+        public static string Deleting_a_row_is_not_allowed {
+            get {
+                return ResourceManager.GetString("Deleting_a_row_is_not_allowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Property Name {0} : Error Message: {1}.
+        /// </summary>
+        public static string Error_Property_Name_0__Error_Message_1 {
+            get {
+                return ResourceManager.GetString("Error_Property_Name_0__Error_Message_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Saving to Database: {0}.
+        /// </summary>
+        public static string Error_Saving_to_Database_0 {
+            get {
+                return ResourceManager.GetString("Error_Saving_to_Database_0", resourceCulture);
             }
         }
         
@@ -169,6 +214,33 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to LoadLaserData: {0}.
+        /// </summary>
+        public static string LoadLaserData_0 {
+            get {
+                return ResourceManager.GetString("LoadLaserData_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LoadLaserDataFiltered: {0}.
+        /// </summary>
+        public static string LoadLaserDataFiltered_0 {
+            get {
+                return ResourceManager.GetString("LoadLaserDataFiltered_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LoadLaserDataFiltered exception.
+        /// </summary>
+        public static string LoadLaserDataFiltered_exception {
+            get {
+                return ResourceManager.GetString("LoadLaserDataFiltered_exception", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _New.
         /// </summary>
         public static string NewMenuHeader {
@@ -205,6 +277,15 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Out of memory! Please use a filter to make selection smaller!.
+        /// </summary>
+        public static string Out_of_memory_Please_use_a_filter_to_make_selection_smaller {
+            get {
+                return ResourceManager.GetString("Out_of_memory_Please_use_a_filter_to_make_selection_smaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Refresh.
         /// </summary>
         public static string RefreshMenuHeader {
@@ -219,6 +300,15 @@ namespace DCAdmin.Properties {
         public static string RefreshToolTip {
             get {
                 return ResourceManager.GetString("RefreshToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SaveChanges Exception.
+        /// </summary>
+        public static string SaveChanges_Exception {
+            get {
+                return ResourceManager.GetString("SaveChanges_Exception", resourceCulture);
             }
         }
         

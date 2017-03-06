@@ -1,10 +1,13 @@
 using DCAdmin.ViewModel;
 using DCMarkerEF;
+using System;
+using System.Data.Entity.Validation;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Threading;
+using System.Linq;
 
 namespace DCAdmin.View
 {
@@ -34,7 +37,20 @@ namespace DCAdmin.View
 
                         if (DB.Instance.IsChangesPending())
                         {
-                            DB.Instance.SaveChanges();
+                            try
+                            {
+                                DB.Instance.SaveChanges();
+                            }
+                            catch (DbEntityValidationException ex)
+                            {
+                                var error = ex.EntityValidationErrors.First().ValidationErrors.First();
+                                LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+                                laserVM.ErrorMessage = string.Format("Error Saving to Database: {0}", error.ErrorMessage);
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
                         }
                         return null;
                     }), DispatcherPriority.Background, new object[] { null });
@@ -42,36 +58,47 @@ namespace DCAdmin.View
             }
         }
 
-        private void FindArticleAndScrollIntoView()
-        {
-            var entity = DB.Instance.FindArticle(SearchArticleNumber.Text);
-            ScrollToView(entity);
-        }
+        //private void FindArticleAndScrollIntoView()
+        //{
+        //    var entity = DB.Instance.FindArticle(SearchArticleNumber.Text);
+        //    if (entity != null)
+        //    {
+        //        ScrollToView(entity);
+        //    }
+        //    else
+        //    {
+        //        LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+        //        laserVM.ErrorMessage = "Article not found!";
+        //    }
+        //}
 
-        private void ScrollToView(LaserData entity)
-        {
-            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
-            laserVM.SelectedLaserDataRow = null;
-            laserVM.SelectedLaserDataRow = entity;
-        }
+        //private void ScrollToView(LaserData entity)
+        //{
+        //    LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+        //    laserVM.SelectedLaserDataRow = null;
+        //    laserVM.SelectedLaserDataRow = entity;
+        //}
 
         private void SearchArticleNumber_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == System.Windows.Input.Key.Enter)
             {
                 e.Handled = true;
-                FindArticleAndScrollIntoView();
+                LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+                laserVM.FindArticleAndScrollIntoView(SearchArticleNumber.Text);
             }
         }
 
         private void SearchArticleNumber_LostFocus(object sender, RoutedEventArgs e)
         {
-            SearchError.Text = "";
+            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            laserVM.ErrorMessage = string.Empty;
         }
 
         private void FindButton_Click(object sender, RoutedEventArgs e)
         {
-            FindArticleAndScrollIntoView();
+            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            laserVM.FindArticleAndScrollIntoView(SearchArticleNumber.Text);
         }
 
         private void laserDataDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -103,7 +130,7 @@ namespace DCAdmin.View
             laserVM.ErrorMessage = string.Empty;
             if (tmp.IsChecked.Value)
             {
-                if (laserVM.FilterKey != null && laserVM.FilterValue != null)
+                if (!string.IsNullOrWhiteSpace(laserVM.FilterKey) && !string.IsNullOrWhiteSpace(laserVM.FilterValue))
                 {
                     laserVM.ExecuteFilter();
                     laserDataDataGrid.Items.Refresh();

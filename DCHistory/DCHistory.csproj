@@ -92,11 +92,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ItemsControlExtensions.cs" />
-    <Compile Include="Migrations\201702201953228_InitialMigration.cs" />
-    <Compile Include="Migrations\201702201953228_InitialMigration.Designer.cs">
-      <DependentUpon>201702201953228_InitialMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\DB.cs" />
     <Compile Include="Model\DCHistoryContext.cs" />
     <Compile Include="Model\HistoryData.cs" />
@@ -136,9 +131,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Migrations\201702201953228_InitialMigration.resx">
-      <DependentUpon>201702201953228_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
