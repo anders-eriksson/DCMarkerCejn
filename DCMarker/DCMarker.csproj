@@ -98,6 +98,7 @@
     <Compile Include="ErrorMainWindow.xaml.cs">
       <DependentUpon>ErrorMainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ManualMainWindow.xaml.cs">
       <DependentUpon>ManualMainWindow.xaml</DependentUpon>
     </Compile>
