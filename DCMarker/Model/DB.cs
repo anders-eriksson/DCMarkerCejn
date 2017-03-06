@@ -27,7 +27,7 @@ namespace DCMarker.Model
             {
                 LaserObjectData hrec = new LaserObjectData();
                 hrec.ID = pinfo.Name.ToString();
-                hrec.Value = pinfo.GetValue(historyData).ToString();
+                hrec.Value = pinfo.GetValue(historyData) != null ? pinfo.GetValue(historyData).ToString() : null;
                 result.Add(hrec);
             }
 
@@ -138,7 +138,7 @@ namespace DCMarker.Model
                         var rec = new LaserObjectData
                         {
                             ID = pinfo.Name.ToString(),
-                            Value = pinfo.GetValue(entity).ToString()
+                            Value = pinfo.GetValue(entity) != null ? pinfo.GetValue(entity).ToString() : null,
                         };
                         result.Add(rec);
                     }

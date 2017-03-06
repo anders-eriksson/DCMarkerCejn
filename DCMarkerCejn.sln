@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCHistory", "DCHistory\DCHi
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DCMarkerInstall", "DCMarkerInstall\DCMarkerInstall.vdproj", "{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DCInstall", "DCInstall\DCInstall.vdproj", "{841CF5A2-0E31-4242-8304-57E862E404F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -136,6 +138,10 @@ Global
 		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.Debug|x86.ActiveCfg = Debug
 		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.Release|Any CPU.ActiveCfg = Release
 		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.Release|x86.ActiveCfg = Release
+		{841CF5A2-0E31-4242-8304-57E862E404F8}.Debug|Any CPU.ActiveCfg = Debug
+		{841CF5A2-0E31-4242-8304-57E862E404F8}.Debug|x86.ActiveCfg = Debug
+		{841CF5A2-0E31-4242-8304-57E862E404F8}.Release|Any CPU.ActiveCfg = Release
+		{841CF5A2-0E31-4242-8304-57E862E404F8}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
