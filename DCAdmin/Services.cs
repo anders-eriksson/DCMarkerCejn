@@ -1,4 +1,4 @@
-﻿using Jot;
+using Jot;
 
 namespace DCAdmin
 {

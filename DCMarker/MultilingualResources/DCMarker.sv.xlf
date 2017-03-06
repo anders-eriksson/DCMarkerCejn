@@ -79,7 +79,7 @@
         </trans-unit>
         <trans-unit id="Type_of_machine_not_available_Type0" translate="yes" xml:space="preserve">
           <source>Type of machine not available! Type={0}</source>
-          <target state="new">Type of machine not available! Type={0}</target>
+          <target state="translated">Maskintyp inte tillgänglig! Maskintyp={0}</target>
         </trans-unit>
         <trans-unit id="Article_0_received" translate="yes" xml:space="preserve">
           <source>Article {0} received</source>
@@ -88,6 +88,50 @@
         <trans-unit id="ItemInPlace_received_before_Article_Number_is_set" translate="yes" xml:space="preserve">
           <source>ItemInPlace signal received before Article Number is set</source>
           <target state="translated">ItemInPlace signal mottagen innan Artikelnummer angetts</target>
+        </trans-unit>
+        <trans-unit id="AboutMenuHeader" translate="yes" xml:space="preserve">
+          <source>_About</source>
+          <target state="translated">_Om</target>
+        </trans-unit>
+        <trans-unit id="ExitMenuHeader" translate="yes" xml:space="preserve">
+          <source>_Exit</source>
+          <target state="translated">_Avsluta</target>
+        </trans-unit>
+        <trans-unit id="FileMenuHeader" translate="yes" xml:space="preserve">
+          <source>_File</source>
+          <target state="translated">_Arkiv</target>
+        </trans-unit>
+        <trans-unit id="HelpMenuHeader" translate="yes" xml:space="preserve">
+          <source>_Help</source>
+          <target state="translated">_Hjälp</target>
+        </trans-unit>
+        <trans-unit id="OnTopMenuHeader" translate="yes" xml:space="preserve">
+          <source>On Top</source>
+          <target state="translated">Överst</target>
+        </trans-unit>
+        <trans-unit id="ResetIOMenuHeader" translate="yes" xml:space="preserve">
+          <source>_Reset IO</source>
+          <target state="translated">_Återställ I/O</target>
+        </trans-unit>
+        <trans-unit id="ToolsMenuHeader" translate="yes" xml:space="preserve">
+          <source>_Tools</source>
+          <target state="translated">_Verktyg</target>
+        </trans-unit>
+        <trans-unit id="WindowMenuHeader" translate="yes" xml:space="preserve">
+          <source>_Windows</source>
+          <target state="translated">_Fönster</target>
+        </trans-unit>
+        <trans-unit id="Error_Property_Name_0__Error_Message_1" translate="yes" xml:space="preserve">
+          <source>Error Property Name {0} : Error Message: {1}</source>
+          <target state="translated">Error-egenskap namn {0}: felmeddelande: {1}</target>
+        </trans-unit>
+        <trans-unit id="AddHistroyDataToDB_Exception" translate="yes" xml:space="preserve">
+          <source>AddHistroyDataToDB Exception</source>
+          <target state="translated">AddHistroyDataToDB undantag</target>
+        </trans-unit>
+        <trans-unit id="CreateSerialNumber_Exception" translate="yes" xml:space="preserve">
+          <source>CreateSerialNumber Exception</source>
+          <target state="translated">CreateSerialNumber undantag</target>
         </trans-unit>
       </group>
     </body>

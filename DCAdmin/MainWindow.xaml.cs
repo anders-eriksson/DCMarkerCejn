@@ -1,5 +1,5 @@
-﻿using Configuration;
-using DCMarkerEF;
+using Configuration;
+using DCAdmin.ViewModel;
 using System;
 using System.Globalization;
 using System.Threading;
@@ -16,30 +16,46 @@ namespace DCAdmin
     public partial class MainWindow : Window
     {
         private DB db;
-        private CollectionViewSource fixtureViewSource;
-        private CollectionViewSource laserDataViewSource;
-        private CollectionViewSource quarterCodeViewSource;
-        private CollectionViewSource weekCodeViewSource;
-
-        public string ErrorMsg { get; set; }
+        private FixtureViewModel fixtureVM;
+        private LaserDataViewModel laserVM;
+        private QuarterCodeViewModel quarterVM;
+        private WeekCodeViewModel weekVM;
 
         public MainWindow()
         {
-            DCConfig cfg = DCConfig.Instance;
-            string language = cfg.GuiLanguage;
+            string language = DCConfig.Instance.GuiLanguage;
             if (!string.IsNullOrWhiteSpace(language))
             {
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
+
             db = new DB();
             InitializeComponent();
 
+            // Init all datagrid view models
+            InitializeViewModels();
+
+            // init save and restore window position.
             Services.Tracker.Configure(this)//the object to track
                                            .IdentifyAs("main window")                                                                           //a string by which to identify the target object
                                            .AddProperties<Window>(w => w.Height, w => w.Width, w => w.Top, w => w.Left, w => w.WindowState)     //properties to track
                                            .RegisterPersistTrigger(nameof(SizeChanged))                                                         //when to persist data to the store
                                            .Apply();                                                                                            //apply any previously stored data
-            ErrorMsg = "ERROR Hello Workd!";
+
+            ErrorMsg = "";
+        }
+
+        private void InitializeViewModels()
+        {
+            laserVM = new LaserDataViewModel();
+            quarterVM = new QuarterCodeViewModel();
+            weekVM = new WeekCodeViewModel();
+            fixtureVM = new FixtureViewModel();
+
+            this.LaserDataRoot.DataContext = laserVM;
+            this.QuarterCodeRoot.DataContext = quarterVM;
+            this.WeekCodeRoot.DataContext = weekVM;
+            this.FixtureRoot.DataContext = fixtureVM;
         }
 
         public static double MaxScreenSize
@@ -49,6 +65,8 @@ namespace DCAdmin
                 return System.Windows.SystemParameters.PrimaryScreenWidth;
             }
         }
+
+        public string ErrorMsg { get; set; }
 
         private static void SetColumnWidthToCell(DataGrid dgrid)
         {
@@ -69,14 +87,24 @@ namespace DCAdmin
         {
             switch (index)
             {
-                case 0:
+                case (int)ViewModelEnum.LaserDataViewModel:
                     {
-                        var entity = db.AddNewLaserDataRecord();
-                        if (entity != null)
-                        {
-                            laserDataDataGrid.SelectedItem = entity;
-                            laserDataDataGrid.ScrollToCenterOfView(entity);
-                        }
+                        laserVM.AddNewRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.WeekCodeViewModel:
+                    {
+                        weekVM.AddNewRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.QuarterCodeViewModel:
+                    {
+                        quarterVM.AddNewRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.FixtureViewModel:
+                    {
+                        fixtureVM.AddNewRecord();
                         break;
                     }
                 default:
@@ -84,16 +112,6 @@ namespace DCAdmin
                         break;
                     }
             }
-        }
-
-        private void Copy_Click(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void Cut_Click(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -104,13 +122,28 @@ namespace DCAdmin
 
         private void DeleteSelectedRecord(int index)
         {
+            // NB   All ViewModel SaveChanges will save all the changes in all the tables!
+            //      Calling in viewmodel will make it easier to handle errors...
             switch (index)
             {
-                case 0:
+                case (int)ViewModelEnum.LaserDataViewModel:
                     {
-                        var selectedItems = laserDataDataGrid.SelectedCells;
-
-                        db.DeleteLaserDataRecord(selectedItems);
+                        laserVM.DeleteSelectedRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.WeekCodeViewModel:
+                    {
+                        weekVM.DeleteSelectedRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.QuarterCodeViewModel:
+                    {
+                        quarterVM.DeleteSelectedRecord();
+                        break;
+                    }
+                case (int)ViewModelEnum.FixtureViewModel:
+                    {
+                        fixtureVM.DeleteSelectedRecord();
                         break;
                     }
                 default:
@@ -125,63 +158,36 @@ namespace DCAdmin
             this.Close();
         }
 
-        private void FindArticleAndScrollIntoView()
-        {
-            var entity = db.FindArticle(SearchArticleNumber.Text);
-            ScrollToView(entity);
-        }
+        //private void laserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        //{
+        //    DataGrid dataGrid = sender as DataGrid;
+        //    if (e.EditAction == DataGridEditAction.Commit)
+        //    {
+        //        ListCollectionView view = CollectionViewSource.GetDefaultView(dataGrid.ItemsSource) as ListCollectionView;
+        //        if (view.IsAddingNew || view.IsEditingItem)
+        //        {
+        //            this.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
+        //            {
+        //                // This callback will be called after the CollectionView
+        //                // has pushed the changes back to the DataGrid.ItemSource.
 
-        private void FindButton_Click(object sender, RoutedEventArgs e)
-        {
-            FindArticleAndScrollIntoView();
-        }
-
-        private void laserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-        {
-            DataGrid dataGrid = sender as DataGrid;
-            if (e.EditAction == DataGridEditAction.Commit)
-            {
-                ListCollectionView view = CollectionViewSource.GetDefaultView(dataGrid.ItemsSource) as ListCollectionView;
-                if (view.IsAddingNew || view.IsEditingItem)
-                {
-                    this.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
-                    {
-                        // This callback will be called after the CollectionView
-                        // has pushed the changes back to the DataGrid.ItemSource.
-
-                        if (db.IsChangesPending())
-                        {
-                            db.SaveChanges();
-                        }
-                        return null;
-                    }), DispatcherPriority.Background, new object[] { null });
-                }
-            }
-        }
-
-        private void LoadFixture()
-        {
-            fixtureViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("fixtureViewSource")));
-            fixtureViewSource.Source = db.LoadFixture();
-        }
-
-        private void LoadLaserData()
-        {
-            laserDataViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("laserDataViewSource")));
-            laserDataViewSource.Source = db.LoadLaserData();
-        }
-
-        private void LoadQuarterCode()
-        {
-            quarterCodeViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("quarterCodeViewSource")));
-            quarterCodeViewSource.Source = db.LoadQuarterCode();
-        }
-
-        private void LoadWeekCode()
-        {
-            weekCodeViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("weekCodeViewSource")));
-            weekCodeViewSource.Source = db.LoadWeekCode();
-        }
+        //                if (db.IsChangesPending())
+        //                {
+        //                    try
+        //                    {
+        //                        db.SaveChanges();
+        //                    }
+        //                    catch (System.Exception ex)
+        //                    {
+        //                        e.Cancel = true;
+        //                        ErrorMessage.Text = GetFirstExceptionMessage(ex);
+        //                    }
+        //                }
+        //                return null;
+        //            }), DispatcherPriority.Background, new object[] { null });
+        //        }
+        //    }
+        //}
 
         private void New_Click(object sender, RoutedEventArgs e)
         {
@@ -191,12 +197,7 @@ namespace DCAdmin
 
         private void OnTop_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        private void Paste_Click(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
+            this.Topmost = !this.Topmost;
         }
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
@@ -207,70 +208,44 @@ namespace DCAdmin
         private void RefreshDatabase()
         {
             db.Refresh();
-            LoadLaserData();
-            LoadWeekCode();
-            LoadQuarterCode();
-            LoadFixture();
-        }
-
-        private void RefreshDataGrid(int index)
-        {
-            if (index == Consts.LASERDATADATAGRID)
-            {
-                laserDataViewSource.View.Refresh();
-            }
-            else if (index == Consts.WEEKCODEDATAGRID)
-            {
-                weekCodeViewSource.View.Refresh();
-            }
-            else if (index == Consts.QUARTERCODEDATAGRID)
-            {
-                quarterCodeViewSource.View.Refresh();
-            }
-            else if (index == Consts.FIXTUREDATAGRID)
-            {
-                fixtureViewSource.View.Refresh();
-            }
-            else
-            {
-                laserDataViewSource.View.Refresh();
-                weekCodeViewSource.View.Refresh();
-                quarterCodeViewSource.View.Refresh();
-                fixtureViewSource.View.Refresh();
-            }
+            InitializeViewModels();
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            db.SaveChanges();
-            RefreshDataGrid(0); // TODO change this so it handles all the tables!
+            int index = tcControl.SelectedIndex;
+            SaveChanges(index);
         }
 
-        private void ScrollToView(LaserData entity)
+        private void SaveChanges(int index)
         {
-            if (entity != null)
+            switch (index)
             {
-                laserDataDataGrid.SelectedItem = entity;
-                laserDataDataGrid.ScrollToCenterOfView(entity);
+                case (int)ViewModelEnum.LaserDataViewModel:
+                    {
+                        laserVM.SaveChanges();
+                        break;
+                    }
+                case (int)ViewModelEnum.WeekCodeViewModel:
+                    {
+                        weekVM.SaveChanges();
+                        break;
+                    }
+                case (int)ViewModelEnum.QuarterCodeViewModel:
+                    {
+                        quarterVM.SaveChanges();
+                        break;
+                    }
+                case (int)ViewModelEnum.FixtureViewModel:
+                    {
+                        fixtureVM.SaveChanges();
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
             }
-            else
-            {
-                SearchError.Text = "Can't find Article number!";
-            }
-        }
-
-        private void SearchArticleNumber_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == System.Windows.Input.Key.Enter)
-            {
-                e.Handled = true;
-                FindArticleAndScrollIntoView();
-            }
-        }
-
-        private void SearchArticleNumber_LostFocus(object sender, RoutedEventArgs e)
-        {
-            SearchError.Text = "";
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -286,26 +261,18 @@ namespace DCAdmin
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    db.SaveChanges();
+                    try
+                    {
+                        db.SaveChanges();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        e.Cancel = true;
+                        //ErrorMessage.Text = GetFirstExceptionMessage(ex);
+                    }
                 }
             }
             db.Dispose();
-        }
-
-        private void Window_ContentRendered(object sender, System.EventArgs e)
-        {
-            //CenterWindowOnScreen();
-            SetColumnWidthToCell(laserDataDataGrid);
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            LoadLaserData();
-            LoadWeekCode();
-
-            LoadQuarterCode();
-
-            LoadFixture();
         }
     }
 }

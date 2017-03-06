@@ -1,4 +1,4 @@
-﻿using Configuration;
+using Configuration;
 using Contracts;
 using DCTcpServer;
 using LaserWrapper;
@@ -314,11 +314,17 @@ namespace DCMarker.Model
 
         //    #endregion Status Event
         //
+#pragma warning disable CS0067 // The event 'ManualWorkFlow.ErrorEvent' is never used
         public event EventHandler<ErrorArgs> ErrorEvent;
+#pragma warning restore CS0067 // The event 'ManualWorkFlow.ErrorEvent' is never used
 
+#pragma warning disable CS0067 // The event 'ManualWorkFlow.StatusEvent' is never used
         public event EventHandler<StatusArgs> StatusEvent;
+#pragma warning restore CS0067 // The event 'ManualWorkFlow.StatusEvent' is never used
 
+#pragma warning disable CS0067 // The event 'ManualWorkFlow.UpdateMainViewModelEvent' is never used
         public event EventHandler<UpdateMainViewModelArgs> UpdateMainViewModelEvent;
+#pragma warning restore CS0067 // The event 'ManualWorkFlow.UpdateMainViewModelEvent' is never used
 
         public void Close()
         {

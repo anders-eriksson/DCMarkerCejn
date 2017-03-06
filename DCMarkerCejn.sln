@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCAdmin", "DCAdmin\DCAdmin.csproj", "{89F5FCA2-5F58-4380-9E24-7E2EBD087C2D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCMarkerEF", "DCMarkerEF\DCMarkerEF.csproj", "{D67C6419-90EB-4236-B73F-757FCC6848E8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6D98C06D-7A94-4BE5-932C-733DF4BFA391} = {6D98C06D-7A94-4BE5-932C-733DF4BFA391}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCTcpServer", "DCTcpServer\DCTcpServer.csproj", "{C8958368-84A3-4292-BF65-6E1BB61C19D6}"
 EndProject
@@ -26,6 +29,10 @@ EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SetupProject1", "SetupProject1\SetupProject1.wixproj", "{992FA754-4575-41A7-B2B6-96A509F35C9B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCHistory", "DCHistory\DCHistory.csproj", "{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DCMarkerInstall", "DCMarkerInstall\DCMarkerInstall.vdproj", "{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DCInstall", "DCInstall\DCInstall.vdproj", "{841CF5A2-0E31-4242-8304-57E862E404F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,7 +91,6 @@ Global
 		{D6C77639-1AA3-4BFC-9292-BF8BBEF84F14}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6C77639-1AA3-4BFC-9292-BF8BBEF84F14}.Release|x86.Build.0 = Release|Any CPU
 		{33CA4A70-6B00-4045-9354-DC8EC1245465}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{33CA4A70-6B00-4045-9354-DC8EC1245465}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33CA4A70-6B00-4045-9354-DC8EC1245465}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{33CA4A70-6B00-4045-9354-DC8EC1245465}.Debug|x86.Build.0 = Debug|Any CPU
 		{33CA4A70-6B00-4045-9354-DC8EC1245465}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -128,6 +134,14 @@ Global
 		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Release|x86.ActiveCfg = Release|Any CPU
 		{646E7A4B-2205-4FA8-BDEF-BC04607F73F2}.Release|x86.Build.0 = Release|Any CPU
+		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.Debug|Any CPU.ActiveCfg = Debug
+		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.Debug|x86.ActiveCfg = Debug
+		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.Release|Any CPU.ActiveCfg = Release
+		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.Release|x86.ActiveCfg = Release
+		{841CF5A2-0E31-4242-8304-57E862E404F8}.Debug|Any CPU.ActiveCfg = Debug
+		{841CF5A2-0E31-4242-8304-57E862E404F8}.Debug|x86.ActiveCfg = Debug
+		{841CF5A2-0E31-4242-8304-57E862E404F8}.Release|Any CPU.ActiveCfg = Release
+		{841CF5A2-0E31-4242-8304-57E862E404F8}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

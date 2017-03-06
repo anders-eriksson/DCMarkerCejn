@@ -1,4 +1,4 @@
-﻿using Configuration;
+using Configuration;
 using Contracts;
 using DCMarker.Model;
 using System;
@@ -32,24 +32,32 @@ namespace DCMarker
             Error = string.Empty;
             NeedUserInput = false;
 
-            cfg = DCConfig.Instance;
-            InitializeMachine();
-            InitializeWorkflow();
-            //_workflowThread = new Thread(ExecuteWorkflow)
-            //{
-            //    Name = "WorkFlow"
-            //};
-            //_workflowThread.Start();
+            try
+            {
+                cfg = DCConfig.Instance;
+                InitializeMachine();
+                InitializeWorkflow();
+            }
+            catch (Exception ex)
+            {
+                Error = ex.Message;
+            }
         }
 
         internal void Test()
         {
-            _wf.SimulateItemInPlace();
+            if (_wf != null)
+            {
+                _wf.SimulateItemInPlace();
+            }
         }
 
         internal void Execute()
         {
-            _wf.Execute();
+            if (_wf != null)
+            {
+                _wf.Execute();
+            }
         }
 
         private void InitializeMachine()
@@ -80,9 +88,12 @@ namespace DCMarker
 
         private void InitializeWorkflow()
         {
-            _wf.ErrorEvent += _wf_ErrorEvent;
-            _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;
-            _wf.StatusEvent += _wf_StatusEvent;
+            if (_wf != null)
+            {
+                _wf.ErrorEvent += _wf_ErrorEvent;
+                _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;
+                _wf.StatusEvent += _wf_StatusEvent;
+            }
         }
 
         private void _wf_StatusEvent(object sender, StatusArgs e)
@@ -92,7 +103,10 @@ namespace DCMarker
 
         internal void Abort()
         {
-            _wf.Close();
+            if (_wf != null)
+            {
+                _wf.Close();
+            }
         }
 
         private void _wf_ErrorEvent(object sender, ErrorArgs e)

@@ -1,4 +1,4 @@
-﻿using Configuration;
+using Configuration;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
@@ -14,6 +14,7 @@ namespace DCMarker
 
         public ManualMainWindow()
         {
+
             DCConfig cfg = DCConfig.Instance;
             string language = cfg.GuiLanguage;
             if (!string.IsNullOrWhiteSpace(language))

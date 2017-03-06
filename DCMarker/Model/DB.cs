@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Contracts;
+using DCLog;
 using DCMarkerEF;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Reflection;
+using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker.Model
 {
@@ -24,7 +27,7 @@ namespace DCMarker.Model
             {
                 LaserObjectData hrec = new LaserObjectData();
                 hrec.ID = pinfo.Name.ToString();
-                hrec.Value = pinfo.GetValue(historyData).ToString();
+                hrec.Value = pinfo.GetValue(historyData) != null ? pinfo.GetValue(historyData).ToString() : null;
                 result.Add(hrec);
             }
 
@@ -37,10 +40,29 @@ namespace DCMarker.Model
 
             using (var _context = new DCLasermarkContext())
             {
-                result = _context.HistoryData.Add(historyData);
-                _context.SaveChanges();
+                try
+                {
+                    result = _context.HistoryData.Add(historyData);
+                    _context.SaveChanges();
+                }
+                catch (DbEntityValidationException dbEx)
+                {
+                    foreach (DbEntityValidationResult entityErr in dbEx.EntityValidationErrors)
+                    {
+                        foreach (DbValidationError error in entityErr.ValidationErrors)
+                        {
+                            Log.Error(string.Format(GlblRes.Error_Property_Name_0__Error_Message_1,
+                                                error.PropertyName, error.ErrorMessage));
+                        }
+                    }
+                    result = null;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, GlblRes.AddHistroyDataToDB_Exception);
+                    result = null;
+                }
             }
-
             return result;
         }
 
@@ -68,6 +90,22 @@ namespace DCMarker.Model
             var snr = CreateSerialNumber();
             var historyData = FillHistoryData(laserDta, snr);
             return historyData;
+        }
+
+        internal void IsConnectionOK()
+        {
+            try
+            {
+                using (var context = new DCLasermarkContext())
+                {
+                    var tmp = context.LaserData.First();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "IsConnection Failed!");
+                throw;
+            }
         }
 
         public LaserData GetLaserData(string articleNumber, string kant)
@@ -100,7 +138,7 @@ namespace DCMarker.Model
                         var rec = new LaserObjectData
                         {
                             ID = pinfo.Name.ToString(),
-                            Value = pinfo.GetValue(entity).ToString()
+                            Value = pinfo.GetValue(entity) != null ? pinfo.GetValue(entity).ToString() : null,
                         };
                         result.Add(rec);
                     }
@@ -136,13 +174,34 @@ namespace DCMarker.Model
 
             using (var context = new DCLasermarkContext())
             {
-                var currentTime = DateTime.Now;
-                var snr = new SerialNumber
+                try
                 {
-                    Issued = currentTime
-                };
-                result = context.SerialNumber.Add(snr);
-                context.SaveChanges();
+                    var currentTime = DateTime.Now;
+                    var snr = new SerialNumber
+                    {
+                        Issued = currentTime
+                    };
+
+                    result = context.SerialNumber.Add(snr);
+                    context.SaveChanges();
+                }
+                catch (DbEntityValidationException dbEx)
+                {
+                    foreach (DbEntityValidationResult entityErr in dbEx.EntityValidationErrors)
+                    {
+                        foreach (DbValidationError error in entityErr.ValidationErrors)
+                        {
+                            Log.Error(string.Format(GlblRes.Error_Property_Name_0__Error_Message_1,
+                                                error.PropertyName, error.ErrorMessage));
+                        }
+                    }
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, GlblRes.CreateSerialNumber_Exception);
+                    throw;
+                }
             }
             return result;
         }

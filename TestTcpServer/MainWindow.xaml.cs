@@ -1,4 +1,4 @@
-﻿using DCTcpServer;
+using DCTcpServer;
 using System.Windows;
 
 namespace TestTcpServer

@@ -1,4 +1,4 @@
-﻿using AMS.Profile;
+using AMS.Profile;
 using DCLog;
 using System;
 
@@ -66,6 +66,7 @@ namespace Configuration
                 // Machine
                 TypeOfMachine = _profile.GetValue("Machine", nameof(TypeOfMachine), 1);
                 GuiLanguage = _profile.GetValue("Machine", nameof(GuiLanguage), "sv-SE");
+                Debug = _profile.GetValue("Machine", nameof(Debug), false);
                 // Laser
                 DeviceAddress = _profile.GetValue("Laser", nameof(DeviceAddress), "127.0.0.1");
                 DeviceTimeout = _profile.GetValue("Laser", nameof(DeviceTimeout), 10);
@@ -97,6 +98,7 @@ namespace Configuration
                 // Machine
                 _profile.SetValue("Machine", nameof(TypeOfMachine), TypeOfMachine);
                 _profile.SetValue("Machine", nameof(GuiLanguage), GuiLanguage);
+                _profile.SetValue("Machine", nameof(Debug), Debug);
                 // Laser
                 _profile.SetValue("Laser", nameof(DeviceAddress), DeviceAddress);
                 _profile.SetValue("Laser", nameof(DeviceTimeout), DeviceTimeout);
@@ -125,6 +127,7 @@ namespace Configuration
         #region Machine properties
 
         public int TypeOfMachine { get; set; }
+        public bool Debug { get; set; }
 
         #endregion Machine properties
 

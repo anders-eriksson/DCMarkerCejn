@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Tasks>
+  <item>
+    <text>Test all Views for Add, Delete, Search, ErrorMessage</text>
+    <finished>false</finished>
+  </item>
+  <item>
+    <text>DCMarker Exception from Entity Framework</text>
+    <finished>false</finished>
+  </item>
+  <item>
+    <text>Make sure that all text is translated</text>
+    <finished>false</finished>
+  </item>
+</Tasks>

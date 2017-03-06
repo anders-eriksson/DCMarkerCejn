@@ -1,53 +1,80 @@
-﻿using DCLog;
+using DCAdmin.ExpressionBuilder;
+using DCLog;
 using DCMarkerEF;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
+using System.Diagnostics;
 using System.Linq;
-using System.Windows.Controls;
+using GlblRes = global::DCAdmin.Properties.Resources;
 
 namespace DCAdmin
 {
     public class DB
     {
+        private static readonly object mutex = new object();
+        private static volatile DB instance;
         private DCLasermarkContext _context;
-
-        public DCLasermarkContext Context { get; internal set; }
 
         public DB()
         {
             _context = new DCLasermarkContext();
-            Log.Trace("Created Context");
+            Log.Trace(GlblRes.Created_Context);
             Context = _context;
+#if DEBUG
+            _context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
+#endif
         }
+
+        public static string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Instanciate the one and only object!
+        /// </summary>
+        public static DB Instance
+        {
+            get
+            {
+                if (instance == null)
+
+                {
+                    lock (mutex)
+                    {
+                        if (instance == null)
+                        {
+                            // Call constructor
+                            instance = new DB();
+                        }
+                    }
+                }
+                return instance;
+            }
+        }
+
+        public DCLasermarkContext Context { get; internal set; }
 
         public LaserData FindArticle(string articleNumber)
         {
-            var entity = _context.LaserData.FirstOrDefault<LaserData>(e => e.F1 == articleNumber);
+            var entity = _context.LaserData.OrderBy(o => o.F1).ThenBy(o => o.Kant).FirstOrDefault<LaserData>(e => e.F1.StartsWith(articleNumber));
 
             return entity;
         }
 
-        public ObservableCollection<WeekCode> LoadWeekCode()
+        public ObservableCollection<string> GetLaserDataColumns()
         {
-            ObservableCollection<WeekCode> result;
-
-            _context.WeekCode.OrderBy(x => x.WeekNo).Load();
-            result = _context.WeekCode.Local;
-
+            var query = (from t in typeof(LaserData).GetProperties()
+                         select t.Name);
+            var result = new ObservableCollection<string>(query);
+            int pos = result.IndexOf("Id");
+            result[pos] = "";
             return result;
         }
 
-        public ObservableCollection<QuarterCode> LoadQuarterCode()
+        public bool IsChangesPending()
         {
-            ObservableCollection<QuarterCode> result;
-
-            _context.QuarterCode.OrderBy(x => x.QYear).Load();
-            result = _context.QuarterCode.Local;
-
-            return result;
+            return _context.ChangeTracker.HasChanges();
         }
 
         public ObservableCollection<Fixture> LoadFixture()
@@ -68,15 +95,72 @@ namespace DCAdmin
         {
             ObservableCollection<LaserData> result;
 
-            _context.LaserData.OrderBy(x => x.F1).ThenBy(x => x.Kant).Load();
-            result = _context.LaserData.Local;
+            _context.LaserData.OrderBy(x => x.F1).ThenBy(x => x.Kant).ToList();
+            result = Context.LaserData.Local;
+
+            Debug.WriteLine(GlblRes.LoadLaserData_0, result.Count);
+            return result;
+        }
+
+        public ObservableCollection<LaserData> LoadLaserDataFiltered(string key, string value)
+        {
+            ObservableCollection<LaserData> result = null;
+
+            try
+            {
+                List<Filter> filter = new List<Filter>()
+                {
+                    new Filter { PropertyName = key ,
+                        Operation = Op.StartsWith, Value = value},
+                };
+
+                var deleg = ExpressionBuilder.ExpressionBuilder.GetExpression<LaserData>(filter);
+
+                if (IsChangesPending())
+                {
+                    SaveChanges();
+                }
+                _context = new DCLasermarkContext();
+
+                _context.LaserData
+                    .OrderBy(x => x.F1).ThenBy(x => x.Kant)
+                    .Where(deleg).ToList();
+                //.AsQueryable()
+                //.Load();
+                result = _context.LaserData.Local;
+            }
+            catch (OutOfMemoryException ex)
+            {
+                // To many rows in select!
+                ErrorMessage = GlblRes.Out_of_memory_Please_use_a_filter_to_make_selection_smaller;
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, GlblRes.LoadLaserDataFiltered_exception);
+                throw;
+            }
+            Debug.WriteLine(GlblRes.LoadLaserDataFiltered_0, result.Count);
+            return result;
+        }
+
+        public ObservableCollection<QuarterCode> LoadQuarterCode()
+        {
+            ObservableCollection<QuarterCode> result;
+
+            _context.QuarterCode.OrderBy(x => x.QYear).Load();
+            result = _context.QuarterCode.Local;
 
             return result;
         }
 
-        public bool IsChangesPending()
+        public ObservableCollection<WeekCode> LoadWeekCode()
         {
-            return _context.ChangeTracker.HasChanges();
+            ObservableCollection<WeekCode> result;
+
+            _context.WeekCode.OrderBy(x => x.WeekNo).Load();
+            result = _context.WeekCode.Local;
+
+            return result;
         }
 
         public void SaveChanges()
@@ -91,34 +175,31 @@ namespace DCAdmin
                 {
                     foreach (DbValidationError error in entityErr.ValidationErrors)
                     {
-                        Log.Error(string.Format("Error Property Name {0} : Error Message: {1}",
+                        Log.Error(string.Format(GlblRes.Error_Property_Name_0__Error_Message_1,
                                             error.PropertyName, error.ErrorMessage));
                     }
                 }
+                throw;
             }
             catch (Exception ex)
             {
                 var errors = _context.GetValidationErrors();
-                Log.Error(ex, "SaveChanges Exception");
+                Log.Error(ex, GlblRes.SaveChanges_Exception);
                 throw;
             }
         }
 
-        internal void Dispose()
+        internal Fixture AddNewFixtureRecord()
         {
-            _context.Dispose();
+            Fixture result;
+            Fixture entity = new Fixture();
+
+            result = _context.Fixture.Add(entity);
+
+            return result;
         }
 
-        //internal object AddNewRecord<T>()
-        //{
-        //    <T> entity = new <T>();
-
-        //    var result = _context.LaserData.Add(entity);
-
-        //    return result;
-        //}
-
-        internal object AddNewLaserDataRecord()
+        internal LaserData AddNewLaserDataRecord()
         {
             LaserData result;
             LaserData entity = new LaserData();
@@ -128,17 +209,7 @@ namespace DCAdmin
             return result;
         }
 
-        internal object AddNewWeekCodeRecord()
-        {
-            WeekCode result;
-            WeekCode entity = new WeekCode();
-
-            result = _context.WeekCode.Add(entity);
-
-            return result;
-        }
-
-        internal object AddNewQuartalCodeRecord()
+        internal QuarterCode AddNewQuartalCodeRecord()
         {
             QuarterCode result;
             QuarterCode entity = new QuarterCode();
@@ -148,26 +219,51 @@ namespace DCAdmin
             return result;
         }
 
-        internal object AddNewFixtureRecord()
+        internal WeekCode AddNewWeekCodeRecord()
         {
-            LaserData result;
-            LaserData entity = new LaserData();
+            WeekCode result;
+            WeekCode entity = new WeekCode();
 
-            result = _context.LaserData.Add(entity);
+            result = _context.WeekCode.Add(entity);
 
             return result;
         }
 
-        internal void DeleteLaserDataRecord(IList<DataGridCellInfo> selectedItems)
+        internal void DeleteLaserDataRecord(LaserData selectedItem)
         {
-            if (selectedItems != null)
+            if (selectedItem != null)
             {
-                var selectedItem = selectedItems[0];
-                var item = (LaserData)selectedItem.Item;
-                var id = item.Id;
-                var entity = _context.LaserData.Find(id);
-                _context.LaserData.Remove(entity);
+                _context.LaserData.Remove(selectedItem);
             }
+        }
+
+        internal void DeleteWeekCodeRecord(WeekCode selectedItem)
+        {
+            if (selectedItem != null)
+            {
+                _context.WeekCode.Remove(selectedItem);
+            }
+        }
+
+        internal void DeleteQuarterCodeRecord(QuarterCode selectedItem)
+        {
+            if (selectedItem != null)
+            {
+                _context.QuarterCode.Remove(selectedItem);
+            }
+        }
+
+        internal void DeleteFixtureRecord(Fixture selectedItem)
+        {
+            if (selectedItem != null)
+            {
+                _context.Fixture.Remove(selectedItem);
+            }
+        }
+
+        internal void Dispose()
+        {
+            _context.Dispose();
         }
 
         internal void Refresh()
@@ -179,6 +275,7 @@ namespace DCAdmin
 
             Dispose();
             _context = new DCLasermarkContext();
+            Log.Trace(GlblRes.Created_Context);
             Context = _context;
         }
     }

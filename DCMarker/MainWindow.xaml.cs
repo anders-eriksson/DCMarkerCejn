@@ -1,4 +1,5 @@
-﻿using Configuration;
+using Configuration;
+using DCLog;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
@@ -16,11 +17,18 @@ namespace DCMarker
         {
             DCConfig cfg = DCConfig.Instance;
             string language = cfg.GuiLanguage;
+            Log.Debug(string.Format("GUI Language: {0}", language));
             if (!string.IsNullOrWhiteSpace(language))
             {
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
             InitializeComponent();
+
+            if (!DCConfig.Instance.Debug)
+            {
+                TestButton.Visibility = Visibility.Hidden;
+                ExecuteButton.Visibility = Visibility.Hidden;
+            }
             Services.Tracker.Configure(this)//the object to track
                                            .IdentifyAs("MainWindow")                                                                           //a string by which to identify the target object
                                            .AddProperties<Window>(w => w.Height, w => w.Width, w => w.Top, w => w.Left, w => w.WindowState)     //properties to track

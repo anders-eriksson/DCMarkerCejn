@@ -92,18 +92,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ItemsControlExtensions.cs" />
-    <Compile Include="Migrations\201702201953228_InitialMigration.cs" />
-    <Compile Include="Migrations\201702201953228_InitialMigration.Designer.cs">
-      <DependentUpon>201702201953228_InitialMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\DB.cs" />
     <Compile Include="Model\DCHistoryContext.cs" />
     <Compile Include="Model\HistoryData.cs" />
     <Compile Include="Services.cs" />
-    <Compile Include="testWindow1.xaml.cs">
-      <DependentUpon>testWindow1.xaml</DependentUpon>
-    </Compile>
     <Compile Include="WPFAboutBox1.xaml.cs">
       <DependentUpon>WPFAboutBox1.xaml</DependentUpon>
     </Compile>
@@ -120,10 +112,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="testWindow1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="WPFAboutBox1.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -143,9 +131,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Migrations\201702201953228_InitialMigration.resx">
-      <DependentUpon>201702201953228_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

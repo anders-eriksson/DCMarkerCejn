@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en-US" target-language="sv" original="DCMARKER/PROPERTIES/RESOURCES.RESX" tool-id="MultilingualAppToolkit" product-name="n/a" product-version="n/a" build-num="n/a">
+    <header>
+      <tool tool-id="MultilingualAppToolkit" tool-name="Multilingual App Toolkit" tool-version="4.0.1795.0" tool-company="Microsoft" />
+    </header>
+    <body>
+      <group id="DCMARKER/PROPERTIES/RESOURCES.RESX" datatype="resx">
+        <trans-unit id="ArticleNumber" translate="yes" xml:space="preserve">
+          <source>Article Number</source>
+          <target state="translated" state-qualifier="mt-suggestion">Artikelnummer</target>
+        </trans-unit>
+        <trans-unit id="BatchSize" translate="yes" xml:space="preserve">
+          <source>Batch Size</source>
+          <target state="translated">Antal</target>
+          <note from="MultilingualEditor" annotates="source" priority="4">Not a direct translation but more of a meaningful one....</note>
+        </trans-unit>
+        <trans-unit id="Cancel" translate="yes" xml:space="preserve">
+          <source>Cancel</source>
+          <target state="translated" state-qualifier="tm-suggestion">Avbryt</target>
+        </trans-unit>
+        <trans-unit id="Fixture" translate="yes" xml:space="preserve">
+          <source>Fixture</source>
+          <target state="translated">Fixtur</target>
+          <note from="MultilingualEditor" annotates="source" priority="4">Technical</note>
+        </trans-unit>
+        <trans-unit id="Kant" translate="yes" xml:space="preserve">
+          <source>Edges</source>
+          <target state="translated">Kanter</target>
+        </trans-unit>
+        <trans-unit id="OK" translate="yes" xml:space="preserve">
+          <source>OK</source>
+          <target state="translated" state-qualifier="tm-suggestion">OK</target>
+        </trans-unit>
+        <trans-unit id="Status" translate="yes" xml:space="preserve">
+          <source>Status</source>
+          <target state="translated">Status</target>
+        </trans-unit>
+        <trans-unit id="ToNumber" translate="no" xml:space="preserve">
+          <source>TO</source>
+          <target state="final">TO</target>
+          <note from="MultilingualEditor" annotates="source" priority="4">Technical. It's an abbrivation TillverkningOrder </note>
+        </trans-unit>
+        <trans-unit id="Title" translate="yes" xml:space="preserve">
+          <source>DCMarker</source>
+          <target state="translated" state-qualifier="mt-suggestion">DCMarker</target>
+        </trans-unit>
+        <trans-unit id="Article_not_defined_in_database_Article0" translate="yes" xml:space="preserve">
+          <source>Article not defined in database! Article={0}</source>
+          <target state="translated">Artikel finns inte definierat i databasen! Artikel = {0}</target>
+        </trans-unit>
+        <trans-unit id="Error_loading_layout_0" translate="yes" xml:space="preserve">
+          <source>Error loading layout: {0}</source>
+          <target state="translated">Kan inte öppna layout: {0}</target>
+        </trans-unit>
+        <trans-unit id="Layout_not_defined_for_this_article_Article0" translate="yes" xml:space="preserve">
+          <source>Layout not defined for this article! Article={0}</source>
+          <target state="translated">Layout inte definierad för denna artikel! Artikel = {0}</target>
+        </trans-unit>
+        <trans-unit id="Marking_is_done" translate="yes" xml:space="preserve">
+          <source>Marking is done!</source>
+          <target state="translated" state-qualifier="mt-suggestion">Märkningen är klar!</target>
+        </trans-unit>
+        <trans-unit id="Update_didnt_work_on_this_article_and_layout_Article0_Layout1" translate="yes" xml:space="preserve">
+          <source>Update didn't work on this article and layout! Article={0}, Layout={1}</source>
+          <target state="translated" state-qualifier="mt-suggestion">Uppdatering fungerade inte på denna artikel och layout! Artikel = {0}, Layout = {1}</target>
+        </trans-unit>
+        <trans-unit id="Waiting_for_start_signal_0" translate="yes" xml:space="preserve">
+          <source>Waiting for start signal ({0})</source>
+          <target state="translated" state-qualifier="mt-suggestion">Väntar på startsignal ({0})</target>
+        </trans-unit>
+        <trans-unit id="Waiting_for_start_signal_0xlp" translate="yes" xml:space="preserve">
+          <source>Waiting for start signal ({0}.xlp)</source>
+          <target state="translated" state-qualifier="mt-suggestion">Väntar på startsignal ({0} .xlp)</target>
+        </trans-unit>
+        <trans-unit id="xlp" translate="no" xml:space="preserve">
+          <source>.xlp</source>
+          <target state="final">.xlp</target>
+        </trans-unit>
+        <trans-unit id="Type_of_machine_not_available_Type0" translate="yes" xml:space="preserve">
+          <source>Type of machine not available! Type={0}</source>
+          <target state="new">Type of machine not available! Type={0}</target>
+        </trans-unit>
+        <trans-unit id="Article_0_received" translate="yes" xml:space="preserve">
+          <source>Article {0} received</source>
+          <target state="translated">Artikel {0} mottagen</target>
+        </trans-unit>
+        <trans-unit id="ItemInPlace_received_before_Article_Number_is_set" translate="yes" xml:space="preserve">
+          <source>ItemInPlace signal received before Article Number is set</source>
+          <target state="translated">ItemInPlace signal mottagen innan Artikelnummer angetts</target>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>

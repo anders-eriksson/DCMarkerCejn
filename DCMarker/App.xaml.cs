@@ -1,4 +1,4 @@
-﻿using Configuration;
+using Configuration;
 using System.Windows;
 
 namespace DCMarker
@@ -27,13 +27,8 @@ namespace DCMarker
                     wnd = new ErrorMainWindow();
                     break;
             }
-            // Create the startup window
 
-            // Show the window
-            if (wnd != null)
-            {
-                wnd.Show();
-            }
+            wnd.Show();
         }
     }
 }

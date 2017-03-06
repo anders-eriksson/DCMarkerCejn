@@ -1,4 +1,4 @@
-﻿using AlphaChiTech.Virtualization;
+using AlphaChiTech.Virtualization;
 using Configuration;
 using System;
 using System.Globalization;
@@ -63,7 +63,8 @@ namespace DCHistory
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
 
                 // set culture for xaml...
-                FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(language)));            }
+                FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(language)));
+            }
         }
 
         private void OnTop_Click(object sender, RoutedEventArgs e)

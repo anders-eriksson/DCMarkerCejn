@@ -18,9 +18,6 @@ namespace DCMarkerEF
         [StringLength(100)]
         public string Avdelning { get; set; }
 
-        [StringLength(100)]
-        public string Laser { get; set; }
-
         [StringLength(50)]
         public string F2 { get; set; }
 

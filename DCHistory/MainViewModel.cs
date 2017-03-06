@@ -1,4 +1,4 @@
-﻿using DCHistory.Model;
+using DCHistory.Model;
 using DCLog;
 using System;
 using System.Collections.ObjectModel;
