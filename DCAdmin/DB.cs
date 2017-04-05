@@ -64,11 +64,22 @@ namespace DCAdmin
 
         public ObservableCollection<string> GetLaserDataColumns()
         {
-            var query = (from t in typeof(LaserData).GetProperties()
-                         select t.Name);
-            var result = new ObservableCollection<string>(query);
-            int pos = result.IndexOf("Id");
-            result[pos] = "";
+            ObservableCollection<string> result;
+
+            try
+            {
+                var query = (from t in typeof(LaserData).GetProperties()
+                             select t.Name);
+                result = new ObservableCollection<string>(query);
+                int pos = result.IndexOf("Id");
+                result[pos] = "";
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error EntityFramework");
+                throw;
+            }
+
             return result;
         }
 
@@ -81,8 +92,18 @@ namespace DCAdmin
         {
             ObservableCollection<Fixture> result;
 
-            _context.Fixture.OrderBy(x => x.FixturId).Load();
-            result = _context.Fixture.Local;
+            try
+            {
+                _context = null;
+                _context = new DCLasermarkContext();
+                _context.Fixture.OrderBy(x => x.FixturId).Load();
+                result = _context.Fixture.Local;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error EntityFramework");
+                throw;
+            }
 
             return result;
         }
@@ -95,8 +116,19 @@ namespace DCAdmin
         {
             ObservableCollection<LaserData> result;
 
-            _context.LaserData.OrderBy(x => x.F1).ThenBy(x => x.Kant).ToList();
-            result = Context.LaserData.Local;
+            try
+            {
+                _context = null;
+                _context = new DCLasermarkContext();
+
+                _context.LaserData.OrderBy(x => x.F1).ThenBy(x => x.Kant).ToList();
+                result = _context.LaserData.Local;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error EntityFramework");
+                throw;
+            }
 
             Debug.WriteLine(GlblRes.LoadLaserData_0, result.Count);
             return result;
@@ -108,7 +140,7 @@ namespace DCAdmin
 
             try
             {
-                List<Filter> filter = new List<Filter>()
+                var filter = new List<Filter>()
                 {
                     new Filter { PropertyName = key ,
                         Operation = Op.StartsWith, Value = value},
@@ -120,6 +152,7 @@ namespace DCAdmin
                 {
                     SaveChanges();
                 }
+                _context = null;
                 _context = new DCLasermarkContext();
 
                 _context.LaserData
@@ -147,8 +180,18 @@ namespace DCAdmin
         {
             ObservableCollection<QuarterCode> result;
 
-            _context.QuarterCode.OrderBy(x => x.QYear).Load();
-            result = _context.QuarterCode.Local;
+            _context = null;
+            _context = new DCLasermarkContext();
+            try
+            {
+                _context.QuarterCode.OrderBy(x => x.QYear).Load();
+                result = _context.QuarterCode.Local;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error EntityFramework");
+                throw;
+            }
 
             return result;
         }
@@ -157,8 +200,19 @@ namespace DCAdmin
         {
             ObservableCollection<WeekCode> result;
 
-            _context.WeekCode.OrderBy(x => x.WeekNo).Load();
-            result = _context.WeekCode.Local;
+            _context = null;
+            _context = new DCLasermarkContext();
+
+            try
+            {
+                _context.WeekCode.OrderBy(x => x.WeekNo).Load();
+                result = _context.WeekCode.Local;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error EntityFramework");
+                throw;
+            }
 
             return result;
         }
@@ -219,6 +273,11 @@ namespace DCAdmin
             return result;
         }
 
+        /// <summary>
+        /// Don't use!
+        /// We don't allow adding a week
+        /// </summary>
+        /// <returns>new weekcode record</returns>
         internal WeekCode AddNewWeekCodeRecord()
         {
             WeekCode result;
@@ -229,35 +288,95 @@ namespace DCAdmin
             return result;
         }
 
-        internal void DeleteLaserDataRecord(LaserData selectedItem)
+        internal void DeleteFixtureRecord(Fixture selectedItem)
         {
-            if (selectedItem != null)
+            if (selectedItem != null && selectedItem.FixturId != null)
             {
-                _context.LaserData.Remove(selectedItem);
+                try
+                {
+                    if (!_context.Fixture.Local.Any(l => l.FixturId == selectedItem.FixturId))
+                    {
+                        _context.Fixture.Attach(selectedItem);
+                    }
+
+                    _context.Fixture.Remove(selectedItem);
+                    SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error when trying to remove an entity that isn't in the context");
+                    throw;
+                }
             }
         }
 
-        internal void DeleteWeekCodeRecord(WeekCode selectedItem)
+        internal void DeleteLaserDataRecord(LaserData selectedItem)
         {
-            if (selectedItem != null)
+            if (selectedItem != null && selectedItem.F1 != null)
             {
-                _context.WeekCode.Remove(selectedItem);
+                try
+                {
+                    if (!_context.LaserData.Local.Any(l => l.F1 == selectedItem.F1 && l.Kant == selectedItem.Kant))
+                    {
+                        _context.LaserData.Attach(selectedItem);
+                    }
+
+                    _context.LaserData.Remove(selectedItem);
+                    SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error when trying to remove an entity that isn't in the context");
+                    throw;
+                }
             }
         }
 
         internal void DeleteQuarterCodeRecord(QuarterCode selectedItem)
         {
-            if (selectedItem != null)
+            if (selectedItem != null && selectedItem.QYear != null)
             {
-                _context.QuarterCode.Remove(selectedItem);
+                try
+                {
+                    if (!_context.QuarterCode.Local.Any(l => l.QYear == selectedItem.QYear))
+                    {
+                        _context.QuarterCode.Attach(selectedItem);
+                    }
+
+                    _context.QuarterCode.Remove(selectedItem);
+                    SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error when trying to remove an entity that isn't in the context");
+                    throw;
+                }
             }
         }
 
-        internal void DeleteFixtureRecord(Fixture selectedItem)
+        /// <summary>
+        /// This method is not used since the user should not be able to delete a week.
+        /// </summary>
+        /// <param name="selectedItem">The item that is selected in the datagrid and that will be deleted</param>
+        internal void DeleteWeekCodeRecord(WeekCode selectedItem)
         {
             if (selectedItem != null)
             {
-                _context.Fixture.Remove(selectedItem);
+                try
+                {
+                    if (!_context.WeekCode.Local.Any(l => l.WeekNo == selectedItem.WeekNo))
+                    {
+                        _context.WeekCode.Attach(selectedItem);
+                    }
+
+                    _context.WeekCode.Remove(selectedItem);
+                    SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error when trying to remove an entity that isn't in the context");
+                    throw;
+                }
             }
         }
 
@@ -277,6 +396,74 @@ namespace DCAdmin
             _context = new DCLasermarkContext();
             Log.Trace(GlblRes.Created_Context);
             Context = _context;
+        }
+
+        internal ObservableCollection<Fixture> RefreshFixture()
+        {
+            ObservableCollection<Fixture> result = null;
+
+            try
+            {
+                result = LoadFixture();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error EntityFramework");
+                throw;
+            }
+
+            return result;
+        }
+
+        internal ObservableCollection<LaserData> RefreshLaserData()
+        {
+            ObservableCollection<LaserData> result = null;
+
+            try
+            {
+                result = LoadLaserData();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error EntityFramework");
+                throw;
+            }
+
+            return result;
+        }
+
+        internal ObservableCollection<QuarterCode> RefreshQuarterCode()
+        {
+            ObservableCollection<QuarterCode> result = null;
+
+            try
+            {
+                result = LoadQuarterCode();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error EntityFramework");
+                throw;
+            }
+
+            return result;
+        }
+
+        internal ObservableCollection<WeekCode> RefreshWeekCode()
+        {
+            ObservableCollection<WeekCode> result = null;
+
+            try
+            {
+                result = LoadWeekCode();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error EntityFramework");
+                throw;
+            }
+
+            return result;
         }
     }
 }

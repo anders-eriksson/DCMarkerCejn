@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using WorkFlow_Res = global::DCMarker.Properties.Resources;
+using DCLog;
 
 namespace DCMarker.Model
 {
@@ -44,6 +45,7 @@ namespace DCMarker.Model
 
         public void Close()
         {
+            ResetAllIoSignals();
             _laser.Release();
             _articleInput.Close();
         }
@@ -97,7 +99,13 @@ namespace DCMarker.Model
             }
             else
             {
+                Article empty = new Article();
+                List<Article> emptyList = new List<Article>();
+                emptyList.Add(empty);
+                UpdateViewModel(emptyList);
+                _laser.SetPort(0, sig.MASK_ERROR);
                 // Can't find article in database.
+
                 RaiseErrorEvent(string.Format(WorkFlow_Res.Article_not_defined_in_database_Article0, _articleNumber));
             }
         }
@@ -132,6 +140,13 @@ namespace DCMarker.Model
             _laser.LaserEndEvent += _laser_LaserEndEvent;
             _laser.LaserErrorEvent += _laser_LaserErrorEvent;
             _laser.ItemInPositionEvent += _laser_ItemInPositionEvent;
+            _laser.ResetIoEvent += _laser_ResetIoEvent;
+        }
+
+        private void _laser_ResetIoEvent()
+        {
+            _laser.ResetPort(0, sig.MASK_ALL);
+            RaiseErrorMsgEvent(string.Empty);
         }
 
         private void _laser_QueryStartEvent(string msg)
@@ -141,8 +156,16 @@ namespace DCMarker.Model
 
         private void InitializeMachine()
         {
-            _articleInput = new TcpArticleInput();
-            _articleInput.ArticleEvent += _articleInput_ArticleEvent;
+            try
+            {
+                _articleInput = new TcpArticleInput();
+                _articleInput.ArticleEvent += _articleInput_ArticleEvent;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error initializing machine");
+                throw;
+            }
         }
 
         private string NormalizeLayoutName(string layoutname)
@@ -174,6 +197,8 @@ namespace DCMarker.Model
 
             sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
             sig.MASK_EMERGENCY = cfg.EmergencyError;
+            sig.MASK_RESET = cfg.ResetIo;
+            sig.MASK_ALL = sig.MASK_ALL | sig.MASK_ERROR | sig.MASK_ITEMINPLACE | sig.MASK_READYTOMARK;
         }
 
         /// <summary>
@@ -358,9 +383,38 @@ namespace DCMarker.Model
             if (_laser != null)
             {
                 _laser.ResetPort(0, sig.MASK_ALL);
+                _laser.SetReady(false);
             }
         }
 
         #endregion Status Event
+
+        #region Update Error Message Event
+
+        public delegate void ErrorMsgHandler(string msg);
+
+        public event EventHandler<StatusArgs> ErrorMsgEvent;
+
+        internal void RaiseErrorMsgEvent(string msg)
+        {
+            var handler = ErrorMsgEvent;
+            if (handler != null)
+            {
+                var arg = new StatusArgs(msg);
+                handler(null, arg);
+            }
+        }
+
+        public class ErrorMsgArgs : EventArgs
+        {
+            public ErrorMsgArgs(string s)
+            {
+                Text = s;
+            }
+
+            public string Text { get; private set; } // readonly
+        }
+
+        #endregion Update Error Message Event
     }
 }

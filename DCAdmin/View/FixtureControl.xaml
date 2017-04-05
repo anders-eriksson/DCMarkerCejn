@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <l:StringTrimConverter x:Key="TrimString" />
     </UserControl.Resources>
-    <Grid x:Name="FixtureGrid">
+    <Grid x:Name="LayoutRoot">
         <TextBlock
             x:Name="SearchError"
             Height="30"
@@ -34,6 +34,7 @@
             ScrollViewer.CanContentScroll="True"
             ScrollViewer.HorizontalScrollBarVisibility="Auto"
             ScrollViewer.VerticalScrollBarVisibility="Auto"
+            SelectionChanged="fixtureDataGrid_SelectionChanged"
             SelectionMode="Single"
             SelectionUnit="FullRow">
 

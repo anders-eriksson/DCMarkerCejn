@@ -15,10 +15,19 @@ namespace DCAdmin
 
         public WeekCodeViewModel()
         {
-            WeekCodeCollection = DB.Instance.LoadWeekCode();
+            try
+            {
+                _WeekCodeCollection = new ObservableCollection<WeekCode>();
+                WeekCodeCollection = null;
+                WeekCodeCollection = DB.Instance.LoadWeekCode();
 #if DEBUG
-            ErrorMessage = "Hello World!";
+                ErrorMessage = "Hello World!";
 #endif
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -37,7 +46,21 @@ namespace DCAdmin
             }
         }
 
-        public ObservableCollection<WeekCode> WeekCodeCollection { get; set; }
+        // public ObservableCollection<WeekCode> WeekCodeCollection { get; set; }
+        private ObservableCollection<WeekCode> _WeekCodeCollection;
+
+        public ObservableCollection<WeekCode> WeekCodeCollection
+        {
+            get
+            {
+                return _WeekCodeCollection; ;
+            }
+            set
+            {
+                _WeekCodeCollection = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         private string _ErrorMessage;
 
@@ -99,6 +122,25 @@ namespace DCAdmin
             {
                 var error = ex.EntityValidationErrors.First().ValidationErrors.First();
                 ErrorMessage = string.Format(GlblRes.Error_Saving_to_Database_0, error.ErrorMessage);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        internal void RefreshDatabase(bool saveChanges)
+        {
+            try
+            {
+                if (saveChanges)
+                {
+                    SaveChanges();
+                }
+
+                _WeekCodeCollection = new ObservableCollection<WeekCode>();
+                WeekCodeCollection = null;
+                WeekCodeCollection = DB.Instance.RefreshWeekCode();
             }
             catch (Exception)
             {

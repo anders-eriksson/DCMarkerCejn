@@ -80,7 +80,7 @@ namespace DCHistory
             }
             catch (SqlException ex)
             {
-                Log.Fatal(ex, "Database Error");
+                Log.Fatal(ex, ex.Message);
                 ErrorMessage = string.Format("Database Error: {0}", ex.Message);
             }
             catch (Exception ex)

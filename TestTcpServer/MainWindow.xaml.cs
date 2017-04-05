@@ -8,7 +8,7 @@ namespace TestTcpServer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private int port = 50000;
+        private int port = 2000;
         private int bufferLength = 12;
         private TextBoxValue TBV = new TextBoxValue();
         private Server _server;
@@ -34,6 +34,11 @@ namespace TestTcpServer
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _server.Abort();
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            TBV = new TextBoxValue();
         }
     }
 }

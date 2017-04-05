@@ -8,13 +8,26 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:p="clr-namespace:DCAdmin.Properties"
     xmlns:view="clr-namespace:DCAdmin.View"
-    Title="MainWindow"
+    Title="DCAmin"
     Width="611"
     Height="401"
     MaxWidth="{x:Static local:MainWindow.MaxScreenSize}"
     Closing="Window_Closing"
     mc:Ignorable="d">
-
+    <Window.CommandBindings>
+        <CommandBinding
+        Command="ApplicationCommands.Copy"
+        CanExecute="CopyCommandBinding_CanExecute" />
+        <!--Executed="CopyCommandBinding_Executed"  />-->
+        <CommandBinding
+        Command="ApplicationCommands.Cut"
+        CanExecute="CutCommandBinding_CanExecute" />
+        <!--Executed="CutCommandBinding_Executed" />-->
+        <CommandBinding
+        Command="ApplicationCommands.Paste"
+        CanExecute="PasteCommandBinding_CanExecute" />
+        <!--Executed="CutCommandBinding_Executed" />-->
+    </Window.CommandBindings>
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
@@ -24,6 +37,11 @@
                         Click="New_Click"
                         Header="{x:Static p:Resources.NewMenuHeader}"
                         ToolTip="{x:Static p:Resources.NewToolTip}" />
+                    <MenuItem
+                        x:Name="NewFromSelected"
+                        Click="NewFromSelected_Click"
+                        Header="{x:Static p:Resources.NewFromSelectedMenuHeader}"
+                        ToolTip="{x:Static p:Resources.NewFromSelectedToolTip}" />
                     <MenuItem
                         x:Name="Save"
                         Click="Save_Click"
@@ -48,19 +66,22 @@
                         Header="{x:Static p:Resources.ExitMenuHeader}"
                         ToolTip="{x:Static p:Resources.ExitToolTip}" />
                 </MenuItem>
-                <MenuItem Header="_Edit">
+                <MenuItem Header="{x:Static p:Resources.EditMenuHeader}">
                     <MenuItem
                         x:Name="Cut"
                         Command="ApplicationCommands.Cut"
-                        Header="_Cut" />
+                        Header="{x:Static p:Resources.CutHeader}"
+                        ToolTip="{x:Static p:Resources.CutToolTip}" />
                     <MenuItem
                         x:Name="Copy"
                         Command="ApplicationCommands.Copy"
-                        Header="_Copy" />
+                        Header="{x:Static p:Resources.CopyHeader}"
+                        ToolTip="{x:Static p:Resources.CopyToolTip}" />
                     <MenuItem
                         x:Name="Paste"
                         Command="ApplicationCommands.Paste"
-                        Header="_Paste" />
+                        Header="{x:Static p:Resources.PasteHeader}"
+                        ToolTip="{x:Static p:Resources.PasteToolTip}" />
                 </MenuItem>
                 <MenuItem Header="{x:Static p:Resources.WindowMenuHeader}">
                     <MenuItem
@@ -79,20 +100,20 @@
             </Menu>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
-                    <Button Command="ApplicationCommands.Cut" ToolTip="Cut">
+                    <Button Command="ApplicationCommands.Cut" IsEnabled="True" ToolTip="{x:Static p:Resources.CutToolTip}">
 
                         <Image
                             Width="20"
                             Height="20"
                             Source="Images\Cut_16x.png" />
                     </Button>
-                    <Button Command="ApplicationCommands.Copy" ToolTip="Copy">
+                    <Button Command="ApplicationCommands.Copy" IsEnabled="True" ToolTip="{x:Static p:Resources.CopyToolTip}">
                         <Image
                             Width="20"
                             Height="20"
                             Source="Images\Copy_16x.png" />
                     </Button>
-                    <Button Command="ApplicationCommands.Paste" ToolTip="Paste">
+                    <Button Command="ApplicationCommands.Paste" IsEnabled="True" ToolTip="{x:Static p:Resources.PasteToolTip}">
                         <Image
                             Width="20"
                             Height="20"

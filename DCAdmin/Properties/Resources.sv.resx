@@ -69,4 +69,44 @@
   <data name="OnTopToolTip" xml:space="preserve">
     <value>Fönster alltid överst</value>
   </data>
+  <data name="SearchHeader" xml:space="preserve">
+    <value>Sök
+</value>
+  </data>
+  <data name="Out_of_memory_Please_use_a_filter_to_make_selection_smaller" xml:space="preserve">
+    <value>Minnet räcker inte till för att visa all data! Använd ett filter för att att visa en delmängd!</value>
+  </data>
+  <data name="Adding_a_row_is_not_allowed" xml:space="preserve">
+    <value>Det går inte att lägga till en rad</value>
+  </data>
+  <data name="Deleting_a_row_is_not_allowed" xml:space="preserve">
+    <value>Det går inte att radera en rad</value>
+  </data>
+  <data name="CopyHeader" xml:space="preserve">
+    <value>_Kopiera</value>
+  </data>
+  <data name="CutHeader" xml:space="preserve">
+    <value>_Klipp</value>
+  </data>
+  <data name="PasteHeader" xml:space="preserve">
+    <value>_Klistra in</value>
+  </data>
+  <data name="CopyToolTip" xml:space="preserve">
+    <value>Kopiera markerat värde till klippbord</value>
+  </data>
+  <data name="CutToolTip" xml:space="preserve">
+    <value>Klipp markerat värde till klippbord</value>
+  </data>
+  <data name="PasteToolTip" xml:space="preserve">
+    <value>Klistra in från klippbord</value>
+  </data>
+  <data name="NewFromSelectedToolTip" xml:space="preserve">
+    <value>Skapa en ny artikelrad och kopiera värdena from den markerade artikeln</value>
+  </data>
+  <data name="NewFromSelectedMenuHeader" xml:space="preserve">
+    <value>_Ny från markerad</value>
+  </data>
+  <data name="EditMenuHeader" xml:space="preserve">
+    <value>R_edigera</value>
+  </data>
 </root>

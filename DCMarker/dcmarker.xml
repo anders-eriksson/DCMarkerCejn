@@ -10,13 +10,14 @@
     <entry name="IsIoEnabled">True</entry>
     <entry name="ReadyToMark">1</entry>
     <entry name="MarkingDone">2</entry>
-    <entry name="Error">16</entry>
+    <entry name="Error">64</entry>
     <entry name="ItemInPlace">2</entry>
     <entry name="EmergencyError">16</entry>
+    <entry name="ResetIo">8</entry>
   </section>
   <section name="TcpServer">
-    <entry name="TcpPort">50000</entry>
-    <entry name="BufferLength">12</entry>
+    <entry name="TcpPort">2000</entry>
+    <entry name="BufferLength">14</entry>
   </section>
   <section name="Machine">
     <entry name="TypeOfMachine">1</entry>

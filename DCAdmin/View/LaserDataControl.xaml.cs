@@ -8,6 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Threading;
 using System.Linq;
+using System.Data.Entity.Infrastructure;
 
 namespace DCAdmin.View
 {
@@ -24,6 +25,9 @@ namespace DCAdmin.View
 
         private void laserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
+            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            laserVM.ErrorMessage = string.Empty;
+
             DataGrid dataGrid = sender as DataGrid;
             if (e.EditAction == DataGridEditAction.Commit)
             {
@@ -44,8 +48,19 @@ namespace DCAdmin.View
                             catch (DbEntityValidationException ex)
                             {
                                 var error = ex.EntityValidationErrors.First().ValidationErrors.First();
-                                LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
                                 laserVM.ErrorMessage = string.Format("Error Saving to Database: {0}", error.ErrorMessage);
+                            }
+                            catch (DbUpdateException ex)
+                            {
+                                string errorMessage = string.Empty;
+                                var innerException = ex.InnerException;
+                                while (innerException != null)
+                                {
+                                    errorMessage = innerException.Message;
+                                    innerException = innerException.InnerException;
+                                }
+                                errorMessage = ParseInnerExceptionMessage(errorMessage);
+                                laserVM.ErrorMessage = string.Format("Error Saving to Database: {0}", errorMessage);
                             }
                             catch (Exception)
                             {
@@ -58,26 +73,25 @@ namespace DCAdmin.View
             }
         }
 
-        //private void FindArticleAndScrollIntoView()
-        //{
-        //    var entity = DB.Instance.FindArticle(SearchArticleNumber.Text);
-        //    if (entity != null)
-        //    {
-        //        ScrollToView(entity);
-        //    }
-        //    else
-        //    {
-        //        LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
-        //        laserVM.ErrorMessage = "Article not found!";
-        //    }
-        //}
+        private string ParseInnerExceptionMessage(string errorMessage)
+        {
+            string result = string.Empty;
+            if (errorMessage.Contains("UNIQUE KEY"))
+            {
+                string s = errorMessage;
+                int start = s.IndexOf("(") + 1;
+                int end = s.IndexOf(")", start);
+                string tmp = s.Substring(start, end - start);
+                string[] arr = tmp.Split(new[] { ',' });
 
-        //private void ScrollToView(LaserData entity)
-        //{
-        //    LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
-        //    laserVM.SelectedLaserDataRow = null;
-        //    laserVM.SelectedLaserDataRow = entity;
-        //}
+                result = string.Format("LaserData kräver att F1+Kant bildar ett unikt värde.\n Det finns redan en artikel som har värdet: F1 ={0}, Kant ={1}", arr[0], arr[1]);
+            }
+            else
+            {
+                result = errorMessage;
+            }
+            return result;
+        }
 
         private void SearchArticleNumber_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
@@ -105,7 +119,9 @@ namespace DCAdmin.View
         {
             if (e.AddedItems.Count > 0)
             {
-                laserDataDataGrid.ScrollIntoView(e.AddedItems[0]);
+                laserDataDataGrid.ScrollIntoView(e.AddedItems[0]);                              // Since we only can select one it will always be in position 0
+                LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+                laserVM.SelectedLaserDataRow = (LaserData)e.AddedItems[0];
             }
         }
 

@@ -32,6 +32,13 @@ namespace DCAdmin
             db = new DB();
             InitializeComponent();
 
+            // TODO: is this a good idea?
+            // we make configurable
+            if (DCConfig.Instance.ClearClipboard)
+            {
+                Clipboard.Clear();
+            }
+
             // Init all datagrid view models
             InitializeViewModels();
 
@@ -47,6 +54,11 @@ namespace DCAdmin
 
         private void InitializeViewModels()
         {
+            this.LaserDataRoot.DataContext = null;
+            this.QuarterCodeRoot.DataContext = null;
+            this.WeekCodeRoot.DataContext = null;
+            this.FixtureRoot.DataContext = null;
+
             laserVM = new LaserDataViewModel();
             quarterVM = new QuarterCodeViewModel();
             weekVM = new WeekCodeViewModel();
@@ -116,14 +128,28 @@ namespace DCAdmin
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            int index = tcControl.SelectedIndex;
-            DeleteSelectedRecord(index);
+            ConfirmationDeleteRow dlg = new ConfirmationDeleteRow();
+            var currentItem = laserVM.SelectedLaserDataRow;
+            string machineId = "AME";
+#if MACHINE-ID
+            string machineId = currentItem.MachineId;
+#endif
+            string article = currentItem.F1;
+            string kant = currentItem.Kant;
+
+            dlg.InitValues(machineId, article, kant);
+
+            bool? rc = dlg.ShowDialog();
+
+            if (rc.HasValue && rc.Value)
+            {
+                int index = tcControl.SelectedIndex;
+                DeleteSelectedRecord(index);
+            }
         }
 
         private void DeleteSelectedRecord(int index)
         {
-            // NB   All ViewModel SaveChanges will save all the changes in all the tables!
-            //      Calling in viewmodel will make it easier to handle errors...
             switch (index)
             {
                 case (int)ViewModelEnum.LaserDataViewModel:
@@ -158,37 +184,6 @@ namespace DCAdmin
             this.Close();
         }
 
-        //private void laserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-        //{
-        //    DataGrid dataGrid = sender as DataGrid;
-        //    if (e.EditAction == DataGridEditAction.Commit)
-        //    {
-        //        ListCollectionView view = CollectionViewSource.GetDefaultView(dataGrid.ItemsSource) as ListCollectionView;
-        //        if (view.IsAddingNew || view.IsEditingItem)
-        //        {
-        //            this.Dispatcher.BeginInvoke(new DispatcherOperationCallback(param =>
-        //            {
-        //                // This callback will be called after the CollectionView
-        //                // has pushed the changes back to the DataGrid.ItemSource.
-
-        //                if (db.IsChangesPending())
-        //                {
-        //                    try
-        //                    {
-        //                        db.SaveChanges();
-        //                    }
-        //                    catch (System.Exception ex)
-        //                    {
-        //                        e.Cancel = true;
-        //                        ErrorMessage.Text = GetFirstExceptionMessage(ex);
-        //                    }
-        //                }
-        //                return null;
-        //            }), DispatcherPriority.Background, new object[] { null });
-        //        }
-        //    }
-        //}
-
         private void New_Click(object sender, RoutedEventArgs e)
         {
             int index = tcControl.SelectedIndex;
@@ -202,13 +197,46 @@ namespace DCAdmin
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            RefreshDatabase();
+            int index = tcControl.SelectedIndex;
+            RefreshDatabase(index);
         }
 
-        private void RefreshDatabase()
+        private void RefreshDatabase(int index)
         {
-            db.Refresh();
-            InitializeViewModels();
+            switch (index)
+            {
+                case (int)ViewModelEnum.LaserDataViewModel:
+                    {
+                        var saveChanges = IsChangesPending();
+                        laserVM.RefreshDatabase(saveChanges);
+                        break;
+                    }
+                case (int)ViewModelEnum.WeekCodeViewModel:
+                    {
+                        var saveChanges = IsChangesPending();
+                        weekVM.RefreshDatabase(saveChanges);
+                        break;
+                    }
+                case (int)ViewModelEnum.QuarterCodeViewModel:
+                    {
+                        var saveChanges = IsChangesPending();
+                        quarterVM.RefreshDatabase(saveChanges);
+                        break;
+                    }
+                case (int)ViewModelEnum.FixtureViewModel:
+                    {
+                        var saveChanges = IsChangesPending();
+                        fixtureVM.RefreshDatabase(saveChanges);
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+
+            //db.Refresh();
+            //InitializeViewModels();
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
@@ -223,22 +251,34 @@ namespace DCAdmin
             {
                 case (int)ViewModelEnum.LaserDataViewModel:
                     {
-                        laserVM.SaveChanges();
+                        if (IsChangesPending())
+                        {
+                            laserVM.SaveChanges();
+                        }
                         break;
                     }
                 case (int)ViewModelEnum.WeekCodeViewModel:
                     {
-                        weekVM.SaveChanges();
+                        if (IsChangesPending())
+                        {
+                            weekVM.SaveChanges();
+                        }
                         break;
                     }
                 case (int)ViewModelEnum.QuarterCodeViewModel:
                     {
-                        quarterVM.SaveChanges();
+                        if (IsChangesPending())
+                        {
+                            quarterVM.SaveChanges();
+                        }
                         break;
                     }
                 case (int)ViewModelEnum.FixtureViewModel:
                     {
-                        fixtureVM.SaveChanges();
+                        if (IsChangesPending())
+                        {
+                            fixtureVM.SaveChanges();
+                        }
                         break;
                     }
                 default:
@@ -246,6 +286,28 @@ namespace DCAdmin
                         break;
                     }
             }
+        }
+
+        private bool IsChangesPending()
+        {
+            bool result = false;
+            var pending = db.IsChangesPending();
+
+            if (db.IsChangesPending())
+            {
+                var mbResult = MessageBox.Show("Changes exists! Do you want to save them?", "Pending Changes", MessageBoxButton.YesNo);
+                if (mbResult == MessageBoxResult.No)
+                {
+                    result = false;
+                }
+
+                if (mbResult == MessageBoxResult.Yes)
+                {
+                    result = true;
+                }
+            }
+
+            return result;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -273,6 +335,84 @@ namespace DCAdmin
                 }
             }
             db.Dispose();
+        }
+
+        private void NewFromSelected_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void CopyCommandBinding_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void CopyCommandBinding_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            int index = tcControl.SelectedIndex;
+            switch (index)
+            {
+                case (int)ViewModelEnum.LaserDataViewModel:
+                    Clipboard.SetText(LaserDataGrid.laserDataDataGrid.SelectedItem.ToString());
+                    break;
+
+                case (int)ViewModelEnum.QuarterCodeViewModel:
+                    Clipboard.SetText(QuarterCodeGrid.quarterCodeDataGrid.SelectedItem.ToString());
+                    break;
+
+                case (int)ViewModelEnum.FixtureViewModel:
+                    Clipboard.SetText(FixtureGrid.fixtureDataGrid.SelectedItem.ToString());
+                    break;
+
+                case (int)ViewModelEnum.WeekCodeViewModel:
+                    Clipboard.SetText(WeekCodeGrid.weekCodeDataGrid.SelectedItem.ToString());
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private void CutCommandBinding_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void CutCommandBinding_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            int index = tcControl.SelectedIndex;
+            switch (index)
+            {
+                case (int)ViewModelEnum.LaserDataViewModel:
+                    Clipboard.SetText(LaserDataGrid.laserDataDataGrid.SelectedItem.ToString());
+                    break;
+
+                case (int)ViewModelEnum.QuarterCodeViewModel:
+                    Clipboard.SetText(QuarterCodeGrid.quarterCodeDataGrid.SelectedItem.ToString());
+                    break;
+
+                case (int)ViewModelEnum.FixtureViewModel:
+                    Clipboard.SetText(FixtureGrid.fixtureDataGrid.SelectedItem.ToString());
+                    break;
+
+                case (int)ViewModelEnum.WeekCodeViewModel:
+                    Clipboard.SetText(WeekCodeGrid.weekCodeDataGrid.SelectedItem.ToString());
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private void PasteCommandBinding_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            if (Clipboard.ContainsText(TextDataFormat.UnicodeText))
+            {
+                e.CanExecute = true;
+            }
+            else
+            {
+                e.CanExecute = false;
+            }
         }
     }
 }

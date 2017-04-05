@@ -17,6 +17,7 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <l:StringTrimConverter x:Key="TrimString" />
+        <l:CheckBoxConverter x:Key="CheckBoxConverter" />
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot">
 
@@ -68,18 +69,20 @@
             </StackPanel>
             <TextBlock
                 x:Name="SearchError"
-                Height="30"
+                Height="20"
                 VerticalAlignment="Bottom"
                 Panel.ZIndex="1"
                 DockPanel.Dock="Bottom"
                 Foreground="Red"
-                Text="{Binding Path=ErrorMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                Text="{Binding Path=ErrorMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                TextWrapping="Wrap" />
 
             <DataGrid
                 x:Name="laserDataDataGrid"
                 Grid.Row="2"
                 Height="Auto"
-                Margin="10,13,10,40"
+                Margin="10,13,10,10"
+                VerticalAlignment="Stretch"
                 AutoGenerateColumns="False"
                 CanUserAddRows="false"
                 DockPanel.Dock="Top"
@@ -234,13 +237,13 @@
                         x:Name="externTestColumn"
                         Width="*"
                         MinWidth="50"
-                        Binding="{Binding ExternTest, IsAsync=True, FallbackValue=false}"
+                        Binding="{Binding ExternTest, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
                         Header="Extern Test" />
                     <DataGridCheckBoxColumn
                         x:Name="enableTOColumn"
                         Width="*"
                         MinWidth="50"
-                        Binding="{Binding EnableTO, IsAsync=True, FallbackValue=false}"
+                        Binding="{Binding EnableTO, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
                         Header="EnableTO" />
                     <DataGridTextColumn
                         x:Name="tOnrColumn"

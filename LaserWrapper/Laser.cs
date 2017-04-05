@@ -59,6 +59,8 @@ namespace LaserWrapper
 
             sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
             sig.MASK_EMERGENCY = cfg.EmergencyError;
+            sig.MASK_RESET = cfg.ResetIo;
+            sig.MASK_ALL = sig.MASK_ALL | sig.MASK_ERROR | sig.MASK_ITEMINPLACE | sig.MASK_READYTOMARK;
         }
 
         public int ErrorCode { get; set; }
@@ -69,25 +71,6 @@ namespace LaserWrapper
             try
             {
                 result = _doc.execute(true, true);
-                //if (result)
-                //{
-                //    try
-                //    {
-                //        lock (lockObj)
-                //        {
-                //            Monitor.Wait(lockObj, _executeTimeout);
-                //            if (ErrorCode > 0)
-                //            {
-                //                result = false;
-                //            }
-                //        }
-                //    }
-                //    catch (ThreadInterruptedException ex)
-                //    {
-                //        Log.Error(ex, "Laser: Execute was interrupted"); ;
-                //        result = false;
-                //    }
-                //}
             }
             catch (NullReferenceException ex)
             {
@@ -193,6 +176,10 @@ namespace LaserWrapper
             {
                 _ioPort.checkPort(0);
                 Log.Trace("checkPort(0)");
+                SetPort(0, sig.MASK_ALL);
+                SetReady(true);
+                Log.Trace("SetReady(true)");
+                RaiseLaserErrorEvent(string.Empty);
             }
 
             //lock (lockObj)
@@ -208,34 +195,22 @@ namespace LaserWrapper
 
         private void _laserSystem_sigDeviceError(string p_message)
         {
-            Log.Error(string.Format("Laser error: {0}", p_message));
-            RaiseLaserErrorEvent(p_message);
-            //lock (lockObj)
-            //{
-            //    Monitor.Pulse(lockObj);
-            //    RaiseLaserErrorEvent(p_message);
-            //}
+            string msg = string.Format("Laser error: {0}", p_message);
+            Log.Error(msg);
+            RaiseLaserErrorEvent(msg);
         }
 
         private void _laserSystem_sigLaserEnd()
         {
             Log.Trace("Laser End");
             ErrorCode = 0;
-            //lock (lockObj)
-            //{
-            // Monitor.Pulse(lockObj);
             RaiseLaserEndEvent();
-            //}
         }
 
         private void _laserSystem_sigLaserError(int p_errCode)
         {
             ErrorCode = p_errCode;
             Log.Error(string.Format("Laser error: {0}", p_errCode));
-            //lock (lockObj)
-            //{
-            //    Monitor.Pulse(lockObj);
-            //}
         }
 
         private void InitLaser()
@@ -260,6 +235,9 @@ namespace LaserWrapper
                     if (_isIoEnabled)
                     {
                         _ioPort.checkPort(0);
+                        SetPort(0, sig.MASK_ALL);
+
+                        SetReady(true);
                     }
                 }
                 else
@@ -270,10 +248,6 @@ namespace LaserWrapper
                     _laserSystem.sigDeviceDisconnected += _laserSystem_sigDeviceDisconnected;
 
                     _laserSystem.connectToDevice(_deviceAddress, _deviceTimeout);
-                    //lock (lockObj)
-                    //{
-                    //    Monitor.Wait(lockObj);
-                    //}
                 }
             }
             catch (COMException ex)
@@ -285,7 +259,10 @@ namespace LaserWrapper
 
         private void _laserSystem_sigQueryStart()
         {
+            Log.Trace("Start of marking");
             RaiseQueryStartEvent(GlblRes.Marking);
+            _ioPort.resetPort(0, sig.MASK_READYTOMARK);
+            _doc.execute(true, true);
         }
 
         #region Digital IO
@@ -312,6 +289,7 @@ namespace LaserWrapper
 
         private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
         {
+            // Item In Place
             if ((p_nBits & sig.MASK_ITEMINPLACE) == sig.MASK_ITEMINPLACE)
             {
                 // bit is set
@@ -324,6 +302,21 @@ namespace LaserWrapper
             else
             {
                 currentBits &= ~sig.MASK_ITEMINPLACE;
+            }
+
+            // Reset IO
+            if ((p_nBits & sig.MASK_RESET) == sig.MASK_RESET)
+            {
+                // bit is set
+                if ((currentBits & sig.MASK_RESET) != sig.MASK_RESET)
+                {
+                    currentBits |= sig.MASK_RESET;
+                    RaiseResetIoEvent();
+                }
+            }
+            else
+            {
+                currentBits &= ~sig.MASK_RESET;
             }
         }
 
@@ -414,6 +407,23 @@ namespace LaserWrapper
         }
 
         #endregion LaserQueryStart Event
+
+        #region Reset IO Signals Event
+
+        public delegate void ResetIoHandler();
+
+        public event ResetIoHandler ResetIoEvent;
+
+        internal void RaiseResetIoEvent()
+        {
+            ResetIoHandler handler = ResetIoEvent;
+            if (handler != null)
+            {
+                handler();
+            }
+        }
+
+        #endregion Reset IO Signals Event
 
         #endregion Digital IO
 

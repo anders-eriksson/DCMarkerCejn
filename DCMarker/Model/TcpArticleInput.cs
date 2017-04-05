@@ -13,10 +13,18 @@ namespace DCMarker.Model
 
         public TcpArticleInput()
         {
-            cfg = DCConfig.Instance;
-            cfg.ReadConfig();
-            _server = new Server(cfg.TcpPort, cfg.BufferLength);
-            _server.NewArticleNumberEvent += _server_NewArticleNumberEvent;
+            try
+            {
+                cfg = DCConfig.Instance;
+                cfg.ReadConfig();
+                _server = new Server(cfg.TcpPort, cfg.BufferLength);
+                _server.NewArticleNumberEvent += _server_NewArticleNumberEvent;
+            }
+            catch (Exception ex)
+            {
+                DCLog.Log.Error(ex, "Tcp Server Error");
+                throw;
+            }
         }
 
         private void _server_NewArticleNumberEvent(string msg)

@@ -1,3 +1,5 @@
+#define TEST
+
 using DCMarkerEF;
 using System;
 using System.Collections.ObjectModel;
@@ -16,12 +18,24 @@ namespace DCAdmin.ViewModel
 
         public LaserDataViewModel()
         {
-            KeyCollection = DB.Instance.GetLaserDataColumns();
-            _LaserDataCollection = new ObservableCollection<LaserData>();
-            LaserDataCollection = DB.Instance.LoadLaserData();
-#if DEBUG
-            ErrorMessage = "Hello World!";
+            try
+            {
+                KeyCollection = DB.Instance.GetLaserDataColumns();
+#if TEST
+                _LaserDataCollection = new ObservableCollection<LaserData>();
 #endif
+                LaserDataCollection = null;
+                LaserDataCollection = DB.Instance.LoadLaserData();
+#if DEBUG
+                ErrorMessage = "Hello World!";
+#else
+                ErrorMessage = string.Empty;
+#endif
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -104,6 +118,7 @@ namespace DCAdmin.ViewModel
 
         internal object FindArticleAndScrollIntoView(string searchText)
         {
+            ErrorMessage = string.Empty;
             var entity = FindSerialNumber(searchText);
             if (entity == null)
             {
@@ -134,9 +149,13 @@ namespace DCAdmin.ViewModel
 
         internal void AddNewRecord()
         {
+            ErrorMessage = string.Empty;
             try
             {
                 var entity = DB.Instance.AddNewLaserDataRecord();
+#if DEBUG
+                var x = LaserDataCollection.FirstOrDefault(e => e.Id == entity.Id);
+#endif
                 if (entity != null)
                 {
                     SelectedLaserDataRow = entity;
@@ -150,20 +169,27 @@ namespace DCAdmin.ViewModel
 
         internal void ExecuteFilter()
         {
+            ErrorMessage = string.Empty;
             //_LaserDataCollection.Clear();
+#if TEST
             _LaserDataCollection = new ObservableCollection<LaserData>();
+#endif
             LaserDataCollection = DB.Instance.LoadLaserDataFiltered(FilterKey, FilterValue);
         }
 
         internal void ExecuteNoFilter()
         {
+            ErrorMessage = string.Empty;
             //_LaserDataCollection.Clear();
+#if TEST
             _LaserDataCollection = new ObservableCollection<LaserData>();
+#endif
             LaserDataCollection = DB.Instance.LoadLaserData();
         }
 
         internal void SaveChanges()
         {
+            ErrorMessage = string.Empty;
             try
             {
                 DB.Instance.SaveChanges();
@@ -181,7 +207,35 @@ namespace DCAdmin.ViewModel
 
         internal void DeleteSelectedRecord()
         {
-            DB.Instance.DeleteLaserDataRecord(SelectedLaserDataRow);
+            ErrorMessage = string.Empty;
+            try
+            {
+                DB.Instance.DeleteLaserDataRecord(SelectedLaserDataRow);
+            }
+            catch (Exception)
+            {
+                ErrorMessage = "Can't delete selected row!";
+            }
+        }
+
+        internal void RefreshDatabase(bool saveChanges = false)
+        {
+            ErrorMessage = string.Empty;
+            try
+            {
+                if (saveChanges)
+                {
+                    SaveChanges();
+                }
+
+                _LaserDataCollection = new ObservableCollection<LaserData>();
+                LaserDataCollection = null;
+                LaserDataCollection = DB.Instance.RefreshLaserData();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
