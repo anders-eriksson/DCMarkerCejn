@@ -16,5 +16,6 @@
             Margin="10,102,10,10"
             Text="{Binding Path=TextboxValue, Mode=TwoWay}"
             TextWrapping="Wrap" />
+        <Button x:Name="button" Content="Clear" HorizontalAlignment="Left" Margin="441,74,0,0" VerticalAlignment="Top" Width="75" Click="button_Click" />
     </Grid>
 </Window>

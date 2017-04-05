@@ -1,22 +1,26 @@
+//#define TEST
+
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using DCLog;
+using System.Text;
 
 namespace DCTcpServer
 {
     public class Server
     {
         private int _port = 50000;
-        private int _bufferLength = 12;
+        private int _maxBufferBytes = 14;
         private TcpListener _listener;
         private Thread listeningThread;
 
-        public Server(int port = 50000, int bufferLength = 12)
+        public Server(int port = 50000, int bufferLength = 14)
         {
             _port = port;
-            _bufferLength = bufferLength;
+            _maxBufferBytes = bufferLength;
 
             var childref = new ThreadStart(Listener);
             listeningThread = new Thread(childref)
@@ -24,6 +28,7 @@ namespace DCTcpServer
                 Name = "ServerListeningThread"
             };
             listeningThread.Start();
+            Log.Debug("Listener thread started");
         }
 
         private void Listener()
@@ -35,43 +40,82 @@ namespace DCTcpServer
                 try
                 {
                     var client = _listener.AcceptTcpClient();       // Blocking!
+                    Log.Trace("Client connected");
+                    // We have connection
+                    //var stream = client.GetStream();
+                    var server = client.Client;
+                    var buffer = new byte[_maxBufferBytes];
 
-                    // We have connection...
-                    var stream = client.GetStream();
-                    var buffer = new byte[_bufferLength];
-                    var receivedLength = 0;
+                    var inbuffer = new byte[_maxBufferBytes];
+                    var totalReceivedBytes = 0;
+                    var readBytes = 0;
 
-                    while (receivedLength < _bufferLength)
+                    bool hasReceivedAllBytes = false;
+                    do
                     {
-                        var nextLength = stream.Read(buffer, receivedLength, _bufferLength - receivedLength);
-                        if (IsAbort(buffer, receivedLength))
+                        //readBytes = stream.Read(buffer, totalReceivedBytes, _maxBufferBytes - totalReceivedBytes);
+
+                        readBytes = server.Receive(buffer, _maxBufferBytes, SocketFlags.None); // blocking!
+                        Log.Debug(string.Format("Read {0} bytes from client", readBytes));
+                        Log.Debug(string.Format("string.read: {0}", readBytes));
+                        Log.Debug(ByteToHex(buffer));
+
+                        totalReceivedBytes += readBytes;
+                        if (!hasReceivedAllBytes && totalReceivedBytes >= _maxBufferBytes)
                         {
-                            _listener.Stop();
-                            return;
-                        }
-                        if (nextLength == 0 || nextLength == _bufferLength)
-                        {
-                            // Update Workflow
+                            hasReceivedAllBytes = true;
                             UpdateWF(buffer);
 
-                            stream.Write(buffer, 0, _bufferLength);
-
-                            stream.Close();
-                            client.Close();
+                            //stream.Write(buffer, 0, _maxBufferBytes);
+                            int writeBytes = server.Send(buffer, _maxBufferBytes, SocketFlags.None);
+                            Log.Debug(string.Format("Write {0} bytes to client", writeBytes));
+                            buffer = new byte[_maxBufferBytes];
                         }
-                        receivedLength += nextLength;
-                    }
-                }
-                catch (SocketException e)
-                {
-                    if ((e.SocketErrorCode == SocketError.Interrupted))
+                    } while (readBytes > 0);
+
+                    if (IsAbort(buffer, totalReceivedBytes))
                     {
-                        // a blocking listen has been cancelled
                         _listener.Stop();
                         return;
                     }
+
+                    //Log.Trace("Client disconnected");
+                    // stream.Close();
+                    client.Close();
+                    Log.Trace("Client disconnected/closed");
+                }
+                catch (SocketException ex)
+                {
+                    if ((ex.SocketErrorCode == SocketError.Interrupted))
+                    {
+                        // a blocking listen has been cancelled
+                        _listener.Stop();
+
+                        return;
+                    }
+                    else if (ex.SocketErrorCode == SocketError.ConnectionAborted
+                            || ex.SocketErrorCode == SocketError.ConnectionReset)
+                    {
+                        Log.Trace("Connection Aborted");
+                    }
+                    else
+                    {
+                        Log.Error(ex, "SocketException");
+                        throw;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Unknown Exception");
+                    throw;
                 }
             }
+        }
+
+        private string ByteToHex(byte[] buffer)
+        {
+            string hex = BitConverter.ToString(buffer);
+            return hex;
         }
 
         private static bool IsAbort(byte[] buffer, int receivedLength)
@@ -95,7 +139,23 @@ namespace DCTcpServer
         {
             int count = buffer.Count(bt => bt != 0); // find the first null
             string articleNumber = System.Text.Encoding.ASCII.GetString(buffer, 0, count);
+            articleNumber = RemoveNonPrintableChars(articleNumber);
             RaiseNewArticleNumberEvent(articleNumber);
+        }
+
+        private string RemoveNonPrintableChars(string articleNumber)
+        {
+            StringBuilder sb = new StringBuilder();
+            int len = articleNumber.Length;
+            for (int i = 0; i < len; i++)
+            {
+                if (articleNumber[i] > 31)
+                {
+                    sb.Append(articleNumber[i]);
+                }
+            }
+
+            return sb.ToString();
         }
 
         #region Display Message Event

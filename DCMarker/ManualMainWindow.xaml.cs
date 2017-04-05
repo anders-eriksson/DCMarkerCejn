@@ -48,7 +48,7 @@ namespace DCMarker
 
         private void ResetSignals_Click(object sender, RoutedEventArgs e)
         {
-            mainViewModel.Error = string.Empty;
+            mainViewModel.ErrorMessage = string.Empty;
             mainViewModel.ResetAllIoSignals();
         }
 

@@ -34,6 +34,7 @@
             ScrollViewer.CanContentScroll="True"
             ScrollViewer.HorizontalScrollBarVisibility="Auto"
             ScrollViewer.VerticalScrollBarVisibility="Auto"
+            SelectionChanged="weekCodeDataGrid_SelectionChanged"
             SelectionMode="Single"
             SelectionUnit="FullRow">
 

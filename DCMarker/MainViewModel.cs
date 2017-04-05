@@ -12,7 +12,6 @@ namespace DCMarker
     {
         private IWorkFlow _wf = null;
 
-        //private Thread _workflowThread;
         private DCConfig cfg;
 
         public MainViewModel()
@@ -29,7 +28,7 @@ namespace DCMarker
             HasTOnr = false;
             TOnr = string.Empty;
             Status = string.Empty;
-            Error = string.Empty;
+            ErrorMessage = string.Empty;
             NeedUserInput = false;
 
             try
@@ -40,7 +39,7 @@ namespace DCMarker
             }
             catch (Exception ex)
             {
-                Error = ex.Message;
+                ErrorMessage = ex.Message;
             }
         }
 
@@ -93,7 +92,13 @@ namespace DCMarker
                 _wf.ErrorEvent += _wf_ErrorEvent;
                 _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;
                 _wf.StatusEvent += _wf_StatusEvent;
+                _wf.ErrorMsgEvent += _wf_ErrorMsgEvent;
             }
+        }
+
+        private void _wf_ErrorMsgEvent(object sender, StatusArgs e)
+        {
+            ErrorMessage = e.Text;
         }
 
         private void _wf_StatusEvent(object sender, StatusArgs e)
@@ -113,7 +118,7 @@ namespace DCMarker
         {
             // Clear Status since we have an error
             Status = string.Empty;
-            Error = e.Text;
+            ErrorMessage = e.Text;
         }
 
         private void _wf_UpdateMainViewModelEvent(object sender, UpdateMainViewModelArgs e)
@@ -157,7 +162,7 @@ namespace DCMarker
             }
         }
 
-        public string Error
+        public string ErrorMessage
         {
             get
             {

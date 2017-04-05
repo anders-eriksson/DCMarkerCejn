@@ -97,11 +97,47 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Copy.
+        /// </summary>
+        public static string CopyHeader {
+            get {
+                return ResourceManager.GetString("CopyHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy selected value to clip board.
+        /// </summary>
+        public static string CopyToolTip {
+            get {
+                return ResourceManager.GetString("CopyToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Created Context.
         /// </summary>
         public static string Created_Context {
             get {
                 return ResourceManager.GetString("Created_Context", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Cut.
+        /// </summary>
+        public static string CutHeader {
+            get {
+                return ResourceManager.GetString("CutHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cut selected value to clip board.
+        /// </summary>
+        public static string CutToolTip {
+            get {
+                return ResourceManager.GetString("CutToolTip", resourceCulture);
             }
         }
         
@@ -129,6 +165,15 @@ namespace DCAdmin.Properties {
         public static string Deleting_a_row_is_not_allowed {
             get {
                 return ResourceManager.GetString("Deleting_a_row_is_not_allowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Edit.
+        /// </summary>
+        public static string EditMenuHeader {
+            get {
+                return ResourceManager.GetString("EditMenuHeader", resourceCulture);
             }
         }
         
@@ -241,6 +286,24 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _New From Selected.
+        /// </summary>
+        public static string NewFromSelectedMenuHeader {
+            get {
+                return ResourceManager.GetString("NewFromSelectedMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create a new article number and copy the values from the selected.
+        /// </summary>
+        public static string NewFromSelectedToolTip {
+            get {
+                return ResourceManager.GetString("NewFromSelectedToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _New.
         /// </summary>
         public static string NewMenuHeader {
@@ -282,6 +345,24 @@ namespace DCAdmin.Properties {
         public static string Out_of_memory_Please_use_a_filter_to_make_selection_smaller {
             get {
                 return ResourceManager.GetString("Out_of_memory_Please_use_a_filter_to_make_selection_smaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Paste.
+        /// </summary>
+        public static string PasteHeader {
+            get {
+                return ResourceManager.GetString("PasteHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paste from clip board.
+        /// </summary>
+        public static string PasteToolTip {
+            get {
+                return ResourceManager.GetString("PasteToolTip", resourceCulture);
             }
         }
         

@@ -11,6 +11,8 @@ namespace DCMarker.Model
 
         event EventHandler<UpdateMainViewModelArgs> UpdateMainViewModelEvent;
 
+        event EventHandler<StatusArgs> ErrorMsgEvent;
+
         void Close();
 
         bool Initialize();

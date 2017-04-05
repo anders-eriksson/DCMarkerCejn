@@ -213,4 +213,31 @@
   <data name="Error_Saving_to_Database_0" xml:space="preserve">
     <value>Error Saving to Database: {0}</value>
   </data>
+  <data name="CopyHeader" xml:space="preserve">
+    <value>_Copy</value>
+  </data>
+  <data name="CopyToolTip" xml:space="preserve">
+    <value>Copy selected value to clip board</value>
+  </data>
+  <data name="CutHeader" xml:space="preserve">
+    <value>_Cut</value>
+  </data>
+  <data name="CutToolTip" xml:space="preserve">
+    <value>Cut selected value to clip board</value>
+  </data>
+  <data name="PasteHeader" xml:space="preserve">
+    <value>_Paste</value>
+  </data>
+  <data name="PasteToolTip" xml:space="preserve">
+    <value>Paste from clip board</value>
+  </data>
+  <data name="NewFromSelectedMenuHeader" xml:space="preserve">
+    <value>_New From Selected</value>
+  </data>
+  <data name="NewFromSelectedToolTip" xml:space="preserve">
+    <value>Create a new article number and copy the values from the selected</value>
+  </data>
+  <data name="EditMenuHeader" xml:space="preserve">
+    <value>_Edit</value>
+  </data>
 </root>

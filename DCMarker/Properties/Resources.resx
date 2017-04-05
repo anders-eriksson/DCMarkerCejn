@@ -210,4 +210,7 @@
   <data name="CreateSerialNumber_Exception" xml:space="preserve">
     <value>CreateSerialNumber Exception</value>
   </data>
+  <data name="Loaded" xml:space="preserve">
+    <value>Loaded</value>
+  </data>
 </root>

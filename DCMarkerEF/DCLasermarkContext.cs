@@ -13,6 +13,9 @@ namespace DCMarkerEF
         {
             // Without this line, the compiler will optimize away  System.Data.Entity.SqlServer
             var type = typeof(System.Data.Entity.SqlServer.SqlProviderServices);
+
+            // make sure that we don't initialize the database!!
+            Database.SetInitializer<DCLasermarkContext>(null);
         }
 
         public virtual DbSet<Fixture> Fixture { get; set; }
@@ -103,6 +106,9 @@ namespace DCMarkerEF
                 .IsUnicode(false);
         }
 
+        // Uppdating DateCreated and DateModified
+        // Clearing IsDirty after save changes
+        //
         //public override int SaveChanges()
         //{
         //    foreach (var history in this.ChangeTracker.Entries()
@@ -143,12 +149,21 @@ namespace DCMarkerEF
 
                 var items = from item in properties
                             let value = (string)item.GetValue(entity, null)
-                            where value != null && value.Trim().Length == 0
+                            where value != null // && value.Trim().Length == 0
                             select item;
 
                 foreach (var item in items)
                 {
-                    item.SetValue(entity, null, null);
+                    var currentValue = (string)item.GetValue(entity, null);
+                    currentValue = currentValue.Trim();
+                    if (currentValue.Length == 0)
+                    {
+                        item.SetValue(entity, null, null);
+                    }
+                    else
+                    {
+                        item.SetValue(entity, currentValue, null);
+                    }
                 }
             }
 

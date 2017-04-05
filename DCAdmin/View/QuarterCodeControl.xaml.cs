@@ -1,3 +1,4 @@
+using DCMarkerEF;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Threading;
@@ -34,6 +35,16 @@ namespace DCAdmin.View
                         return null;
                     }), DispatcherPriority.Background, new object[] { null });
                 }
+            }
+        }
+
+        private void quarterCodeDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+            {
+                quarterCodeDataGrid.ScrollIntoView(e.AddedItems[0]);                              // Since we only can select one it will always be in position 0
+                QuarterCodeViewModel quarterVM = (QuarterCodeViewModel)LayoutRoot.DataContext;
+                quarterVM.SelectedQuarterCodeRow = (QuarterCode)e.AddedItems[0];
             }
         }
     }

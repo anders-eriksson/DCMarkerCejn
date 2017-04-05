@@ -15,15 +15,38 @@ namespace DCAdmin
 
         public FixtureViewModel()
         {
-            FixtureCollection = DB.Instance.LoadFixture();
+            try
+            {
+                _FixtureCollection = new ObservableCollection<Fixture>();
+                FixtureCollection = null;
+                FixtureCollection = DB.Instance.LoadFixture();
 #if DEBUG
-            ErrorMessage = "Hello World!";
+                ErrorMessage = "Hello World!";
 #endif
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public ObservableCollection<Fixture> FixtureCollection { get; set; }
+        //public ObservableCollection<Fixture> FixtureCollection { get; set; }
+        private ObservableCollection<Fixture> _FixtureCollection;
+
+        public ObservableCollection<Fixture> FixtureCollection
+        {
+            get
+            {
+                return _FixtureCollection;
+            }
+            set
+            {
+                _FixtureCollection = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         public Fixture SelectedFixtureRow
         {
@@ -91,6 +114,25 @@ namespace DCAdmin
             {
                 var error = ex.EntityValidationErrors.First().ValidationErrors.First();
                 ErrorMessage = string.Format("Error Saving to Database: {0}", error.ErrorMessage);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        internal void RefreshDatabase(bool saveChanges)
+        {
+            try
+            {
+                if (saveChanges)
+                {
+                    SaveChanges();
+                }
+
+                _FixtureCollection = new ObservableCollection<Fixture>();
+                FixtureCollection = null;
+                FixtureCollection = DB.Instance.RefreshFixture();
             }
             catch (Exception)
             {

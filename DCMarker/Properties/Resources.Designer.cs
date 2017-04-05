@@ -214,6 +214,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loaded.
+        /// </summary>
+        public static string Loaded {
+            get {
+                return ResourceManager.GetString("Loaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Marking is done!.
         /// </summary>
         public static string Marking_is_done {

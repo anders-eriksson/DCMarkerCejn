@@ -41,9 +41,9 @@
           <target state="final">TO</target>
           <note from="MultilingualEditor" annotates="source" priority="4">Technical. It's an abbrivation TillverkningOrder </note>
         </trans-unit>
-        <trans-unit id="Title" translate="yes" xml:space="preserve">
+        <trans-unit id="Title" translate="no" xml:space="preserve">
           <source>DCMarker</source>
-          <target state="translated" state-qualifier="mt-suggestion">DCMarker</target>
+          <target state="final" state-qualifier="mt-suggestion">DCMarker</target>
         </trans-unit>
         <trans-unit id="Article_not_defined_in_database_Article0" translate="yes" xml:space="preserve">
           <source>Article not defined in database! Article={0}</source>
@@ -132,6 +132,10 @@
         <trans-unit id="CreateSerialNumber_Exception" translate="yes" xml:space="preserve">
           <source>CreateSerialNumber Exception</source>
           <target state="translated">CreateSerialNumber undantag</target>
+        </trans-unit>
+        <trans-unit id="Loaded" translate="yes" xml:space="preserve">
+          <source>Loaded</source>
+          <target state="translated">Laddad</target>
         </trans-unit>
       </group>
     </body>
