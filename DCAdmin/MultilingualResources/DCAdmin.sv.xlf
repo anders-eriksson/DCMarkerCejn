@@ -19,8 +19,8 @@
           <target state="translated">_Radera</target>
         </trans-unit>
         <trans-unit id="DeleteToolTip" translate="yes" xml:space="preserve">
-          <source>Delete selected article number</source>
-          <target state="translated">Radera valt artikelnummer</target>
+          <source>Delete selected row</source>
+          <target state="translated">Radera markerad rad</target>
         </trans-unit>
         <trans-unit id="ExitMenuHeader" translate="yes" xml:space="preserve">
           <source>_Exit</source>
@@ -43,8 +43,8 @@
           <target state="translated">_Ny</target>
         </trans-unit>
         <trans-unit id="NewToolTip" translate="yes" xml:space="preserve">
-          <source>Create New article number</source>
-          <target state="translated">Skapa nytt artikelnummer</target>
+          <source>Create New row</source>
+          <target state="translated">Skapa ny rad</target>
         </trans-unit>
         <trans-unit id="OnTopMenuHeader" translate="yes" xml:space="preserve">
           <source>_OnTop</source>
@@ -84,12 +84,11 @@
         </trans-unit>
         <trans-unit id="FilterHeader" translate="yes" xml:space="preserve">
           <source>Filter</source>
-          <target state="new">Filter</target>
+          <target state="translated">Filter</target>
         </trans-unit>
         <trans-unit id="SearchHeader" translate="yes" xml:space="preserve">
           <source>Search</source>
-          <target state="translated">Sök
-</target>
+          <target state="translated">Sök</target>
         </trans-unit>
         <trans-unit id="FilterButtonHeader" translate="no" xml:space="preserve">
           <source>Filter</source>
@@ -133,7 +132,7 @@
         </trans-unit>
         <trans-unit id="Error_Saving_to_Database_0" translate="yes" xml:space="preserve">
           <source>Error Saving to Database: {0}</source>
-          <target state="new">Error Saving to Database: {0}</target>
+          <target state="translated">Fel vid sparande till databas: {0}</target>
         </trans-unit>
         <trans-unit id="CopyHeader" translate="yes" xml:space="preserve">
           <source>_Copy</source>
@@ -160,8 +159,8 @@
           <target state="translated">Klistra in från klippbord</target>
         </trans-unit>
         <trans-unit id="NewFromSelectedToolTip" translate="yes" xml:space="preserve">
-          <source>Create a new article number and copy the values from the selected</source>
-          <target state="translated">Skapa en ny artikelrad och kopiera värdena from den markerade artikeln</target>
+          <source>Create a new article number and copy the values from the selected row</source>
+          <target state="translated">Skapa en ny rad och kopiera värdena from den markerade raden</target>
         </trans-unit>
         <trans-unit id="NewFromSelectedMenuHeader" translate="yes" xml:space="preserve">
           <source>_New From Selected</source>
@@ -170,6 +169,26 @@
         <trans-unit id="EditMenuHeader" translate="yes" xml:space="preserve">
           <source>_Edit</source>
           <target state="translated">R_edigera</target>
+        </trans-unit>
+        <trans-unit id="value_cant_be_emtpy" translate="yes" xml:space="preserve">
+          <source>Value can't be empty</source>
+          <target state="translated">Värdet kan inte vara tomt</target>
+        </trans-unit>
+        <trans-unit id="Article_label" translate="yes" xml:space="preserve">
+          <source>Article (F1)</source>
+          <target state="translated">Artikel (F1)</target>
+        </trans-unit>
+        <trans-unit id="Kant_label" translate="yes" xml:space="preserve">
+          <source>Kant</source>
+          <target state="translated">Kant</target>
+        </trans-unit>
+        <trans-unit id="Machine_id_label" translate="yes" xml:space="preserve">
+          <source>Machine Id</source>
+          <target state="translated">Maskin Id</target>
+        </trans-unit>
+        <trans-unit id="Delete_article_question" translate="yes" xml:space="preserve">
+          <source>Is this the Article you want to delete?</source>
+          <target state="translated">Vill du radera denna artikel?</target>
         </trans-unit>
       </group>
     </body>

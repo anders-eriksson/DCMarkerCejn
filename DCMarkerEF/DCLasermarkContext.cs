@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Linq;
 using GlblRes = global::DCMarkerEF.Properties.Resources;
 
@@ -134,40 +135,46 @@ namespace DCMarkerEF
         //    return result;
         //}
 
-        public override int SaveChanges()
-        {
-            var objContext = ((IObjectContextAdapter)this).ObjectContext;
-            var entries = objContext.ObjectStateManager.GetObjectStateEntries(EntityState.Added | EntityState.Modified)
-                .Select(entry => entry.Entity);
-            var str = typeof(string).Name;
+        //public override int SaveChanges()
+        //{
+        //    Debug.WriteLine("Trimmed Start");
+        //    var objContext = ((IObjectContextAdapter)this).ObjectContext;
+        //    var entries = objContext.ObjectStateManager.GetObjectStateEntries(EntityState.Added | EntityState.Modified)
+        //        .Select(entry => entry.Entity);
 
-            foreach (var entity in entries)
-            {
-                var properties = from p in entity.GetType().GetProperties()
-                                 where p.PropertyType.Name == str
-                                 select p;
+        //    Debug.WriteLine(entries);
 
-                var items = from item in properties
-                            let value = (string)item.GetValue(entity, null)
-                            where value != null // && value.Trim().Length == 0
-                            select item;
+        //    var str = typeof(string).Name;
 
-                foreach (var item in items)
-                {
-                    var currentValue = (string)item.GetValue(entity, null);
-                    currentValue = currentValue.Trim();
-                    if (currentValue.Length == 0)
-                    {
-                        item.SetValue(entity, null, null);
-                    }
-                    else
-                    {
-                        item.SetValue(entity, currentValue, null);
-                    }
-                }
-            }
+        //    foreach (var entity in entries)
+        //    {
+        //        var properties = from p in entity.GetType().GetProperties()
+        //                         where p.PropertyType.Name == str
+        //                         select p;
 
-            return base.SaveChanges();
-        }
+        //        var items = from item in properties
+        //                    let value = (string)item.GetValue(entity, null)
+        //                    where value != null // && value.Trim().Length == 0
+        //                    select item;
+
+        //        foreach (var item in items)
+        //        {
+        //            var currentValue = (string)item.GetValue(entity, null);
+        //            currentValue = currentValue.Trim();
+        //            if (currentValue.Length == 0)
+        //            {
+        //                item.SetValue(entity, null, null);
+        //            }
+        //            else
+        //            {
+        //                item.SetValue(entity, currentValue, null);
+        //            }
+        //        }
+        //    }
+        //    Debug.WriteLine("Trimmed Done");
+        //    Debug.WriteLine(entries);
+
+        //    return base.SaveChanges();
+        //}
     }
 }

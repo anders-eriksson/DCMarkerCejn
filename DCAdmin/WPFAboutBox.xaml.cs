@@ -11,12 +11,12 @@ namespace DCAdmin
     /// <summary>
     /// Interaction logic for WPFAboutBox1.xaml
     /// </summary>
-    public partial class WPFAboutBox1 : Window
+    public partial class WPFAboutBox : Window
     {
         /// <summary>
         /// Default constructor is protected so callers must use one with a parent.
         /// </summary>
-        protected WPFAboutBox1()
+        protected WPFAboutBox()
         {
             InitializeComponent();
         }
@@ -25,7 +25,7 @@ namespace DCAdmin
         /// Constructor that takes a parent for this WPFAboutBox1 dialog.
         /// </summary>
         /// <param name="parent">Parent window for this dialog.</param>
-        public WPFAboutBox1(Window parent)
+        public WPFAboutBox(Window parent)
             : this()
         {
             this.Owner = parent;
@@ -47,7 +47,9 @@ namespace DCAdmin
         }
 
         #region AboutData Provider
+
         #region Member data
+
         private XmlDocument xmlDoc = null;
 
         private const string propertyNameTitle = "Title";
@@ -64,9 +66,11 @@ namespace DCAdmin
         private const string xPathCompany = xPathRoot + propertyNameCompany;
         private const string xPathLink = xPathRoot + "Link";
         private const string xPathLinkUri = xPathRoot + "Link/@Uri";
-        #endregion
+
+        #endregion Member data
 
         #region Properties
+
         /// <summary>
         /// Gets the title property, which is display in the About dialogs window title.
         /// </summary>
@@ -154,9 +158,11 @@ namespace DCAdmin
         {
             get { return GetLogicalResourceString(xPathLinkUri); }
         }
-        #endregion
+
+        #endregion Properties
 
         #region Resource location methods
+
         /// <summary>
         /// Gets the specified property value either from a specific attribute, or from a resource dictionary.
         /// </summary>
@@ -214,7 +220,7 @@ namespace DCAdmin
         /// Gets the specified data element from the XmlDataProvider in the resource dictionary.
         /// </summary>
         /// <param name="xpathQuery">An XPath query to the XML element to retrieve.</param>
-        /// <returns>The resulting string value for the specified XML element. 
+        /// <returns>The resulting string value for the specified XML element.
         /// Returns empty string if resource element couldn't be found.</returns>
         protected virtual string GetLogicalResourceString(string xpathQuery)
         {
@@ -223,7 +229,7 @@ namespace DCAdmin
             XmlDocument doc = this.ResourceXmlDocument;
             if (doc != null)
             {
-                // if we found the XmlDocument, then look for the specified data. 
+                // if we found the XmlDocument, then look for the specified data.
                 XmlNode node = doc.SelectSingleNode(xpathQuery);
                 if (node != null)
                 {
@@ -241,7 +247,9 @@ namespace DCAdmin
             }
             return result;
         }
-        #endregion
-        #endregion
+
+        #endregion Resource location methods
+
+        #endregion AboutData Provider
     }
 }

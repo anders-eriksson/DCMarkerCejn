@@ -9,6 +9,9 @@ using System.Windows.Data;
 using System.Windows.Threading;
 using System.Linq;
 using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
+using System.Threading;
+using System.Windows.Media;
 
 namespace DCAdmin.View
 {
@@ -20,10 +23,21 @@ namespace DCAdmin.View
         public LaserDataControl()
         {
             InitializeComponent();
-            // LayoutRoot.DataContext = this;
         }
 
-        private void laserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        private void LaserDataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        {
+            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            laserVM.EditColor = Colors.Red;
+        }
+
+        private void LaserDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            laserVM.EditColor = Colors.LimeGreen;
+        }
+
+        private void LaserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
             laserVM.ErrorMessage = string.Empty;
@@ -44,6 +58,7 @@ namespace DCAdmin.View
                             try
                             {
                                 DB.Instance.SaveChanges();
+                                laserVM.RaiseSaveChangesEvent();
                             }
                             catch (DbEntityValidationException ex)
                             {
@@ -98,8 +113,7 @@ namespace DCAdmin.View
             if (e.Key == System.Windows.Input.Key.Enter)
             {
                 e.Handled = true;
-                LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
-                laserVM.FindArticleAndScrollIntoView(SearchArticleNumber.Text);
+                DoFind();
             }
         }
 
@@ -111,11 +125,19 @@ namespace DCAdmin.View
 
         private void FindButton_Click(object sender, RoutedEventArgs e)
         {
-            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
-            laserVM.FindArticleAndScrollIntoView(SearchArticleNumber.Text);
+            DoFind();
         }
 
-        private void laserDataDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void DoFind()
+        {
+            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            var item = laserVM.FindArticleAndScrollIntoView(SearchArticleNumber.Text);
+
+            //laserDataDataGrid.Focus();
+            //laserDataDataGrid.ScrollToCenterOfView(item);
+        }
+
+        private void LaserDataDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count > 0)
             {
@@ -134,7 +156,7 @@ namespace DCAdmin.View
             }
         }
 
-        private void laserDataDataGrid_Loaded(object sender, RoutedEventArgs e)
+        private void LaserDataDataGrid_Loaded(object sender, RoutedEventArgs e)
         {
             SetColumnWidthToCell(laserDataDataGrid);
         }
@@ -149,6 +171,8 @@ namespace DCAdmin.View
                 if (!string.IsNullOrWhiteSpace(laserVM.FilterKey) && !string.IsNullOrWhiteSpace(laserVM.FilterValue))
                 {
                     laserVM.ExecuteFilter();
+                    laserDataDataGrid.DataContext = null;
+                    laserDataDataGrid.DataContext = laserVM;
                     laserDataDataGrid.Items.Refresh();
                 }
                 else
@@ -160,15 +184,51 @@ namespace DCAdmin.View
             else
             {
                 laserVM.ExecuteNoFilter();
+                laserDataDataGrid.DataContext = null;
+                laserDataDataGrid.DataContext = laserVM;
                 laserDataDataGrid.Items.Refresh();
             }
         }
 
         private void FilterCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string key = FilterCombobox.SelectedItem.ToString();
+            if (FilterCombobox != null && FilterCombobox.SelectedItem != null)
+            {
+                string key = FilterCombobox.SelectedItem.ToString();
+                LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+                laserVM.FilterKey = key;
+            }
+        }
+
+        private void LaserDataDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            var editedTextbox = e.EditingElement as TextBox;
+
+            editedTextbox.Text = editedTextbox.Text.Trim();
+
+#if DEBUG
+            var x = e.EditingElement as TextBox;
+            string t = x.Text;
+            Debug.WriteLine("# {0} #", t);
+#endif
+
             LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
-            laserVM.FilterKey = key;
+            laserVM.EditColor = Colors.LimeGreen;
+        }
+
+        private string GetCurrentCellValue(TextBox txtCurCell)
+        {
+            return txtCurCell.Text;
+        }
+
+        private void GotoSelectedButton_Click(object sender, RoutedEventArgs e)
+        {
+            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            laserVM.GotoSelected();
+            //var sel = laserVM.SelectedLaserDataRow;
+            //laserVM.SelectedLaserDataRow = null;
+            //Thread.Sleep(500);
+            //laserVM.SelectedLaserDataRow = sel;
         }
     }
 }

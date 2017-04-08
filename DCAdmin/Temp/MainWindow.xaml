@@ -1,0 +1,193 @@
+﻿<Window
+    x:Class="DCAdmin.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:DCMarkerEF="clr-namespace:DCMarkerEF;assembly=DCMarkerEF"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DCAdmin"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:p="clr-namespace:DCAdmin.Properties"
+    xmlns:view="clr-namespace:DCAdmin.View"
+    Title="DCAmin"
+    Width="611"
+    Height="401"
+    MaxWidth="{x:Static local:MainWindow.MaxScreenSize}"
+    Closing="Window_Closing"
+    mc:Ignorable="d">
+    <Window.CommandBindings>
+        <CommandBinding
+        Command="ApplicationCommands.Copy"
+        CanExecute="CopyCommandBinding_CanExecute" />
+        <!--Executed="CopyCommandBinding_Executed"  />-->
+        <CommandBinding
+        Command="ApplicationCommands.Cut"
+        CanExecute="CutCommandBinding_CanExecute" />
+        <!--Executed="CutCommandBinding_Executed" />-->
+        <CommandBinding
+        Command="ApplicationCommands.Paste"
+        CanExecute="PasteCommandBinding_CanExecute" />
+        <!--Executed="CutCommandBinding_Executed" />-->
+    </Window.CommandBindings>
+    <Grid>
+        <DockPanel Margin="0,0,0,23">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="{x:Static p:Resources.FileMenuHeader}">
+                    <MenuItem
+                        x:Name="New"
+                        Click="New_Click"
+                        Header="{x:Static p:Resources.NewMenuHeader}"
+                        ToolTip="{x:Static p:Resources.NewToolTip}" />
+                    <MenuItem
+                        x:Name="NewFromSelected"
+                        Click="NewFromSelected_Click"
+                        Header="{x:Static p:Resources.NewFromSelectedMenuHeader}"
+                        ToolTip="{x:Static p:Resources.NewFromSelectedToolTip}" />
+                    <MenuItem
+                        x:Name="Save"
+                        Click="Save_Click"
+                        Header="{x:Static p:Resources.SaveMenuHeader}"
+                        ToolTip="{x:Static p:Resources.SaveToolTip}" />
+                    <Separator />
+                    <MenuItem
+                        x:Name="Delete"
+                        Click="Delete_Click"
+                        Header="{x:Static p:Resources.DeleteMenuHeader}"
+                        ToolTip="{x:Static p:Resources.DeleteToolTip}" />
+                    <Separator />
+                    <MenuItem
+                        x:Name="Refresh"
+                        Click="Refresh_Click"
+                        Header="{x:Static p:Resources.RefreshMenuHeader}"
+                        ToolTip="{x:Static p:Resources.RefreshToolTip}" />
+                    <Separator />
+                    <MenuItem
+                        x:Name="Exit"
+                        Click="Exit_Click"
+                        Header="{x:Static p:Resources.ExitMenuHeader}"
+                        ToolTip="{x:Static p:Resources.ExitToolTip}" />
+                </MenuItem>
+                <MenuItem Header="{x:Static p:Resources.EditMenuHeader}">
+                    <MenuItem
+                        x:Name="Cut"
+                        Command="ApplicationCommands.Cut"
+                        Header="{x:Static p:Resources.CutHeader}"
+                        ToolTip="{x:Static p:Resources.CutToolTip}" />
+                    <MenuItem
+                        x:Name="Copy"
+                        Command="ApplicationCommands.Copy"
+                        Header="{x:Static p:Resources.CopyHeader}"
+                        ToolTip="{x:Static p:Resources.CopyToolTip}" />
+                    <MenuItem
+                        x:Name="Paste"
+                        Command="ApplicationCommands.Paste"
+                        Header="{x:Static p:Resources.PasteHeader}"
+                        ToolTip="{x:Static p:Resources.PasteToolTip}" />
+                </MenuItem>
+                <MenuItem Header="{x:Static p:Resources.WindowMenuHeader}">
+                    <MenuItem
+                        x:Name="OnTop"
+                        Click="OnTop_Click"
+                        Header="{x:Static p:Resources.OnTopMenuHeader}"
+                        ToolTip="{x:Static p:Resources.OnTopToolTip}" />
+                </MenuItem>
+                <MenuItem Header="{x:Static p:Resources.HelpMenuHeader}">
+                    <MenuItem
+                        x:Name="About"
+                        Click="About_Click"
+                        Header="{x:Static p:Resources.AboutMenuHeader}"
+                        ToolTip="{x:Static p:Resources.AboutToolTip}" />
+                </MenuItem>
+            </Menu>
+            <ToolBarTray DockPanel.Dock="Top">
+                <ToolBar>
+                    <Button Command="ApplicationCommands.Cut" IsEnabled="True" ToolTip="{x:Static p:Resources.CutToolTip}">
+
+                        <Image
+                            Width="20"
+                            Height="20"
+                            Source="Images\Cut_16x.png" />
+                    </Button>
+                    <Button Command="ApplicationCommands.Copy" IsEnabled="True" ToolTip="{x:Static p:Resources.CopyToolTip}">
+                        <Image
+                            Width="20"
+                            Height="20"
+                            Source="Images\Copy_16x.png" />
+                    </Button>
+                    <Button Command="ApplicationCommands.Paste" IsEnabled="True" ToolTip="{x:Static p:Resources.PasteToolTip}">
+                        <Image
+                            Width="20"
+                            Height="20"
+                            Source="Images\Paste_16x.png" />
+                    </Button>
+                    <Separator />
+                    <Button Click="New_Click" ToolTip="{x:Static p:Resources.NewToolTip}">
+                        <Image
+                            Width="20"
+                            Height="20"
+                            Source="Images\Add_16x.png" />
+                    </Button>
+                    <Button Click="Save_Click" ToolTip="{x:Static p:Resources.SaveToolTip}">
+                        <Image
+                            Width="20"
+                            Height="20"
+                            Source="Images\Save_16x.png" />
+                    </Button>
+                    <Separator />
+                    <Button Click="Delete_Click" ToolTip="{x:Static p:Resources.DeleteToolTip}">
+                        <Image
+                            Width="20"
+                            Height="20"
+                            Source="Images\Cancel_16x.png" />
+                    </Button>
+                    <Separator />
+                    <Button Click="Refresh_Click" ToolTip="{x:Static p:Resources.RefreshToolTip}">
+                        <Image
+                            Width="20"
+                            Height="20"
+                            Source="Images\Refresh_16x.png" />
+                    </Button>
+                </ToolBar>
+            </ToolBarTray>
+            <TabControl x:Name="tcControl" DockPanel.Dock="Top" Height="294">
+                <TabItem Header="LaserData">
+                    <DockPanel>
+
+                        <Grid x:Name="LaserDataRoot" Margin="0,0,0,-26">
+                            <view:LaserDataControl
+                                x:Name="LaserDataGrid"
+                                Margin="10,0"
+                                DockPanel.Dock="Top" />
+                        </Grid>
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="WeekCode">
+                    <Grid x:Name="WeekCodeRoot">
+                        <view:WeekCodeControl x:Name="WeekCodeGrid" />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="QuarterCode">
+                    <Grid x:Name="QuarterCodeRoot">
+                        <view:QuarterCodeControl x:Name="QuarterCodeGrid" />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Fixture">
+                    <Grid x:Name="FixtureRoot">
+                        <view:FixtureControl x:Name="FixtureGrid" />
+                    </Grid>
+                </TabItem>
+            </TabControl>
+
+            <Popup x:Name="SaveChangesPopup"
+                   DockPanel.Dock="Top"
+                IsOpen="False"
+                Placement="Left"
+                PlacementTarget="{Binding ElementName=EditMode}"
+                StaysOpen="False" />
+            <TextBlock
+                    Padding="5"
+                    Background="AliceBlue"
+                    Text="Changes was saved to database"
+                    TextWrapping="Wrap" />
+        </DockPanel>
+    </Grid>
+</Window>

@@ -15,17 +15,22 @@ namespace DCAdmin
             if (!itemsControl.TryScrollToCenterOfView(item))
             {
                 // Otherwise wait until everything is loaded, then scroll
-                if (itemsControl is ListBox) ((ListBox)itemsControl).ScrollIntoView(item);
-                itemsControl.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+                if (itemsControl is ListBox)
                 {
-                    itemsControl.TryScrollToCenterOfView(item);
-                }));
-
-                if (itemsControl is DataGrid) ((DataGrid)itemsControl).ScrollIntoView(item);
-                itemsControl.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+                    ((ListBox)itemsControl).ScrollIntoView(item);
+                    itemsControl.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+                    {
+                        itemsControl.TryScrollToCenterOfView(item);
+                    }));
+                }
+                if (itemsControl is DataGrid)
                 {
-                    itemsControl.TryScrollToCenterOfView(item);
-                }));
+                    ((DataGrid)itemsControl).ScrollIntoView(item);
+                    itemsControl.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+                    {
+                        itemsControl.TryScrollToCenterOfView(item);
+                    }));
+                }
             }
         }
 

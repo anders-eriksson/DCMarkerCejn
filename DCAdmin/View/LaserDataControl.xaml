@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:l="clr-namespace:DCAdmin"
     xmlns:local="clr-namespace:DCAdmin.View"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -20,13 +21,15 @@
         <l:CheckBoxConverter x:Key="CheckBoxConverter" />
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot">
-
         <DockPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                 <GroupBox Header="{x:Static p:Resources.SearchHeader}">
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                        <TextBlock Text="{x:Static p:Resources.ArticleNumber}" />
-                        <TextBlock Width="5" Text=" " />
+                        <TextBlock Height="23" Text="{x:Static p:Resources.ArticleNumber}" />
+                        <TextBlock
+                            Width="5"
+                            Height="23"
+                            Text=" " />
                         <TextBox
                             x:Name="SearchArticleNumber"
                             Grid.Column="1"
@@ -42,8 +45,14 @@
                             Content="{x:Static p:Resources.FindButtonHeader}" />
                     </StackPanel>
                 </GroupBox>
-                <TextBlock Width="10" Text=" " />
-                <GroupBox Header="{x:Static p:Resources.FilterHeader}">
+                <TextBlock
+                    Width="10"
+                    Height="23"
+                    Text=" " />
+                <GroupBox
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Header="{x:Static p:Resources.FilterHeader}">
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                         <ComboBox
                             x:Name="FilterCombobox"
@@ -51,24 +60,42 @@
                             Height="23"
                             ItemsSource="{Binding Path=KeyCollection}"
                             SelectionChanged="FilterCombobox_SelectionChanged" />
-                        <TextBlock Width="8" Text=" " />
+                        <TextBlock
+                            Width="8"
+                            Height="23"
+                            Text=" " />
                         <TextBox
                             x:Name="ValueFilter"
                             Width="100"
                             Height="23"
                             Text="{Binding Path=FilterValue, Mode=TwoWay}" />
-                        <TextBlock Width="10" Text=" " />
+                        <TextBlock
+                            Width="10"
+                            Height="23"
+                            Text=" " />
                         <ToggleButton
                             x:Name="FilterButton"
                             Width="60"
                             Height="23"
                             Click="FilterButton_Click"
                             Content="{x:Static p:Resources.FilterButtonHeader}" />
+                        <TextBlock
+                            Width="8"
+                            Height="23"
+                            Text=" " />
+                        <Button
+                            x:Name="GotoSelectedButton"
+                            Width="60"
+                            Height="23"
+                            Click="GotoSelectedButton_Click"
+                            Content="Goto" />
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
             <TextBlock
                 x:Name="SearchError"
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
                 Height="20"
                 VerticalAlignment="Bottom"
                 Panel.ZIndex="1"
@@ -79,174 +106,152 @@
 
             <DataGrid
                 x:Name="laserDataDataGrid"
-                Grid.Row="2"
                 Height="Auto"
                 Margin="10,13,10,10"
                 VerticalAlignment="Stretch"
                 AutoGenerateColumns="False"
+                BeginningEdit="LaserDataGrid_BeginningEdit"
                 CanUserAddRows="false"
+                CellEditEnding="LaserDataDataGrid_CellEditEnding"
                 DockPanel.Dock="Top"
                 EnableRowVirtualization="True"
                 IsSynchronizedWithCurrentItem="True"
                 ItemsSource="{Binding Path=LaserDataCollection, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                Loaded="laserDataDataGrid_Loaded"
+                Loaded="LaserDataDataGrid_Loaded"
                 RowDetailsVisibilityMode="VisibleWhenSelected"
-                RowEditEnding="laserDataDataGrid_RowEditEnding"
+                RowEditEnding="LaserDataDataGrid_RowEditEnding"
                 ScrollViewer.CanContentScroll="True"
                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
                 ScrollViewer.VerticalScrollBarVisibility="Auto"
                 SelectedItem="{Binding Path=SelectedLaserDataRow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                SelectionChanged="laserDataDataGrid_SelectionChanged"
+                SelectionChanged="LaserDataDataGrid_SelectionChanged"
                 SelectionMode="Single"
                 SelectionUnit="FullRow">
-
+                <i:Interaction.Behaviors>
+                    <local:ScrollIntoViewBehavior />
+                </i:Interaction.Behaviors>
                 <DataGrid.Columns>
                     <DataGridTextColumn
-                        x:Name="f1Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding F1, IsAsync=True}"
                         Header="F1" />
                     <DataGridTextColumn
-                        x:Name="kantColumn"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding Kant, IsAsync=True}"
                         Header="Kant" />
                     <DataGridTextColumn
-                        x:Name="avdelningColumn"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding Avdelning, IsAsync=True}"
                         Header="Avdelning" />
                     <DataGridTextColumn
-                        x:Name="f2Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding F2, IsAsync=True}"
                         Header="F2" />
                     <DataGridTextColumn
-                        x:Name="f3Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding F3, IsAsync=True}"
                         Header="F3" />
                     <DataGridTextColumn
-                        x:Name="f4Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding F4, IsAsync=True}"
                         Header="F4" />
                     <DataGridTextColumn
-                        x:Name="f5Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding F5, IsAsync=True}"
                         Header="F5" />
                     <DataGridTextColumn
-                        x:Name="f6Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding F6, IsAsync=True}"
                         Header="F6" />
                     <DataGridTextColumn
-                        x:Name="f7Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding F7, IsAsync=True}"
                         Header="F7" />
                     <DataGridTextColumn
-                        x:Name="f8Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding F8, IsAsync=True}"
                         Header="F8" />
                     <DataGridTextColumn
-                        x:Name="f9Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding F9, IsAsync=True}"
                         Header="F9" />
                     <DataGridTextColumn
-                        x:Name="f10Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding F10, IsAsync=True}"
                         Header="F10" />
                     <DataGridTextColumn
-                        x:Name="bC1Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding BC1, IsAsync=True}"
                         Header="BC1" />
                     <DataGridTextColumn
-                        x:Name="bC2Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding BC2, IsAsync=True}"
                         Header="BC2" />
                     <DataGridTextColumn
-                        x:Name="templateColumn"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding Template, IsAsync=True}"
                         Header="Template" />
                     <DataGridTextColumn
-                        x:Name="p1Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding P1, IsAsync=True}"
                         Header="P1" />
                     <DataGridTextColumn
-                        x:Name="p2Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding P2, IsAsync=True}"
                         Header="P2" />
                     <DataGridTextColumn
-                        x:Name="p3Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding P3, IsAsync=True}"
                         Header="P3" />
                     <DataGridTextColumn
-                        x:Name="p4Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding P4, IsAsync=True}"
                         Header="P4" />
                     <DataGridTextColumn
-                        x:Name="p5Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding P5, IsAsync=True}"
                         Header="P5" />
                     <DataGridTextColumn
-                        x:Name="p6Column"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding P6, IsAsync=True}"
                         Header="P6" />
                     <DataGridTextColumn
-                        x:Name="fIXTURIDColumn"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding FixtureId, IsAsync=True}"
                         Header="FIXTURID" />
                     <DataGridCheckBoxColumn
-                        x:Name="externTestColumn"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding ExternTest, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
                         Header="Extern Test" />
                     <DataGridCheckBoxColumn
-                        x:Name="enableTOColumn"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding EnableTO, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
                         Header="EnableTO" />
                     <DataGridTextColumn
-                        x:Name="tOnrColumn"
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding TOnr, IsAsync=True}"

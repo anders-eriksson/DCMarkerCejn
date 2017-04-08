@@ -130,7 +130,7 @@
     <value>_Delete</value>
   </data>
   <data name="DeleteToolTip" xml:space="preserve">
-    <value>Delete selected article number</value>
+    <value>Delete selected row</value>
   </data>
   <data name="ExitMenuHeader" xml:space="preserve">
     <value>_Exit</value>
@@ -157,7 +157,7 @@
     <value>_New</value>
   </data>
   <data name="NewToolTip" xml:space="preserve">
-    <value>Create New article number</value>
+    <value>Create New row</value>
   </data>
   <data name="OnTopMenuHeader" xml:space="preserve">
     <value>_OnTop</value>
@@ -235,9 +235,24 @@
     <value>_New From Selected</value>
   </data>
   <data name="NewFromSelectedToolTip" xml:space="preserve">
-    <value>Create a new article number and copy the values from the selected</value>
+    <value>Create a new article number and copy the values from the selected row</value>
   </data>
   <data name="EditMenuHeader" xml:space="preserve">
     <value>_Edit</value>
+  </data>
+  <data name="value_cant_be_emtpy" xml:space="preserve">
+    <value>Value can't be empty</value>
+  </data>
+  <data name="Article_label" xml:space="preserve">
+    <value>Article (F1)</value>
+  </data>
+  <data name="Delete_article_question" xml:space="preserve">
+    <value>Is this the Article you want to delete?</value>
+  </data>
+  <data name="Kant_label" xml:space="preserve">
+    <value>Kant</value>
+  </data>
+  <data name="Machine_id_label" xml:space="preserve">
+    <value>Machine Id</value>
   </data>
 </root>

@@ -17,13 +17,13 @@ namespace DCAdmin
     /// <summary>
     /// Interaction logic for ConfirmationDeleteRow.xaml
     /// </summary>
-    public partial class ConfirmationDeleteRow : Window
+    public partial class ConfirmationDeleteRowWindow : Window
     {
         private string _machineId;
         private string _article;
         private string _kant;
 
-        public ConfirmationDeleteRow()
+        public ConfirmationDeleteRowWindow()
         {
             InitializeComponent();
         }
@@ -34,7 +34,8 @@ namespace DCAdmin
             _article = article;
             _kant = kant;
 
-            MachineIdTextblock.Text = machineId;
+            // TODO: MachineId
+            //MachineIdTextblock.Text = machineId;
             ArticleTextblock.Text = article;
             KantTextblock.Text = kant;
         }

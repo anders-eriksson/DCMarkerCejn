@@ -1,4 +1,4 @@
-#define TEST
+//#define TEST
 
 using DCMarkerEF;
 using System;
@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
+using AutoMapper;
 
 namespace DCAdmin.ViewModel
 {
@@ -14,7 +16,6 @@ namespace DCAdmin.ViewModel
     {
         private string _FilterKey;
         private string _FilterValue;
-        private LaserData _SelectedLaserDataRow;
 
         public LaserDataViewModel()
         {
@@ -24,8 +25,8 @@ namespace DCAdmin.ViewModel
 #if TEST
                 _LaserDataCollection = new ObservableCollection<LaserData>();
 #endif
-                LaserDataCollection = null;
-                LaserDataCollection = DB.Instance.LoadLaserData();
+                //LaserDataCollection = null;
+                //LaserDataCollection = DB.Instance.LoadLaserData();
 #if DEBUG
                 ErrorMessage = "Hello World!";
 #else
@@ -82,25 +83,10 @@ namespace DCAdmin.ViewModel
         }
 
         public ObservableCollection<string> KeyCollection { get; set; }
-#if true
-        private ObservableCollection<LaserData> _LaserDataCollection;
 
-        public ObservableCollection<LaserData> LaserDataCollection
-        {
-            get
-            {
-                return _LaserDataCollection;
-            }
-            set
-            {
-                _LaserDataCollection = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-#else
         public ObservableCollection<LaserData> LaserDataCollection { get; set; }
-#endif
+
+        private LaserData _SelectedLaserDataRow;
 
         public LaserData SelectedLaserDataRow
         {
@@ -110,9 +96,54 @@ namespace DCAdmin.ViewModel
             }
             set
             {
-                //if (value == _SelectedLaserDataRow) return;
                 _SelectedLaserDataRow = value;
                 NotifyPropertyChanged();
+#if DEBUG
+                DisplaySelectedLaserDataRow();
+#endif
+            }
+        }
+
+        private void DisplaySelectedLaserDataRow()
+        {
+            if (SelectedLaserDataRow != null)
+            {
+                ErrorMessage = SelectedLaserDataRow.F1;
+            }
+            else
+            {
+                ErrorMessage = string.Empty;
+            }
+        }
+
+        private LaserData _LastAddedRow;
+
+        public LaserData LastAddedRow
+        {
+            get
+            {
+                return _LastAddedRow;
+            }
+            set
+            {
+                _LastAddedRow = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private Color _editColor;
+
+        public Color EditColor
+        {
+            get
+            {
+                return _editColor;
+            }
+            internal set
+            {
+                _editColor = value;
+                NotifyPropertyChanged();
+                RaiseEventColorEvent(_editColor);
             }
         }
 
@@ -135,7 +166,7 @@ namespace DCAdmin.ViewModel
 
         internal LaserData FindSerialNumber(string articleNumber)
         {
-            var entity = LaserDataCollection.FirstOrDefault(c => c.F1.StartsWith(articleNumber));
+            var entity = LaserDataCollection.FirstOrDefault(c => c.F1.StartsWith(articleNumber, StringComparison.CurrentCultureIgnoreCase));
             return entity;
         }
 
@@ -145,6 +176,13 @@ namespace DCAdmin.ViewModel
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        internal void TriggerSelectedRow()
+        {
+            var tmp = SelectedLaserDataRow;
+            SelectedLaserDataRow = null;
+            SelectedLaserDataRow = tmp;
         }
 
         internal void AddNewRecord()
@@ -167,23 +205,59 @@ namespace DCAdmin.ViewModel
             }
         }
 
+        internal object AddRow(string machineId, string article, string kant)
+        {
+            LaserData d = new LaserData()
+            {
+                // TODO: MachineId
+                //MachineId = machineId,
+                F1 = article,
+                Kant = kant
+            };
+            try
+            {
+                DB.Instance.AddLaserData(ref d);
+                LastAddedRow = d;
+                SelectedLaserDataRow = d;
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var error = ex.EntityValidationErrors.First().ValidationErrors.First();
+                ErrorMessage = string.Format("Error Adding to Database: {0}", error.ErrorMessage);
+                d = null;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return d;
+        }
+
+        internal object AddRowFromSelected(string machineId, string article, string kant)
+        {
+            Mapper.Initialize(cfg => cfg.CreateMap<LaserData, LaserData>());
+            LaserData newRecord = Mapper.Map<LaserData, LaserData>(SelectedLaserDataRow);
+            // TODO: MachineId
+            //newRecord.MachineId = machineId,
+            newRecord.F1 = article;
+            newRecord.Kant = string.IsNullOrWhiteSpace(kant) ? null : kant;
+            newRecord.Id = 0;
+            DB.Instance.AddLaserData(ref newRecord);
+            SelectedLaserDataRow = newRecord;
+
+            return newRecord;
+        }
+
         internal void ExecuteFilter()
         {
             ErrorMessage = string.Empty;
-            //_LaserDataCollection.Clear();
-#if TEST
-            _LaserDataCollection = new ObservableCollection<LaserData>();
-#endif
             LaserDataCollection = DB.Instance.LoadLaserDataFiltered(FilterKey, FilterValue);
         }
 
         internal void ExecuteNoFilter()
         {
             ErrorMessage = string.Empty;
-            //_LaserDataCollection.Clear();
-#if TEST
-            _LaserDataCollection = new ObservableCollection<LaserData>();
-#endif
             LaserDataCollection = DB.Instance.LoadLaserData();
         }
 
@@ -228,14 +302,72 @@ namespace DCAdmin.ViewModel
                     SaveChanges();
                 }
 
-                _LaserDataCollection = new ObservableCollection<LaserData>();
-                LaserDataCollection = null;
-                LaserDataCollection = DB.Instance.RefreshLaserData();
+                LaserDataCollection = DB.Instance.LoadLaserData();
             }
             catch (Exception)
             {
                 throw;
             }
         }
+
+        internal void GotoSelected()
+        {
+            LaserData found = DB.Instance.FindLaserData(LastAddedRow);
+            var equ = found.Equals(LastAddedRow);
+            if (found != null && found.Equals(LastAddedRow))
+            {
+                SelectedLaserDataRow = found;
+            }
+            else
+            {
+                var tmp = SelectedLaserDataRow;
+                SelectedLaserDataRow = null;
+                SelectedLaserDataRow = tmp;
+            }
+        }
+
+        #region Signal Edit Color Event
+
+        public delegate void EventColorHandler(Color color);
+
+        public event EventColorHandler EventColorEvent;
+
+        internal void RaiseEventColorEvent(Color color)
+        {
+            EventColorHandler handler = EventColorEvent;
+            if (handler != null)
+            {
+                handler(color);
+            }
+        }
+
+        public class EventColorArgs : EventArgs
+        {
+            public EventColorArgs(Color c)
+            {
+                Color = c;
+            }
+
+            public Color Color { get; private set; } // readonly
+        }
+
+        #endregion Signal Edit Color Event
+
+        #region Saved Changes Event
+
+        public delegate void SaveChangesHandler();
+
+        public event SaveChangesHandler SaveChangesEvent;
+
+        internal void RaiseSaveChangesEvent()
+        {
+            SaveChangesHandler handler = SaveChangesEvent;
+            if (handler != null)
+            {
+                handler();
+            }
+        }
+
+        #endregion Saved Changes Event
     }
 }

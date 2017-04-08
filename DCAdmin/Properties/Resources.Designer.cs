@@ -88,6 +88,15 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Article (F1).
+        /// </summary>
+        public static string Article_label {
+            get {
+                return ResourceManager.GetString("Article_label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Article Number (F1).
         /// </summary>
         public static string ArticleNumber {
@@ -142,6 +151,15 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Is this the Article you want to delete?.
+        /// </summary>
+        public static string Delete_article_question {
+            get {
+                return ResourceManager.GetString("Delete_article_question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Delete.
         /// </summary>
         public static string DeleteMenuHeader {
@@ -151,7 +169,7 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete selected article number.
+        ///   Looks up a localized string similar to Delete selected row.
         /// </summary>
         public static string DeleteToolTip {
             get {
@@ -259,6 +277,15 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Kant.
+        /// </summary>
+        public static string Kant_label {
+            get {
+                return ResourceManager.GetString("Kant_label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LoadLaserData: {0}.
         /// </summary>
         public static string LoadLaserData_0 {
@@ -286,6 +313,15 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Machine Id.
+        /// </summary>
+        public static string Machine_id_label {
+            get {
+                return ResourceManager.GetString("Machine_id_label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _New From Selected.
         /// </summary>
         public static string NewFromSelectedMenuHeader {
@@ -295,7 +331,7 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create a new article number and copy the values from the selected.
+        ///   Looks up a localized string similar to Create a new article number and copy the values from the selected row.
         /// </summary>
         public static string NewFromSelectedToolTip {
             get {
@@ -313,7 +349,7 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create New article number.
+        ///   Looks up a localized string similar to Create New row.
         /// </summary>
         public static string NewToolTip {
             get {
@@ -417,6 +453,15 @@ namespace DCAdmin.Properties {
         public static string SearchHeader {
             get {
                 return ResourceManager.GetString("SearchHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value can&apos;t be empty.
+        /// </summary>
+        public static string value_cant_be_emtpy {
+            get {
+                return ResourceManager.GetString("value_cant_be_emtpy", resourceCulture);
             }
         }
         

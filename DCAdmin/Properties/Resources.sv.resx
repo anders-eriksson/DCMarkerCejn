@@ -22,7 +22,7 @@
     <value>_Radera</value>
   </data>
   <data name="DeleteToolTip" xml:space="preserve">
-    <value>Radera valt artikelnummer</value>
+    <value>Radera markerad rad</value>
   </data>
   <data name="ExitMenuHeader" xml:space="preserve">
     <value>_Avsluta</value>
@@ -40,7 +40,7 @@
     <value>_Ny</value>
   </data>
   <data name="NewToolTip" xml:space="preserve">
-    <value>Skapa nytt artikelnummer</value>
+    <value>Skapa ny rad</value>
   </data>
   <data name="OnTopMenuHeader" xml:space="preserve">
     <value>_Överst</value>
@@ -69,9 +69,11 @@
   <data name="OnTopToolTip" xml:space="preserve">
     <value>Fönster alltid överst</value>
   </data>
+  <data name="FilterHeader" xml:space="preserve">
+    <value>Filter</value>
+  </data>
   <data name="SearchHeader" xml:space="preserve">
-    <value>Sök
-</value>
+    <value>Sök</value>
   </data>
   <data name="Out_of_memory_Please_use_a_filter_to_make_selection_smaller" xml:space="preserve">
     <value>Minnet räcker inte till för att visa all data! Använd ett filter för att att visa en delmängd!</value>
@@ -81,6 +83,9 @@
   </data>
   <data name="Deleting_a_row_is_not_allowed" xml:space="preserve">
     <value>Det går inte att radera en rad</value>
+  </data>
+  <data name="Error_Saving_to_Database_0" xml:space="preserve">
+    <value>Fel vid sparande till databas: {0}</value>
   </data>
   <data name="CopyHeader" xml:space="preserve">
     <value>_Kopiera</value>
@@ -101,12 +106,27 @@
     <value>Klistra in från klippbord</value>
   </data>
   <data name="NewFromSelectedToolTip" xml:space="preserve">
-    <value>Skapa en ny artikelrad och kopiera värdena from den markerade artikeln</value>
+    <value>Skapa en ny rad och kopiera värdena from den markerade raden</value>
   </data>
   <data name="NewFromSelectedMenuHeader" xml:space="preserve">
     <value>_Ny från markerad</value>
   </data>
   <data name="EditMenuHeader" xml:space="preserve">
     <value>R_edigera</value>
+  </data>
+  <data name="value_cant_be_emtpy" xml:space="preserve">
+    <value>Värdet kan inte vara tomt</value>
+  </data>
+  <data name="Article_label" xml:space="preserve">
+    <value>Artikel (F1)</value>
+  </data>
+  <data name="Kant_label" xml:space="preserve">
+    <value>Kant</value>
+  </data>
+  <data name="Machine_id_label" xml:space="preserve">
+    <value>Maskin Id</value>
+  </data>
+  <data name="Delete_article_question" xml:space="preserve">
+    <value>Vill du radera denna artikel?</value>
   </data>
 </root>

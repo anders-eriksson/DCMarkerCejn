@@ -12,7 +12,7 @@ using GlblRes = global::DCAdmin.Properties.Resources;
 
 namespace DCAdmin
 {
-    public class DB
+    public class DB : IDisposable
     {
         private static readonly object mutex = new object();
         private static volatile DB instance;
@@ -55,6 +55,32 @@ namespace DCAdmin
 
         public DCLasermarkContext Context { get; internal set; }
 
+        public void AddLaserData(ref LaserData d)
+        {
+            try
+            {
+                var x = _context.LaserData.Add(d);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public bool ExistsLaserData(string machineId, string article, string kant)
+        {
+            bool result = false;
+            //var found = _context.LaserData.Where(x => x.F1 == article && x.Kant == kant).FirstOrDefault();
+            var found = _context.LaserData.FirstOrDefault(p => p.F1 == article && p.Kant == kant);
+            if (found != null)
+            {
+                result = true;
+            }
+
+            return result;
+        }
+
         public LaserData FindArticle(string articleNumber)
         {
             var entity = _context.LaserData.OrderBy(o => o.F1).ThenBy(o => o.Kant).FirstOrDefault<LaserData>(e => e.F1.StartsWith(articleNumber));
@@ -94,7 +120,7 @@ namespace DCAdmin
 
             try
             {
-                _context = null;
+                Dispose();
                 _context = new DCLasermarkContext();
                 _context.Fixture.OrderBy(x => x.FixturId).Load();
                 result = _context.Fixture.Local;
@@ -118,7 +144,7 @@ namespace DCAdmin
 
             try
             {
-                _context = null;
+                Dispose();
                 _context = new DCLasermarkContext();
 
                 _context.LaserData.OrderBy(x => x.F1).ThenBy(x => x.Kant).ToList();
@@ -152,7 +178,7 @@ namespace DCAdmin
                 {
                     SaveChanges();
                 }
-                _context = null;
+                Dispose();
                 _context = new DCLasermarkContext();
 
                 _context.LaserData
@@ -180,7 +206,7 @@ namespace DCAdmin
         {
             ObservableCollection<QuarterCode> result;
 
-            _context = null;
+            Dispose();
             _context = new DCLasermarkContext();
             try
             {
@@ -200,7 +226,7 @@ namespace DCAdmin
         {
             ObservableCollection<WeekCode> result;
 
-            _context = null;
+            Dispose();
             _context = new DCLasermarkContext();
 
             try
@@ -380,9 +406,11 @@ namespace DCAdmin
             }
         }
 
-        internal void Dispose()
+        internal LaserData FindLaserData(LaserData selectedLaserDataRow)
         {
-            _context.Dispose();
+            var found = _context.LaserData.FirstOrDefault(x => x.Id == selectedLaserDataRow.Id);
+
+            return found;
         }
 
         internal void Refresh()
@@ -464,6 +492,22 @@ namespace DCAdmin
             }
 
             return result;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // dispose managed resources
+                _context.Dispose();
+            }
+            // free native resources
         }
     }
 }

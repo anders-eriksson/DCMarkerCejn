@@ -58,7 +58,13 @@
     <TranslationReport Condition="'$(Configuration)' == 'Release'">true</TranslationReport>
     <SuppressPseudoWarning Condition="'$(Configuration)' == 'Debug'">true</SuppressPseudoWarning>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>dclasersystem.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=6.0.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="DCLog">
       <HintPath>..\..\..\..\_LIBRARY\DCLog\bin\Release\DCLog.dll</HintPath>
     </Reference>
@@ -85,6 +91,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -103,21 +110,32 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Dialog\AddRowWindow.xaml.cs">
+      <DependentUpon>AddRowWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ArticleValidator.cs" />
     <Compile Include="CheckBoxConverter.cs" />
-    <Compile Include="ConfirmationDeleteRow.xaml.cs" />
+    <Compile Include="Dialog\ConfirmationDeleteRowWindow.xaml.cs">
+      <DependentUpon>ConfirmationDeleteRowWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Consts.cs" />
+    <Compile Include="Control\DataGridTrimTextColumn.cs" />
     <Compile Include="DB.cs" />
+    <Compile Include="DebugBindingExtension.cs" />
     <Compile Include="ExpressionBuilder\Filter.cs" />
     <Compile Include="ExpressionBuilder\Operators.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ItemsControlExtensions.cs" />
-    <Compile Include="StringTrimConverter.cs" />
-    <Compile Include="ViewModelEnum.cs" />
-    <Compile Include="ViewModel\FixtureViewModel.cs" />
-    <Compile Include="ViewModel\LaserDataViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RowData.cs" />
+    <Compile Include="View\ScrollIntoViewBehavior.cs" />
+    <Compile Include="StringTrimConverter.cs" />
+    <Compile Include="ViewModelEnum.cs" />
+    <Compile Include="ViewModel\AddRowVM.cs" />
+    <Compile Include="ViewModel\FixtureViewModel.cs" />
+    <Compile Include="ViewModel\LaserDataViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -138,10 +156,14 @@
     <Compile Include="View\WeekCodeControl.xaml.cs">
       <DependentUpon>WeekCodeControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WPFAboutBox1.xaml.cs">
-      <DependentUpon>WPFAboutBox1.xaml</DependentUpon>
+    <Compile Include="WPFAboutBox.xaml.cs">
+      <DependentUpon>WPFAboutBox.xaml</DependentUpon>
     </Compile>
-    <Page Include="ConfirmationDeleteRow.xaml">
+    <Page Include="Dialog\AddRowWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialog\ConfirmationDeleteRowWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -165,7 +187,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WPFAboutBox1.xaml">
+    <Page Include="WPFAboutBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -206,7 +228,7 @@
     <None Include="Properties\DataSources\DCMarkerEF.QuarterCode.datasource" />
     <None Include="Properties\DataSources\DCMarkerEF.WeekCode.datasource" />
     <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
@@ -224,6 +246,10 @@
     <ProjectReference Include="..\DCMarkerEF\DCMarkerEF.csproj">
       <Project>{d67c6419-90eb-4236-b73f-757fcc6848e8}</Project>
       <Name>DCMarkerEF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ValidationToolkit\ValidationToolkit.csproj">
+      <Project>{2b0b0ec8-3850-4786-b423-e9bd545186ab}</Project>
+      <Name>ValidationToolkit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -270,6 +296,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="dcmarker.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\AddRow_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets" Label="MultilingualAppToolkit" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\v$(MultilingualAppToolkitVersion)\Microsoft.Multilingual.ResxResources.targets')" />

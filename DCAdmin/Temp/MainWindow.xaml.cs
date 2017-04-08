@@ -1,4 +1,4 @@
-﻿using Configuration;
+using Configuration;
 using DCAdmin.ViewModel;
 using System;
 using System.Globalization;
@@ -6,7 +6,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace DCAdmin
@@ -34,15 +33,16 @@ namespace DCAdmin
 
             InitializeComponent();
             SaveChangesPopup.IsOpen = false;
-            //ChangesSavedTextblock.Visibility = Visibility.Hidden;
 
+            // TODO: is this a good idea?
+            // we make configurable
             if (DCConfig.Instance.ClearClipboard)
             {
                 Clipboard.Clear();
             }
 
-            //// Init all datagrid view models
-            //InitializeViewModels();
+            // Init all datagrid view models
+            InitializeViewModels();
 
             // init save and restore window position.
             Services.Tracker.Configure(this)//the object to track
@@ -62,30 +62,14 @@ namespace DCAdmin
             this.FixtureRoot.DataContext = null;
 
             laserVM = new LaserDataViewModel();
-            laserVM.EventColorEvent += EventColorEvent;
-            laserVM.SaveChangesEvent += SaveChangesEvent;
             quarterVM = new QuarterCodeViewModel();
             weekVM = new WeekCodeViewModel();
             fixtureVM = new FixtureViewModel();
 
-            laserVM.RefreshDatabase(false);
-            LaserDataRoot.DataContext = laserVM;
-            LaserDataGrid.laserDataDataGrid.Items.Refresh();
-            LaserDataGrid.laserDataDataGrid.Focus();
-
-            QuarterCodeRoot.DataContext = quarterVM;
-            WeekCodeRoot.DataContext = weekVM;
-            FixtureRoot.DataContext = fixtureVM;
-        }
-
-        private void SaveChangesEvent()
-        {
-            DisplaySavedPopup();
-        }
-
-        private void EventColorEvent(Color color)
-        {
-            EditMode.Fill = new SolidColorBrush(color);
+            this.LaserDataRoot.DataContext = laserVM;
+            this.QuarterCodeRoot.DataContext = quarterVM;
+            this.WeekCodeRoot.DataContext = weekVM;
+            this.FixtureRoot.DataContext = fixtureVM;
         }
 
         public static double MaxScreenSize
@@ -109,7 +93,7 @@ namespace DCAdmin
 
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new WPFAboutBox(this);
+            var dlg = new WPFAboutBox1(this);
             dlg.ShowDialog();
         }
 
@@ -119,62 +103,7 @@ namespace DCAdmin
             {
                 case (int)ViewModelEnum.LaserDataViewModel:
                     {
-                        AddRowWindow dlg = new AddRowWindow()
-                        {
-                            Owner = Window.GetWindow(this)
-                        };
-                        bool? rc = dlg.ShowDialog();
-
-                        LaserDataGrid.laserDataDataGrid.Focus();
-                        if (rc.HasValue && rc.Value)
-                        {
-                            object item = laserVM.AddRow(dlg.RowData.MachineId, dlg.RowData.Article, dlg.RowData.Kant);
-
-                            laserVM.TriggerSelectedRow();
-                        }
-                        break;
-                    }
-                case (int)ViewModelEnum.WeekCodeViewModel:
-                    {
-                        weekVM.AddNewRecord();
-                        break;
-                    }
-                case (int)ViewModelEnum.QuarterCodeViewModel:
-                    {
-                        quarterVM.AddNewRecord();
-                        break;
-                    }
-                case (int)ViewModelEnum.FixtureViewModel:
-                    {
-                        fixtureVM.AddNewRecord();
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
-        }
-
-        private void AddNewRecordFromSelected(int index)
-        {
-            switch (index)
-            {
-                case (int)ViewModelEnum.LaserDataViewModel:
-                    {
-                        AddRowWindow dlg = new AddRowWindow()
-                        {
-                            Owner = Window.GetWindow(this)
-                        };
-                        bool? rc = dlg.ShowDialog();
-
-                        LaserDataGrid.laserDataDataGrid.Focus();
-                        if (rc.HasValue && rc.Value)
-                        {
-                            object item = laserVM.AddRowFromSelected(dlg.RowData.MachineId, dlg.RowData.Article, dlg.RowData.Kant);
-
-                            laserVM.TriggerSelectedRow();
-                        }
+                        laserVM.AddNewRecord();
                         break;
                     }
                 case (int)ViewModelEnum.WeekCodeViewModel:
@@ -201,10 +130,7 @@ namespace DCAdmin
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            ConfirmationDeleteRowWindow dlg = new ConfirmationDeleteRowWindow()
-            {
-                Owner = Window.GetWindow(this)
-            };
+            ConfirmationDeleteRow dlg = new ConfirmationDeleteRow();
             var currentItem = laserVM.SelectedLaserDataRow;
             string machineId = "AME";
 #if MACHINEID
@@ -285,15 +211,6 @@ namespace DCAdmin
                     {
                         var saveChanges = IsChangesPending();
                         laserVM.RefreshDatabase(saveChanges);
-
-                        LaserDataRoot.DataContext = null;
-                        LaserDataRoot.DataContext = laserVM;
-                        LaserDataGrid.laserDataDataGrid.Items.Refresh();
-
-                        var item = laserVM.SelectedLaserDataRow;
-                        DataGridColumn column = this.LaserDataGrid.laserDataDataGrid.Columns[1];
-                        LaserDataGrid.laserDataDataGrid.ScrollIntoView(item, column);
-                        LaserDataGrid.laserDataDataGrid.SelectedItem = item;
                         break;
                     }
                 case (int)ViewModelEnum.WeekCodeViewModel:
@@ -377,7 +294,6 @@ namespace DCAdmin
         private void DisplaySavedPopup()
         {
             SaveChangesPopup.IsOpen = true;
-            //ChangesSavedTextblock.Visibility = Visibility.Visible;
             var timer = new DispatcherTimer()
             {
                 Interval = TimeSpan.FromMilliseconds(1000)
@@ -387,7 +303,6 @@ namespace DCAdmin
             {
                 ((DispatcherTimer)timer).Stop();
                 if (SaveChangesPopup.IsOpen) SaveChangesPopup.IsOpen = false;
-                // ChangesSavedTextblock.Visibility = Visibility.Hidden;
             };
 
             timer.Start();
@@ -444,8 +359,6 @@ namespace DCAdmin
 
         private void NewFromSelected_Click(object sender, RoutedEventArgs e)
         {
-            int index = tcControl.SelectedIndex;
-            AddNewRecordFromSelected(index);
         }
 
         private void CopyCommandBinding_CanExecute(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
@@ -520,12 +433,6 @@ namespace DCAdmin
             {
                 e.CanExecute = false;
             }
-        }
-
-        private void Window_ContentRendered(object sender, EventArgs e)
-        {
-            // Init all datagrid view models
-            InitializeViewModels();
         }
     }
 }

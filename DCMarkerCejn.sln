@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCAdmin", "DCAdmin\DCAdmin.csproj", "{89F5FCA2-5F58-4380-9E24-7E2EBD087C2D}"
 EndProject
@@ -31,6 +31,10 @@ EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DCMarkerInstall", "DCMarkerInstall\DCMarkerInstall.vdproj", "{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DCAdminInstall", "DCAdminInstall\DCAdminInstall.vdproj", "{841CF5A2-0E31-4242-8304-57E862E404F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidationToolkit", "ValidationToolkit\ValidationToolkit.csproj", "{2B0B0EC8-3850-4786-B423-E9BD545186AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCAdminTest", "DCAdminTest\DCAdminTest.csproj", "{8736BDFF-E939-46FC-9502-9F319C46CA8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -134,6 +138,22 @@ Global
 		{841CF5A2-0E31-4242-8304-57E862E404F8}.Debug|x86.ActiveCfg = Debug
 		{841CF5A2-0E31-4242-8304-57E862E404F8}.Release|Any CPU.ActiveCfg = Release
 		{841CF5A2-0E31-4242-8304-57E862E404F8}.Release|x86.ActiveCfg = Release
+		{2B0B0EC8-3850-4786-B423-E9BD545186AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B0B0EC8-3850-4786-B423-E9BD545186AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B0B0EC8-3850-4786-B423-E9BD545186AB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2B0B0EC8-3850-4786-B423-E9BD545186AB}.Debug|x86.Build.0 = Debug|Any CPU
+		{2B0B0EC8-3850-4786-B423-E9BD545186AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B0B0EC8-3850-4786-B423-E9BD545186AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B0B0EC8-3850-4786-B423-E9BD545186AB}.Release|x86.ActiveCfg = Release|Any CPU
+		{2B0B0EC8-3850-4786-B423-E9BD545186AB}.Release|x86.Build.0 = Release|Any CPU
+		{8736BDFF-E939-46FC-9502-9F319C46CA8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8736BDFF-E939-46FC-9502-9F319C46CA8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8736BDFF-E939-46FC-9502-9F319C46CA8A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8736BDFF-E939-46FC-9502-9F319C46CA8A}.Debug|x86.Build.0 = Debug|Any CPU
+		{8736BDFF-E939-46FC-9502-9F319C46CA8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8736BDFF-E939-46FC-9502-9F319C46CA8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8736BDFF-E939-46FC-9502-9F319C46CA8A}.Release|x86.ActiveCfg = Release|Any CPU
+		{8736BDFF-E939-46FC-9502-9F319C46CA8A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

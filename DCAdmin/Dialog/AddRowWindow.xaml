@@ -1,0 +1,148 @@
+﻿<Window
+    x:Class="DCAdmin.AddRowWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:common="clr-namespace:ValidationToolkit;assembly=ValidationToolkit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DCAdmin"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Add"
+    Width="300"
+    Height="253.651"
+    Closing="Window_Closing"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type ValidationError}">
+            <TextBlock
+                Margin="0,1"
+                HorizontalAlignment="Left"
+                FontStyle="Italic"
+                Foreground="Red"
+                Text="{Binding Path=ErrorContent}" />
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <!--  article  -->
+            <RowDefinition Height="33" />
+            <RowDefinition Height="33" />
+            <!--  kant  -->
+            <RowDefinition Height="33" />
+            <RowDefinition Height="33" />
+            <!--  buttons  -->
+            <RowDefinition Height="33" />
+            <!--  Error message  -->
+            <RowDefinition Height="33" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+
+        <Label
+            x:Name="label1"
+            Grid.Row="1"
+            Grid.Column="0"
+            Width="63"
+            Height="23"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Content="Article(F1)" />
+        <TextBox
+            x:Name="ArticleTextbox"
+            Grid.Row="1"
+            Grid.Column="1"
+            Height="23"
+            Margin="0,0,-27,0"
+            VerticalAlignment="Bottom"
+            TextWrapping="Wrap">
+            <TextBox.Text>
+                <Binding
+                    Mode="TwoWay"
+                    NotifyOnValidationError="True"
+                    Path="Article"
+                    UpdateSourceTrigger="PropertyChanged"
+                    ValidatesOnDataErrors="True"
+                    ValidatesOnNotifyDataErrors="True">
+                    <Binding.ValidationRules>
+                        <local:ArticleValidator ValidatesOnTargetUpdated="True" />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <ContentPresenter
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="0,0,-57,0"
+            Content="{Binding ElementName=ArticleTextbox, Path=(Validation.Errors).CurrentItem}" />
+        <Label
+            x:Name="label2"
+            Grid.Row="3"
+            Grid.Column="0"
+            Width="38"
+            Height="23"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Content="Kant" />
+        <TextBox
+            x:Name="KantTextbox"
+            Grid.Row="3"
+            Grid.Column="1"
+            Height="23"
+            Margin="0,0,-27,0"
+            VerticalAlignment="Bottom"
+            MaxLength="1">
+            <TextBox.Text>
+                <Binding
+                    Mode="TwoWay"
+                    NotifyOnValidationError="True"
+                    Path="Kant"
+                    UpdateSourceTrigger="PropertyChanged"
+                    ValidatesOnDataErrors="True"
+                    ValidatesOnNotifyDataErrors="True">
+                    <Binding.ValidationRules>
+                        <common:IntegerRangeRule
+                            Name="KantTextbox"
+                            Max="9"
+                            Min="1" />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <ContentPresenter
+            Grid.Row="4"
+            Grid.Column="1"
+            Margin="0,0,-57,0"
+            Content="{Binding ElementName=KantTextbox, Path=(Validation.Errors).CurrentItem}" />
+        <Button
+            x:Name="OkButton"
+            Grid.Row="5"
+            Grid.ColumnSpan="2"
+            Width="75"
+            Height="23"
+            Margin="73,1,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Click="OkButton_Click"
+            Content="OK"
+            IsDefault="True" />
+        <Button
+            x:Name="CancelButton"
+            Grid.Row="5"
+            Grid.Column="1"
+            Width="75"
+            Height="23"
+            Margin="52,0,-4,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Content="Cancel"
+            IsCancel="True" />
+        <TextBlock
+            Grid.Row="6"
+            Grid.Column="1"
+            Foreground="red"
+            Text="{Binding ErrorMessage}" />
+    </Grid>
+</Window>
