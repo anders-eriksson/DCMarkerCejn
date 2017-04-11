@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
 using System.Windows.Threading;
 
@@ -25,6 +26,8 @@ namespace DCHistory
             SetLocalization();
             mainVM = new MainViewModel();
             InitializeComponent();
+            StartDatePicker.DisplayDate = DateTime.Now;
+            EndDatePicker.DisplayDate = DateTime.Now;
             this.DataContext = mainVM;
 
             //this routine only needs to run once, so first check to make sure the
@@ -85,6 +88,7 @@ namespace DCHistory
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
+            mainVM.GetAllHistoryData();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -154,17 +158,17 @@ namespace DCHistory
 
             if (start.HasValue && end.HasValue)
             {
-                GetFilteredData(start, end);
+                GetFilteredDate(start, end);
             }
             else if (start.HasValue)
             {
                 DateTime? tmp = DateTime.Now;
-                GetFilteredData(start, tmp);
+                GetFilteredDate(start, tmp);
             }
             else if (end.HasValue)
             {
                 DateTime? tmp = DateTime.MinValue;
-                GetFilteredData(tmp, end);
+                GetFilteredDate(tmp, end);
             }
             else
             {
@@ -172,15 +176,17 @@ namespace DCHistory
             }
         }
 
-        private void GetFilteredData(DateTime? start, DateTime? end)
+        private void GetFilteredDate(DateTime? start, DateTime? end)
         {
-            mainVM.GetDateFilteredHistory(start.Value, end.Value);
+            mainVM.ExecuteFilterDate(start.Value, end.Value);
         }
 
         private void ClearFilterButton_Click(object sender, RoutedEventArgs e)
         {
             StartDatePicker.SelectedDate = null;
             EndDatePicker.SelectedDate = null;
+            mainVM.FilterKey = string.Empty;
+            mainVM.FilterValue = string.Empty;
         }
 
         private void LogDirectory_Click(object sender, RoutedEventArgs e)
@@ -194,6 +200,98 @@ namespace DCHistory
             var result = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "DCLasersystem\\DCMarker\\Logs");
 
             return result;
+        }
+
+        private void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            SplashScreen splash = new SplashScreen("./LoadingDatabase.png");
+            splash.Show(autoClose: true, topMost: true);
+
+            ToggleButton tmp = (ToggleButton)sender;
+            mainVM.ErrorMessage = string.Empty;
+            if (tmp.IsChecked.Value)
+            {
+                if (mainVM.HasFilterType == FilterType.Text)
+                {
+                    if (!string.IsNullOrWhiteSpace(mainVM.FilterKey))
+                    {
+                        mainVM.ExecuteFilter();
+                    }
+                    else
+                    {
+                        tmp.IsChecked = false;
+                        mainVM.ErrorMessage = "You must select a column to filter on!";
+                        return;
+                    }
+                }
+                else if (mainVM.HasFilterType == FilterType.Bool)
+                {
+                    mainVM.ExecuteFilterBool();
+                }
+                else if (mainVM.HasFilterType == FilterType.Date)
+                {
+                    DateTime? start = StartDatePicker.SelectedDate;
+                    DateTime? end = EndDatePicker.SelectedDate;
+                    if (start > end)
+                    {
+                        tmp.IsChecked = false;
+                        mainVM.ErrorMessage = "End date must be later than or equal to start date";
+                        return;
+                    }
+                    if (start.HasValue && end.HasValue)
+                    {
+                        GetFilteredDate(start, end);
+                    }
+                    else if (start.HasValue)
+                    {
+                        DateTime? tmpDate = DateTime.Now;
+                        GetFilteredDate(start, tmpDate);
+                    }
+                    else if (end.HasValue)
+                    {
+                        DateTime? tmpDate = DateTime.MinValue;
+                        GetFilteredDate(tmpDate, end);
+                    }
+                    else
+                    {
+                        tmp.IsChecked = false;
+                        mainVM.ErrorMessage = "You must enter a date!";
+                        return;
+                    }
+                }
+
+                HistoryGrid.DataContext = null;
+                HistoryGrid.DataContext = mainVM;
+                HistoryGrid.Items.Refresh();
+            }
+            else
+            {
+                mainVM.ExecuteNoFilter();
+                HistoryGrid.DataContext = null;
+                HistoryGrid.DataContext = mainVM;
+                HistoryGrid.Items.Refresh();
+            }
+        }
+
+        private void FilterCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (FilterCombobox != null && FilterCombobox.SelectedItem != null)
+            {
+                string key = FilterCombobox.SelectedItem.ToString();
+                if (key == "Issued")
+                {
+                    mainVM.HasFilterType = FilterType.Date;
+                }
+                else if (key == "ExternTest" || key == "EnableTO")
+                {
+                    mainVM.HasFilterType = FilterType.Bool;
+                }
+                else
+                {
+                    mainVM.HasFilterType = FilterType.Text;
+                }
+                mainVM.FilterKey = key;
+            }
         }
     }
 }

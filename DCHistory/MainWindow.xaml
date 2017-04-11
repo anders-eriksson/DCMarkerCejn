@@ -7,14 +7,29 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:p="clr-namespace:DCHistory.Properties"
     Title="MainWindow"
-    Width="525"
+    Width="1497.881"
     Height="350"
     ContentRendered="Window_ContentRendered"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
-
+    <Window.Resources>
+        <local:BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+        <local:NumberFormatter x:Key="myNumberFormatter" />
+    </Window.Resources>
     <Grid>
-        <DockPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="215" />
+            <ColumnDefinition Width="333*" />
+            <ColumnDefinition Width="100" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="25" />
+            <RowDefinition />
+            <RowDefinition Height="25" />
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="3">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="{x:Static p:Resources.FileMenuHeader}">
 
@@ -46,245 +61,331 @@
                         Header="{x:Static p:Resources.LogDirectoryMenuHeader}" />
                 </MenuItem>
             </Menu>
+        </DockPanel>
+        <!--<StackPanel
+            Grid.Row="1"
+                VerticalAlignment="Top"
+                Orientation="Horizontal" Height="46">-->
+        <GroupBox
+            Grid.Row="1"
+            Grid.Column="0"
+            Header="Search">
             <StackPanel
+                Grid.Row="1"
+                Grid.Column="0"
                 VerticalAlignment="Top"
                 DockPanel.Dock="Top"
                 Orientation="Horizontal">
-
                 <TextBox
                     x:Name="FindTextbox"
                     Width="100"
+                    Height="23"
                     Margin="10,0"
                     ToolTip="Enter serial number to find" />
                 <Button
                     x:Name="FindButton"
+                    Width="60"
+                    Height="23"
                     Margin="10,0"
                     Click="FindButton_Click"
                     Content="{x:Static p:Resources.FindButtonHeader}" />
                 <TextBlock
                     x:Name="SearchError"
-                    Margin="20,0"
+                    Width="10"
+                    Height="23"
                     Text="{Binding SelectedRow.Snr}" />
                 <TextBlock
                     x:Name="SearchError2"
                     Margin="20,0"
                     Text="{Binding SelectedItem.Snr, ElementName=HistoryGrid, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
-            <StackPanel
-                VerticalAlignment="Top"
-                DockPanel.Dock="Top"
-                Orientation="Horizontal">
-
-                <DatePicker x:Name="StartDatePicker" Margin="10,0" />
-                <DatePicker x:Name="EndDatePicker" />
+        </GroupBox>
+        <GroupBox
+            Grid.Row="1"
+            Grid.Column="1"
+            Header="Filter">
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <ComboBox
+                    x:Name="FilterCombobox"
+                    Width="100"
+                    Height="23"
+                    IsSynchronizedWithCurrentItem="True"
+                    ItemsSource="{Binding Path=KeyCollection}"
+                    SelectedItem="{Binding FilterKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    SelectionChanged="FilterCombobox_SelectionChanged" />
+                <TextBlock
+                    Width="8"
+                    Height="23"
+                    Text=" " />
+                <Grid>
+                    <TextBox
+                        x:Name="ValueFilter"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Width="100"
+                        Height="23"
+                        Text="{Binding Path=FilterValue, Mode=TwoWay}"
+                        Visibility="{Binding IsFilterTextbox, Converter={StaticResource BoolToVisConverter}}" />
+                    <DatePicker
+                        x:Name="StartDatePicker"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Height="23"
+                        Visibility="{Binding IsFilterDataPicker, Converter={StaticResource BoolToVisConverter}}" />
+                    <CheckBox
+                        x:Name="FilterCheckbox"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Height="23"
+                        Content="Enable/Disable"
+                        IsChecked="{Binding IsFilterBoolChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Visibility="{Binding IsFilterBool, Converter={StaticResource BoolToVisConverter}}" />
+                </Grid>
+                <TextBlock
+                    Width="10"
+                    Height="23"
+                    Text=" " />
                 <ToggleButton
-                    x:Name="FilterDateButton"
-                    Margin="10,0"
-                    Click="FilterDateButton_Click"
+                    x:Name="FilterButton"
+                    Width="60"
+                    Height="23"
+                    Click="FilterButton_Click"
                     Content="{x:Static p:Resources.FilterButtonHeader}" />
+                <TextBlock
+                    Width="10"
+                    Height="23"
+                    Text=" " />
                 <Button
                     x:Name="ClearFilterButton"
+                    Width="60"
+                    Height="23"
                     Click="ClearFilterButton_Click"
                     Content="{x:Static p:Resources.ClearFilterButtonHeader}" />
             </StackPanel>
-            <DataGrid
-                x:Name="HistoryGrid"
-                AutoGenerateColumns="False"
-                CanUserAddRows="false"
-                CanUserDeleteRows="False"
-                DockPanel.Dock="Top"
-                EnableRowVirtualization="True"
-                IsReadOnly="True"
-                IsSynchronizedWithCurrentItem="True"
-                ItemsSource="{Binding HistoryCollection}"
-                RowDetailsVisibilityMode="VisibleWhenSelected"
-                ScrollViewer.CanContentScroll="True"
-                ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                SelectedItem="{Binding Path=SelectedRow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                SelectionMode="Single"
-                SelectionUnit="FullRow">
-                <DataGrid.RowStyle>
-                    <Style TargetType="DataGridRow">
-                        <Style.Triggers>
-                            <Trigger Property="DataGridRow.IsSelected" Value="True">
-                                <Setter Property="Background" Value="DodgerBlue" />
-                                <Setter Property="Foreground" Value="White" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.RowStyle>
-                <DataGrid.Columns>
-                    <DataGridTextColumn
-                        x:Name="snrColumn"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding Snr, IsAsync=True, TargetNullValue=''}"
-                        Header="Snr" />
-                    <DataGridTemplateColumn
-                        Width="*"
-                        MinWidth="50"
-                        Header="Issued">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Issued, StringFormat=u, IsAsync=True, TargetNullValue=''}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTextColumn
-                        x:Name="f1Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding F1, IsAsync=True, TargetNullValue=''}"
-                        Header="F1" />
-                    <DataGridTextColumn
-                        x:Name="kantColumn"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding Kant, IsAsync=True, TargetNullValue=''}"
-                        Header="Kant" />
-                    <DataGridTextColumn
-                        x:Name="f2Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding F2, IsAsync=True, TargetNullValue=''}"
-                        Header="F2" />
-                    <DataGridTextColumn
-                        x:Name="f3Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding F3, IsAsync=True, TargetNullValue=''}"
-                        Header="F3" />
-                    <DataGridTextColumn
-                        x:Name="f4Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding F4, IsAsync=True, TargetNullValue=''}"
-                        Header="F4" />
-                    <DataGridTextColumn
-                        x:Name="f5Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding F5, IsAsync=True, TargetNullValue=''}"
-                        Header="F5" />
-                    <DataGridTextColumn
-                        x:Name="f6Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding F6, IsAsync=True, TargetNullValue=''}"
-                        Header="F6" />
-                    <DataGridTextColumn
-                        x:Name="f7Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding F7, IsAsync=True, TargetNullValue=''}"
-                        Header="F7" />
-                    <DataGridTextColumn
-                        x:Name="f8Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding F8, IsAsync=True, TargetNullValue=''}"
-                        Header="F8" />
-                    <DataGridTextColumn
-                        x:Name="f9Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding F9, IsAsync=True, TargetNullValue=''}"
-                        Header="F9" />
-                    <DataGridTextColumn
-                        x:Name="f10Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding F10, IsAsync=True, TargetNullValue=''}"
-                        Header="F10" />
-                    <DataGridTextColumn
-                        x:Name="bC1Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding BC1, IsAsync=True, TargetNullValue=''}"
-                        Header="BC1" />
-                    <DataGridTextColumn
-                        x:Name="bC2Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding BC2, IsAsync=True, TargetNullValue=''}"
-                        Header="BC2" />
-                    <DataGridTextColumn
-                        x:Name="templateColumn"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding Template, IsAsync=True, TargetNullValue=''}"
-                        Header="Template" />
-                    <DataGridTextColumn
-                        x:Name="p1Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding P1, IsAsync=True, TargetNullValue=''}"
-                        Header="P1" />
-                    <DataGridTextColumn
-                        x:Name="p2Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding P2, IsAsync=True, TargetNullValue=''}"
-                        Header="P2" />
-                    <DataGridTextColumn
-                        x:Name="p3Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding P3, IsAsync=True, TargetNullValue=''}"
-                        Header="P3" />
-                    <DataGridTextColumn
-                        x:Name="p4Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding P4, IsAsync=True, TargetNullValue=''}"
-                        Header="P4" />
-                    <DataGridTextColumn
-                        x:Name="p5Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding P5, IsAsync=True, TargetNullValue=''}"
-                        Header="P5" />
-                    <DataGridTextColumn
-                        x:Name="p6Column"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding P6, IsAsync=True, TargetNullValue=''}"
-                        Header="P6" />
-                    <DataGridTextColumn
-                        x:Name="fIXTURIDColumn"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding FixtureId, IsAsync=True, TargetNullValue=''}"
-                        Header="FIXTURID" />
-                    <DataGridCheckBoxColumn
-                        x:Name="externTestColumn"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding ExternTest, IsAsync=True, FallbackValue=false}"
-                        Header="Extern Test" />
-                    <DataGridCheckBoxColumn
-                        x:Name="enableTOColumn"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding EnableTO, IsAsync=True, FallbackValue=false}"
-                        Header="EnableTO" />
-                    <DataGridTextColumn
-                        x:Name="tOnrColumn"
-                        Width="*"
-                        MinWidth="50"
-                        Binding="{Binding TOnr, IsAsync=True, TargetNullValue=''}"
-                        Header="TOnr" />
-                </DataGrid.Columns>
-            </DataGrid>
-
+        </GroupBox>
+        <!--</StackPanel>-->
+        <StackPanel
+            Grid.Row="2"
+            Grid.Column="1"
+            Height="23"
+            VerticalAlignment="Top"
+            DockPanel.Dock="Top"
+            Orientation="Horizontal">
             <TextBlock
-                x:Name="ErrorTextblock"
-                VerticalAlignment="Bottom"
-                DockPanel.Dock="Bottom"
-                Foreground="Red"
-                Text="{Binding ErrorMessage}" />
-        </DockPanel>
+                Width="114"
+                Height="23"
+                Text=" " />
+            <DatePicker
+                x:Name="EndDatePicker"
+                Height="23"
+                Visibility="{Binding IsFilterDataPicker, Converter={StaticResource BoolToVisConverter}}" />
+        </StackPanel>
+        <DataGrid
+            x:Name="HistoryGrid"
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
+            AutoGenerateColumns="False"
+            CanUserAddRows="false"
+            CanUserDeleteRows="False"
+            DockPanel.Dock="Top"
+            EnableRowVirtualization="True"
+            IsReadOnly="True"
+            IsSynchronizedWithCurrentItem="True"
+            ItemsSource="{Binding HistoryCollection}"
+            RowDetailsVisibilityMode="VisibleWhenSelected"
+            ScrollViewer.CanContentScroll="True"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            SelectedItem="{Binding Path=SelectedRow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            SelectionMode="Single"
+            SelectionUnit="FullRow">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <Trigger Property="DataGridRow.IsSelected" Value="True">
+                            <Setter Property="Background" Value="DodgerBlue" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    x:Name="snrColumn"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding Snr, IsAsync=True, TargetNullValue=''}"
+                    Header="Snr" />
+                <DataGridTemplateColumn
+                    Width="*"
+                    MinWidth="50"
+                    Header="Issued">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Issued, StringFormat=u, IsAsync=True, TargetNullValue=''}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTextColumn
+                    x:Name="f1Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding F1, IsAsync=True, TargetNullValue=''}"
+                    Header="F1" />
+                <DataGridTextColumn
+                    x:Name="kantColumn"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding Kant, IsAsync=True, TargetNullValue=''}"
+                    Header="Kant" />
+                <DataGridTextColumn
+                    x:Name="f2Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding F2, IsAsync=True, TargetNullValue=''}"
+                    Header="F2" />
+                <DataGridTextColumn
+                    x:Name="f3Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding F3, IsAsync=True, TargetNullValue=''}"
+                    Header="F3" />
+                <DataGridTextColumn
+                    x:Name="f4Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding F4, IsAsync=True, TargetNullValue=''}"
+                    Header="F4" />
+                <DataGridTextColumn
+                    x:Name="f5Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding F5, IsAsync=True, TargetNullValue=''}"
+                    Header="F5" />
+                <DataGridTextColumn
+                    x:Name="f6Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding F6, IsAsync=True, TargetNullValue=''}"
+                    Header="F6" />
+                <DataGridTextColumn
+                    x:Name="f7Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding F7, IsAsync=True, TargetNullValue=''}"
+                    Header="F7" />
+                <DataGridTextColumn
+                    x:Name="f8Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding F8, IsAsync=True, TargetNullValue=''}"
+                    Header="F8" />
+                <DataGridTextColumn
+                    x:Name="f9Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding F9, IsAsync=True, TargetNullValue=''}"
+                    Header="F9" />
+                <DataGridTextColumn
+                    x:Name="f10Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding F10, IsAsync=True, TargetNullValue=''}"
+                    Header="F10" />
+                <DataGridTextColumn
+                    x:Name="bC1Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding BC1, IsAsync=True, TargetNullValue=''}"
+                    Header="BC1" />
+                <DataGridTextColumn
+                    x:Name="bC2Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding BC2, IsAsync=True, TargetNullValue=''}"
+                    Header="BC2" />
+                <DataGridTextColumn
+                    x:Name="templateColumn"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding Template, IsAsync=True, TargetNullValue=''}"
+                    Header="Template" />
+                <DataGridTextColumn
+                    x:Name="p1Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding P1, IsAsync=True, TargetNullValue=''}"
+                    Header="P1" />
+                <DataGridTextColumn
+                    x:Name="p2Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding P2, IsAsync=True, TargetNullValue=''}"
+                    Header="P2" />
+                <DataGridTextColumn
+                    x:Name="p3Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding P3, IsAsync=True, TargetNullValue=''}"
+                    Header="P3" />
+                <DataGridTextColumn
+                    x:Name="p4Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding P4, IsAsync=True, TargetNullValue=''}"
+                    Header="P4" />
+                <DataGridTextColumn
+                    x:Name="p5Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding P5, IsAsync=True, TargetNullValue=''}"
+                    Header="P5" />
+                <DataGridTextColumn
+                    x:Name="p6Column"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding P6, IsAsync=True, TargetNullValue=''}"
+                    Header="P6" />
+                <DataGridTextColumn
+                    x:Name="fIXTURIDColumn"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding FixtureId, IsAsync=True, TargetNullValue=''}"
+                    Header="FIXTURID" />
+                <DataGridCheckBoxColumn
+                    x:Name="externTestColumn"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding ExternTest, IsAsync=True, FallbackValue=false}"
+                    Header="Extern Test" />
+                <DataGridCheckBoxColumn
+                    x:Name="enableTOColumn"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding EnableTO, IsAsync=True, FallbackValue=false}"
+                    Header="EnableTO" />
+                <DataGridTextColumn
+                    x:Name="tOnrColumn"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding TOnr, IsAsync=True, TargetNullValue=''}"
+                    Header="TOnr" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <TextBlock
+            x:Name="ErrorTextblock"
+            Grid.Row="4"
+            Grid.ColumnSpan="2"
+            Height="16"
+            VerticalAlignment="Bottom"
+            DockPanel.Dock="Bottom"
+            Foreground="Red"
+            Text="{Binding ErrorMessage}" />
+        <TextBlock
+            Grid.Row="4"
+            Grid.Column="3"
+            VerticalAlignment="Bottom"
+            Text="{Binding RowCount, Converter={StaticResource myNumberFormatter}, ConverterParameter=N0, FallbackValue=0}" />
     </Grid>
 </Window>
