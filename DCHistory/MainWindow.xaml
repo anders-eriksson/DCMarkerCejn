@@ -222,11 +222,15 @@
                     Header="Issued">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Issued, StringFormat=u, IsAsync=True, TargetNullValue=''}" />
+                            <TextBlock Text="{Binding Issued, StringFormat={}{0:yyyy'-'MM'-'dd HH':'mm':'ss}, IsAsync=True, TargetNullValue=''}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
+                <DataGridTextColumn
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding Avdelning, IsAsync=True}"
+                    Header="Avdelning" />
                 <DataGridTextColumn
                     x:Name="f1Column"
                     Width="*"

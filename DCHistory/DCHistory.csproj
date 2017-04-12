@@ -97,7 +97,6 @@
     <Compile Include="ExpressionBuilder\PredicateBuilder.cs" />
     <Compile Include="FilterType.cs" />
     <Compile Include="ItemsControlExtensions.cs" />
-    <Compile Include="ExpressionBuilder\ApplyFilter.cs" />
     <Compile Include="Model\DB.cs" />
     <Compile Include="Model\DCHistoryContext.cs" />
     <Compile Include="Model\HistoryData.cs" />

@@ -29,7 +29,7 @@ namespace DCHistory
             StartDatePicker.DisplayDate = DateTime.Now;
             EndDatePicker.DisplayDate = DateTime.Now;
             this.DataContext = mainVM;
-
+#if VIRTUALIZATION
             //this routine only needs to run once, so first check to make sure the
             //VirtualizationManager isn’t already initialized
             if (!VirtualizationManager.IsInitialized)
@@ -49,7 +49,7 @@ namespace DCHistory
                     },
                     this.Dispatcher).Start();
             }
-
+#endif
             Services.Tracker.Configure(this)//the object to track
                                           .IdentifyAs("main window")                                                                           //a string by which to identify the target object
                                           .AddProperties<Window>(w => w.Height, w => w.Width, w => w.Top, w => w.Left, w => w.WindowState)     //properties to track

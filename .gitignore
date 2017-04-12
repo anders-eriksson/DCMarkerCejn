@@ -4,6 +4,9 @@
 # Archived installations
 Archieve Installations/
 
+# temp directory
+[Tt]emp/
+
 # User-specific files
 *.suo
 *.user
