@@ -37,13 +37,25 @@ namespace TestTcpClient.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
         public int IpPort {
             get {
                 return ((int)(this["IpPort"]));
             }
             set {
                 this["IpPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("14")]
+        public int ByteArrLength {
+            get {
+                return ((int)(this["ByteArrLength"]));
+            }
+            set {
+                this["ByteArrLength"] = value;
             }
         }
     }

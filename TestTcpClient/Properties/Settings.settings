@@ -6,7 +6,10 @@
       <Value Profile="(Default)">127.0.0.1</Value>
     </Setting>
     <Setting Name="IpPort" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">50000</Value>
+      <Value Profile="(Default)">2000</Value>
+    </Setting>
+    <Setting Name="ByteArrLength" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">14</Value>
     </Setting>
   </Settings>
 </SettingsFile>

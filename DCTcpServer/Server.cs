@@ -35,6 +35,7 @@ namespace DCTcpServer
         {
             _listener = new TcpListener(IPAddress.Any, _port);
             _listener.Start();
+            Log.Debug(string.Format("Server is started and listening on port: {0}\n", _port));
             while (true)
             {
                 try
@@ -139,8 +140,14 @@ namespace DCTcpServer
         {
             int count = buffer.Count(bt => bt != 0); // find the first null
             string articleNumber = System.Text.Encoding.ASCII.GetString(buffer, 0, count);
+#if DEBUG
+            RaiseNewArticleNumberEvent(string.Format("Raw:\t\t{0}", articleNumber));
+            articleNumber = RemoveNonPrintableChars(articleNumber);
+            RaiseNewArticleNumberEvent(string.Format("Used:\t\t{0}", articleNumber));
+#else
             articleNumber = RemoveNonPrintableChars(articleNumber);
             RaiseNewArticleNumberEvent(articleNumber);
+#endif
         }
 
         private string RemoveNonPrintableChars(string articleNumber)

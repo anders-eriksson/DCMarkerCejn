@@ -16,11 +16,12 @@ namespace TestTcpClient
         {
             string ipaddress = Properties.Settings.Default.IpAddress;
             int ipport = Properties.Settings.Default.IpPort;
+            int byteArrLength = Properties.Settings.Default.ByteArrLength;
             using (TcpClient client = new TcpClient(ipaddress, ipport))
             {
                 using (NetworkStream sw = client.GetStream())
                 {
-                    byte[] buffer = GetBytes(ArticleTextbox.Text.Trim());
+                    byte[] buffer = GetBytes(ArticleTextbox.Text.Trim(), byteArrLength);
 
                     sw.Write(buffer, 0, buffer.Length);
 
@@ -36,9 +37,9 @@ namespace TestTcpClient
             }
         }
 
-        private static byte[] GetBytes(string str, int byteArrLength = 12)
+        private static byte[] GetBytes(string str, int byteArrLen = 14)
         {
-            byte[] bytes = new byte[byteArrLength];
+            byte[] bytes = new byte[byteArrLen];
             byte[] tmp = Encoding.ASCII.GetBytes(str);
             System.Buffer.BlockCopy(tmp, 0, bytes, 0, tmp.Length);
 
