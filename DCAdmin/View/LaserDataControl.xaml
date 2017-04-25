@@ -19,8 +19,11 @@
     <UserControl.Resources>
         <l:StringTrimConverter x:Key="TrimString" />
         <l:CheckBoxConverter x:Key="CheckBoxConverter" />
+        <l:BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+        <l:NumberFormatter x:Key="myNumberFormatter" />
     </UserControl.Resources>
     <Grid x:Name="LayoutRoot">
+
         <DockPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                 <GroupBox Header="{x:Static p:Resources.SearchHeader}">
@@ -50,25 +53,41 @@
                     Height="23"
                     Text=" " />
                 <GroupBox
-                    Grid.Row="0"
+                    Grid.Row="1"
                     Grid.Column="1"
-                    Header="{x:Static p:Resources.FilterHeader}">
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                    Header="Filter">
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <ComboBox
                             x:Name="FilterCombobox"
                             Width="100"
                             Height="23"
+                            IsSynchronizedWithCurrentItem="True"
                             ItemsSource="{Binding Path=KeyCollection}"
+                            SelectedItem="{Binding FilterKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             SelectionChanged="FilterCombobox_SelectionChanged" />
                         <TextBlock
                             Width="8"
                             Height="23"
                             Text=" " />
-                        <TextBox
-                            x:Name="ValueFilter"
-                            Width="100"
-                            Height="23"
-                            Text="{Binding Path=FilterValue, Mode=TwoWay}" />
+                        <Grid>
+                            <TextBox
+                                x:Name="ValueFilter"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Width="100"
+                                Height="23"
+                                Text="{Binding Path=FilterValue, Mode=TwoWay}"
+                                Visibility="{Binding IsFilterTextbox, Converter={StaticResource BoolToVisConverter}}" />
+
+                            <CheckBox
+                                x:Name="FilterCheckbox"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Height="23"
+                                Content="Enable/Disable"
+                                IsChecked="{Binding IsFilterBoolChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Visibility="{Binding IsFilterBool, Converter={StaticResource BoolToVisConverter}}" />
+                        </Grid>
                         <TextBlock
                             Width="10"
                             Height="23"
@@ -80,22 +99,21 @@
                             Click="FilterButton_Click"
                             Content="{x:Static p:Resources.FilterButtonHeader}" />
                         <TextBlock
-                            Width="8"
+                            Width="10"
                             Height="23"
                             Text=" " />
                         <Button
-                            x:Name="GotoSelectedButton"
+                            x:Name="ClearFilterButton"
                             Width="60"
                             Height="23"
-                            Click="GotoSelectedButton_Click"
-                            Content="Goto" />
+                            Click="ClearFilterButton_Click"
+                            Content="{x:Static p:Resources.ClearFilterButtonHeader}" />
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
+
             <TextBlock
                 x:Name="SearchError"
-                Grid.Row="2"
-                Grid.ColumnSpan="2"
                 Height="20"
                 VerticalAlignment="Bottom"
                 Panel.ZIndex="1"
@@ -103,9 +121,15 @@
                 Foreground="Red"
                 Text="{Binding Path=ErrorMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                 TextWrapping="Wrap" />
+            <TextBlock
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Right"
+                DockPanel.Dock="Bottom"
+                Text="{Binding RowCount, Converter={StaticResource myNumberFormatter}, ConverterParameter=N0, FallbackValue=0}" />
 
             <DataGrid
                 x:Name="laserDataDataGrid"
+                Grid.ColumnSpan="2"
                 Height="Auto"
                 Margin="10,13,10,10"
                 VerticalAlignment="Stretch"

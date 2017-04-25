@@ -129,4 +129,7 @@
   <data name="Delete_article_question" xml:space="preserve">
     <value>Vill du radera denna artikel?</value>
   </data>
+  <data name="ClearFilterButtonHeader" xml:space="preserve">
+    <value>Rensa</value>
+  </data>
 </root>

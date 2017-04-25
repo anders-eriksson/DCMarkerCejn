@@ -14,7 +14,11 @@
     MaxWidth="{x:Static local:MainWindow.MaxScreenSize}"
     Closing="Window_Closing"
     ContentRendered="Window_ContentRendered"
+    Loaded="Window_Loaded"
     mc:Ignorable="d">
+    <Window.Resources>
+        <local:NumberFormatter x:Key="myNumberFormatter" />
+    </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding CanExecute="CopyCommandBinding_CanExecute" Command="ApplicationCommands.Copy" />
         <!--  Executed="CopyCommandBinding_Executed"  />  -->
@@ -226,7 +230,7 @@
             Grid.Row="3"
             Height="23"
             Padding="5"
-            Text="Changes was saved to database"
+            Text=" "
             TextWrapping="Wrap" />
     </Grid>
 </Window>

@@ -56,26 +56,52 @@ namespace DCAdmin
 
         private void InitializeViewModels()
         {
-            this.LaserDataRoot.DataContext = null;
-            this.QuarterCodeRoot.DataContext = null;
-            this.WeekCodeRoot.DataContext = null;
-            this.FixtureRoot.DataContext = null;
+            InitLaserDataViewModel();
+            InitQuarterCodeViewModel();
+            InitWeekCodeViewModel();
+            InitFixtureViewModel();
+        }
 
+        private void InitFixtureViewModel()
+        {
+            this.FixtureRoot.DataContext = null;
+            fixtureVM = new FixtureViewModel();
+            fixtureVM.RefreshDatabase(false);
+            FixtureRoot.DataContext = fixtureVM;
+            FixtureGrid.fixtureDataGrid.Items.Refresh();
+            FixtureGrid.fixtureDataGrid.Focus();
+        }
+
+        private void InitWeekCodeViewModel()
+        {
+            this.WeekCodeRoot.DataContext = null;
+            weekVM = new WeekCodeViewModel();
+            weekVM.RefreshDatabase(false);
+            WeekCodeRoot.DataContext = weekVM;
+            WeekCodeGrid.weekCodeDataGrid.Items.Refresh();
+            WeekCodeGrid.weekCodeDataGrid.Focus();
+        }
+
+        private void InitQuarterCodeViewModel()
+        {
+            this.QuarterCodeRoot.DataContext = null;
+            quarterVM = new QuarterCodeViewModel();
+            quarterVM.RefreshDatabase(false);
+            QuarterCodeRoot.DataContext = quarterVM;
+            QuarterCodeGrid.quarterCodeDataGrid.Items.Refresh();
+            QuarterCodeGrid.quarterCodeDataGrid.Focus();
+        }
+
+        private void InitLaserDataViewModel()
+        {
+            this.LaserDataRoot.DataContext = null;
             laserVM = new LaserDataViewModel();
             laserVM.EventColorEvent += EventColorEvent;
             laserVM.SaveChangesEvent += SaveChangesEvent;
-            quarterVM = new QuarterCodeViewModel();
-            weekVM = new WeekCodeViewModel();
-            fixtureVM = new FixtureViewModel();
-
             laserVM.RefreshDatabase(false);
             LaserDataRoot.DataContext = laserVM;
             LaserDataGrid.laserDataDataGrid.Items.Refresh();
             LaserDataGrid.laserDataDataGrid.Focus();
-
-            QuarterCodeRoot.DataContext = quarterVM;
-            WeekCodeRoot.DataContext = weekVM;
-            FixtureRoot.DataContext = fixtureVM;
         }
 
         private void SaveChangesEvent()
@@ -201,27 +227,8 @@ namespace DCAdmin
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            ConfirmationDeleteRowWindow dlg = new ConfirmationDeleteRowWindow()
-            {
-                Owner = Window.GetWindow(this)
-            };
-            var currentItem = laserVM.SelectedLaserDataRow;
-            string machineId = "AME";
-#if MACHINEID
-            string machineId = currentItem.MachineId;
-#endif
-            string article = currentItem.F1;
-            string kant = currentItem.Kant;
-
-            dlg.InitValues(machineId, article, kant);
-
-            bool? rc = dlg.ShowDialog();
-
-            if (rc.HasValue && rc.Value)
-            {
-                int index = tcControl.SelectedIndex;
-                DeleteSelectedRecord(index);
-            }
+            int index = tcControl.SelectedIndex;
+            DeleteSelectedRecord(index);
         }
 
         private void DeleteSelectedRecord(int index)
@@ -230,7 +237,28 @@ namespace DCAdmin
             {
                 case (int)ViewModelEnum.LaserDataViewModel:
                     {
-                        laserVM.DeleteSelectedRecord();
+                        ConfirmationDeleteRowWindow dlg = new ConfirmationDeleteRowWindow()
+                        {
+                            Owner = Window.GetWindow(this)
+                        };
+                        var currentItem = laserVM.SelectedLaserDataRow;
+
+                        // TODO: MachineId
+                        string machineId = "AME";
+#if MACHINEID
+            string machineId = currentItem.MachineId;
+#endif
+                        string article = currentItem.F1;
+                        string kant = currentItem.Kant;
+
+                        dlg.InitValues(machineId, article, kant);
+
+                        bool? rc = dlg.ShowDialog();
+
+                        if (rc.HasValue && rc.Value)
+                        {
+                            laserVM.DeleteSelectedRecord();
+                        }
                         break;
                     }
                 case (int)ViewModelEnum.WeekCodeViewModel:
@@ -526,6 +554,10 @@ namespace DCAdmin
         {
             // Init all datagrid view models
             InitializeViewModels();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
         }
     }
 }

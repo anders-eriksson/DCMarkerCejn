@@ -116,6 +116,7 @@ namespace DCAdmin
         {
             try
             {
+                ErrorMessage = string.Empty;
                 DB.Instance.SaveChanges();
             }
             catch (DbEntityValidationException ex)
@@ -133,6 +134,7 @@ namespace DCAdmin
         {
             try
             {
+                ErrorMessage = string.Empty;
                 if (saveChanges)
                 {
                     SaveChanges();

@@ -255,4 +255,7 @@
   <data name="Machine_id_label" xml:space="preserve">
     <value>Machine Id</value>
   </data>
+  <data name="ClearFilterButtonHeader" xml:space="preserve">
+    <value>Clear</value>
+  </data>
 </root>

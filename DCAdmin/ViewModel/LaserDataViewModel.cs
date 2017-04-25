@@ -16,6 +16,8 @@ namespace DCAdmin.ViewModel
     {
         private string _FilterKey;
         private string _FilterValue;
+        private FilterType _HasFilterType;
+        private bool _IsFilterTextbox;
 
         public LaserDataViewModel()
         {
@@ -25,8 +27,14 @@ namespace DCAdmin.ViewModel
 #if TEST
                 _LaserDataCollection = new ObservableCollection<LaserData>();
 #endif
-                //LaserDataCollection = null;
-                //LaserDataCollection = DB.Instance.LoadLaserData();
+                // enable Filter Textbox
+                IsFilterTextbox = true;
+
+                // disable Filter checkbox
+                IsFilterBool = false;
+
+                // Set init value for checkbox to false
+                IsFilterBoolChecked = false;
 #if DEBUG
                 ErrorMessage = "Hello World!";
 #else
@@ -78,6 +86,78 @@ namespace DCAdmin.ViewModel
             set
             {
                 _FilterValue = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public FilterType HasFilterType
+        {
+            get
+            {
+                return _HasFilterType;
+            }
+            set
+            {
+                _HasFilterType = value;
+                SetFilterType(_HasFilterType);
+                NotifyPropertyChanged();
+            }
+        }
+
+        private void SetFilterType(FilterType hasFilterType)
+        {
+            IsFilterBool = false;
+            IsFilterTextbox = false;
+
+            if (hasFilterType == FilterType.Bool)
+            {
+                IsFilterBool = true;
+            }
+            else if (hasFilterType == FilterType.Text)
+            {
+                IsFilterTextbox = true;
+            }
+        }
+
+        private bool _IsFilterBool;
+
+        public bool IsFilterBool
+        {
+            get
+            {
+                return _IsFilterBool;
+            }
+            set
+            {
+                _IsFilterBool = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool? _IsFilterBoolChecked;
+
+        public bool? IsFilterBoolChecked
+        {
+            get
+            {
+                return _IsFilterBoolChecked;
+            }
+            set
+            {
+                _IsFilterBoolChecked = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool IsFilterTextbox
+        {
+            get
+            {
+                return _IsFilterTextbox;
+            }
+            set
+            {
+                _IsFilterTextbox = value;
                 NotifyPropertyChanged();
             }
         }
@@ -144,6 +224,21 @@ namespace DCAdmin.ViewModel
                 _editColor = value;
                 NotifyPropertyChanged();
                 RaiseEventColorEvent(_editColor);
+            }
+        }
+
+        private string _RowCount;
+
+        public string RowCount
+        {
+            get
+            {
+                return _RowCount;
+            }
+            set
+            {
+                _RowCount = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -252,13 +347,25 @@ namespace DCAdmin.ViewModel
         internal void ExecuteFilter()
         {
             ErrorMessage = string.Empty;
-            LaserDataCollection = DB.Instance.LoadLaserDataFiltered(FilterKey, FilterValue);
+            LaserDataCollection = DB.Instance.LoadLaserDataFilteredText(FilterKey, FilterValue);
+            RowCount = LaserDataCollection != null ? LaserDataCollection.Count.ToString() : string.Empty;
         }
 
         internal void ExecuteNoFilter()
         {
             ErrorMessage = string.Empty;
             LaserDataCollection = DB.Instance.LoadLaserData();
+            RowCount = LaserDataCollection != null ? LaserDataCollection.Count.ToString() : string.Empty;
+        }
+
+        internal void ExecuteFilterBool()
+        {
+            ErrorMessage = string.Empty;
+            //LaserDataCollection = null;
+            //GC.Collect();
+
+            LaserDataCollection = DB.Instance.LoadLaserDataFilteredBool(FilterKey, IsFilterBoolChecked.Value);
+            RowCount = LaserDataCollection != null ? LaserDataCollection.Count.ToString() : string.Empty;
         }
 
         internal void SaveChanges()
@@ -303,6 +410,7 @@ namespace DCAdmin.ViewModel
                 }
 
                 LaserDataCollection = DB.Instance.LoadLaserData();
+                RowCount = LaserDataCollection != null ? LaserDataCollection.Count.ToString() : string.Empty;
             }
             catch (Exception)
             {

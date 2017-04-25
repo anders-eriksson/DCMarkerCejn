@@ -94,11 +94,21 @@ namespace DCAdmin
 
             try
             {
+                //var query = (from t in typeof(LaserData).GetProperties()
+                //             select t.Name);
+                //result = new ObservableCollection<string>(query);
+                //int pos = result.IndexOf("Id");
+                //result[pos] = "";
+
                 var query = (from t in typeof(LaserData).GetProperties()
                              select t.Name);
-                result = new ObservableCollection<string>(query);
-                int pos = result.IndexOf("Id");
-                result[pos] = "";
+                result = new ObservableCollection<string>(query.OrderBy(x => x));
+                if (result != null)
+                {
+                    int pos = result.IndexOf("Id");
+                    result.RemoveAt(pos);
+                    result.Insert(0, "");
+                }
             }
             catch (Exception ex)
             {
@@ -160,19 +170,31 @@ namespace DCAdmin
             return result;
         }
 
-        public ObservableCollection<LaserData> LoadLaserDataFiltered(string key, string value)
+        public ObservableCollection<LaserData> LoadLaserDataFilteredText(string filterKey, string filterValue)
         {
             ObservableCollection<LaserData> result = null;
 
             try
             {
-                var filter = new List<Filter>()
+                var filter = new List<Filter>();
+                var f = new Filter
                 {
-                    new Filter { PropertyName = key ,
-                        Operation = Op.StartsWith, Value = value},
+                    PropertyName = filterKey,
+                    Operation = Op.Equals,
+                    Value = filterValue
                 };
-
-                var deleg = ExpressionBuilder.ExpressionBuilder.GetExpression<LaserData>(filter);
+                filter.Add(f);
+                if (filterValue == null)
+                {
+                    f = new Filter
+                    {
+                        PropertyName = filterKey,
+                        Operation = Op.Equals,
+                        Value = string.Empty
+                    };
+                    filter.Add(f);
+                }
+                var deleg = ExpressionBuilder.ExpressionBuilder.GetExpressionOrElse<LaserData>(filter);
 
                 if (IsChangesPending())
                 {
@@ -199,6 +221,60 @@ namespace DCAdmin
                 throw;
             }
             Debug.WriteLine(GlblRes.LoadLaserDataFiltered_0, result.Count);
+            return result;
+        }
+
+        internal ObservableCollection<LaserData> LoadLaserDataFilteredBool(string filterKey, bool filterValue)
+        {
+            ObservableCollection<LaserData> result = null;
+
+            try
+            {
+                var filter = new List<Filter>();
+                var f = new Filter
+                {
+                    PropertyName = filterKey,
+                    Operation = Op.Equals,
+                    Value = filterValue
+                };
+                filter.Add(f);
+                if (!filterValue)
+                {
+                    f = new Filter
+                    {
+                        PropertyName = filterKey,
+                        Operation = Op.Equals,
+                        Value = null
+                    };
+                    filter.Add(f);
+                }
+
+                var deleg = ExpressionBuilder.ExpressionBuilder.GetExpressionOrElse<LaserData>(filter);
+
+                if (IsChangesPending())
+                {
+                    SaveChanges();
+                }
+                Dispose();
+                _context = new DCLasermarkContext();
+
+                _context.Database.Log = Console.Write;
+                var query = _context.LaserData
+                .OrderBy(x => x.F1).ThenBy(x => x.Kant)
+                .Where(deleg).ToList();
+                result = new ObservableCollection<LaserData>(query);
+            }
+            catch (OutOfMemoryException ex)
+            {
+                // To many rows in select!
+                ErrorMessage = "Out of memory! Please use a filter to make selection smaller!";
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "GetFilteredHistory exception");
+                throw;
+            }
+
             return result;
         }
 

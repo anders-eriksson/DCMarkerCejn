@@ -190,6 +190,10 @@
           <source>Is this the Article you want to delete?</source>
           <target state="translated">Vill du radera denna artikel?</target>
         </trans-unit>
+        <trans-unit id="ClearFilterButtonHeader" translate="yes" xml:space="preserve">
+          <source>Clear</source>
+          <target state="translated">Rensa</target>
+        </trans-unit>
       </group>
     </body>
   </file>

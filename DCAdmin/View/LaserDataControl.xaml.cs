@@ -166,20 +166,33 @@ namespace DCAdmin.View
             ToggleButton tmp = (ToggleButton)sender;
             LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
             laserVM.ErrorMessage = string.Empty;
+            SplashScreen splash = new SplashScreen("./LoadingDatabase.png");
+            splash.Show(autoClose: true, topMost: true);
+
+            laserVM.ErrorMessage = string.Empty;
             if (tmp.IsChecked.Value)
             {
-                if (!string.IsNullOrWhiteSpace(laserVM.FilterKey) && !string.IsNullOrWhiteSpace(laserVM.FilterValue))
+                if (laserVM.HasFilterType == FilterType.Text)
                 {
-                    laserVM.ExecuteFilter();
-                    laserDataDataGrid.DataContext = null;
-                    laserDataDataGrid.DataContext = laserVM;
-                    laserDataDataGrid.Items.Refresh();
+                    if (!string.IsNullOrWhiteSpace(laserVM.FilterKey))
+                    {
+                        laserVM.ExecuteFilter();
+                    }
+                    else
+                    {
+                        tmp.IsChecked = false;
+                        laserVM.ErrorMessage = "You must select a column to filter on!";
+                        return;
+                    }
                 }
-                else
+                else if (laserVM.HasFilterType == FilterType.Bool)
                 {
-                    tmp.IsChecked = false;
-                    laserVM.ErrorMessage = "Both Filter Column and Value must be entered!";
+                    laserVM.ExecuteFilterBool();
                 }
+
+                laserDataDataGrid.DataContext = null;
+                laserDataDataGrid.DataContext = laserVM;
+                laserDataDataGrid.Items.Refresh();
             }
             else
             {
@@ -194,8 +207,17 @@ namespace DCAdmin.View
         {
             if (FilterCombobox != null && FilterCombobox.SelectedItem != null)
             {
-                string key = FilterCombobox.SelectedItem.ToString();
                 LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+                string key = FilterCombobox.SelectedItem.ToString();
+
+                if (key == "ExternTest" || key == "EnableTO")
+                {
+                    laserVM.HasFilterType = FilterType.Bool;
+                }
+                else
+                {
+                    laserVM.HasFilterType = FilterType.Text;
+                }
                 laserVM.FilterKey = key;
             }
         }
@@ -229,6 +251,13 @@ namespace DCAdmin.View
             //laserVM.SelectedLaserDataRow = null;
             //Thread.Sleep(500);
             //laserVM.SelectedLaserDataRow = sel;
+        }
+
+        private void ClearFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            laserVM.FilterKey = string.Empty;
+            laserVM.FilterValue = string.Empty;
         }
     }
 }

@@ -88,6 +88,7 @@ namespace DCAdmin
         {
             try
             {
+                ErrorMessage = string.Empty;
                 var entity = DB.Instance.AddNewQuartalCodeRecord();
                 if (entity != null)
                 {
@@ -105,6 +106,7 @@ namespace DCAdmin
 
         internal void DeleteSelectedRecord()
         {
+            ErrorMessage = string.Empty;
             DB.Instance.DeleteQuarterCodeRecord(SelectedQuarterCodeRow);
         }
 
@@ -112,6 +114,7 @@ namespace DCAdmin
         {
             try
             {
+                ErrorMessage = string.Empty;
                 DB.Instance.SaveChanges();
             }
             catch (DbEntityValidationException ex)
@@ -129,6 +132,7 @@ namespace DCAdmin
         {
             try
             {
+                ErrorMessage = string.Empty;
                 if (saveChanges)
                 {
                     SaveChanges();

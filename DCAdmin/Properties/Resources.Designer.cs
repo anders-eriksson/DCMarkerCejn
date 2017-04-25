@@ -106,6 +106,15 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        public static string ClearFilterButtonHeader {
+            get {
+                return ResourceManager.GetString("ClearFilterButtonHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Copy.
         /// </summary>
         public static string CopyHeader {

@@ -110,6 +110,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BooleanToVisibilityConverter.cs" />
     <Compile Include="Dialog\AddRowWindow.xaml.cs">
       <DependentUpon>AddRowWindow.xaml</DependentUpon>
     </Compile>
@@ -124,10 +125,17 @@
     <Compile Include="DebugBindingExtension.cs" />
     <Compile Include="ExpressionBuilder\Filter.cs" />
     <Compile Include="ExpressionBuilder\Operators.cs" />
+    <Compile Include="FilterType.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ItemsControlExtensions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="NumberFormatter.cs" />
+    <Compile Include="Properties\Resources.sv.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.sv.resx</DependentUpon>
     </Compile>
     <Compile Include="RowData.cs" />
     <Compile Include="View\ScrollIntoViewBehavior.cs" />
@@ -210,7 +218,10 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.sv.resx" />
+    <EmbeddedResource Include="Properties\Resources.sv.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.sv.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
