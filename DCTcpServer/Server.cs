@@ -15,7 +15,16 @@ namespace DCTcpServer
         private int _port = 50000;
         private int _maxBufferBytes = 14;
         private TcpListener _listener;
-        private Thread listeningThread;
+        private Thread _listeningThread;
+        private TcpClient _client = null;
+        private Socket _server = null;
+        private byte[] _buffer;
+
+        public byte[] BufferFromPlc
+        {
+            get { return _buffer; }
+            internal set { _buffer = value; }
+        }
 
         public Server(int port = 50000, int bufferLength = 14)
         {
@@ -23,13 +32,107 @@ namespace DCTcpServer
             _maxBufferBytes = bufferLength;
 
             var childref = new ThreadStart(Listener);
-            listeningThread = new Thread(childref)
+            _listeningThread = new Thread(childref)
             {
                 Name = "ServerListeningThread"
             };
-            listeningThread.Start();
+            _listeningThread.Start();
             Log.Debug("Listener thread started");
         }
+
+#if XXX
+
+        private void Listener()
+        {
+            _listener = new TcpListener(IPAddress.Any, _port);
+            _listener.Start();
+            Log.Debug(string.Format("Server is started and listening on port: {0}\n", _port));
+            while (true)
+            {
+                try
+                {
+                    if (_client == null || !_client.Connected)
+                    {
+                        _client = _listener.AcceptTcpClient();       // Blocking!
+                        Log.Trace("Client connected");
+                        // We have connection
+                        _server = _client.Client;
+                        _buffer = new byte[_maxBufferBytes];
+                    }
+                    var inbuffer = new byte[_maxBufferBytes];
+                    var totalReceivedBytes = 0;
+                    var readBytes = 0;
+
+                    bool hasReceivedAllBytes = false;
+                    do
+                    {
+                        readBytes = _server.Receive(_buffer, _maxBufferBytes, SocketFlags.None); // blocking!
+                        Log.Debug(string.Format("Read {0} bytes from client", readBytes));
+                        Log.Debug(string.Format("string.read: {0}", readBytes));
+                        Log.Debug(ByteToHex(_buffer));
+
+                        totalReceivedBytes += readBytes;
+                        if (!hasReceivedAllBytes && totalReceivedBytes >= _maxBufferBytes)
+                        {
+                            hasReceivedAllBytes = true;
+                            UpdateWF(_buffer);
+                            //buffer = WriteArticleNumberToPlc(server, buffer);
+                        }
+                    } while (readBytes > 0);
+
+                    if (IsAbort(_buffer, totalReceivedBytes))
+                    {
+                        CloseConnections();
+
+                        _listener.Stop();
+                        Log.Trace("Listener stopped");
+
+                        return;
+                    }
+                    if(readBytes==0)
+                    {
+                        CloseConnections();
+                    }
+                }
+                catch (SocketException ex)
+                {
+                    if ((ex.SocketErrorCode == SocketError.Interrupted))
+                    {
+                        // a blocking listen has been cancelled
+                        _listener.Stop();
+
+                        return;
+                    }
+                    else if (ex.SocketErrorCode == SocketError.ConnectionAborted
+                            || ex.SocketErrorCode == SocketError.ConnectionReset)
+                    {
+                        Log.Trace("Connection Aborted");
+                    }
+                    else
+                    {
+                        Log.Error(ex, "SocketException");
+                        throw;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Unknown Exception");
+                    throw;
+                }
+            }
+        }
+
+        private void CloseConnections()
+        {
+            // Client has disconnected
+            _server.Close();
+            _server = null;
+
+            _client.Close();
+            _client = null;
+        }
+
+#else
 
         private void Listener()
         {
@@ -113,6 +216,34 @@ namespace DCTcpServer
             }
         }
 
+#endif
+
+        public bool WriteArticleNumberToPlc()
+        {
+            bool result = false;
+
+            try
+            {
+                int writeBytes = _server.Send(_buffer, _maxBufferBytes, SocketFlags.None);
+                Log.Debug(string.Format("Write {0} bytes to client", writeBytes));
+
+                //_buffer = new byte[_maxBufferBytes];
+
+                //_server.Close();
+                //_client.Close();
+                //Log.Trace("Client disconnected/closed");
+
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "TCP: Can't write to PLC");
+                throw;
+            }
+
+            return result;
+        }
+
         private string ByteToHex(byte[] buffer)
         {
             string hex = BitConverter.ToString(buffer);
@@ -140,7 +271,7 @@ namespace DCTcpServer
         {
             int count = buffer.Count(bt => bt != 0); // find the first null
             string articleNumber = System.Text.Encoding.ASCII.GetString(buffer, 0, count);
-#if DEBUG
+#if DEBUGX
             RaiseNewArticleNumberEvent(string.Format("Raw:\t\t{0}", articleNumber));
             articleNumber = RemoveNonPrintableChars(articleNumber);
             RaiseNewArticleNumberEvent(string.Format("Used:\t\t{0}", articleNumber));

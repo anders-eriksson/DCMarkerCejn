@@ -4,17 +4,19 @@ using DCMarker.Model;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Data;
+using System.Windows.Input;
 using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class ManualMainViewModel : INotifyPropertyChanged
     {
         private IWorkFlow _wf = null;
 
         private DCConfig cfg;
 
-        public MainViewModel()
+        public ManualMainViewModel()
         {
             ArticleNumber = string.Empty;
             Fixture = string.Empty;
@@ -30,6 +32,7 @@ namespace DCMarker
             Status = string.Empty;
             ErrorMessage = string.Empty;
             NeedUserInput = false;
+            IsTOnrNotAcknowledged = true;
 
             try
             {
@@ -41,6 +44,16 @@ namespace DCMarker
             {
                 ErrorMessage = ex.Message;
             }
+        }
+
+        private bool CanOkExecute()
+        {
+            return TOnr.Length == cfg.TOnumberLength;
+        }
+
+        private void AcknowledgeTONumber()
+        {
+            IsTOnrNotAcknowledged = !_wf.AcknowledgeTONumber(ArticleNumber, Kant, TOnr);
         }
 
         internal void Test()
@@ -114,6 +127,11 @@ namespace DCMarker
             }
         }
 
+        //internal void CreateHistoryData()
+        //{
+        //    _wf.CreateHistoryData(TOnr);
+        //}
+
         private void _wf_ErrorEvent(object sender, ErrorArgs e)
         {
             // Clear Status since we have an error
@@ -132,6 +150,25 @@ namespace DCMarker
             HasBatchSize = e.Data.HasBatchSize;
             NeedUserInput = e.Data.NeedUserInput;
             Status = e.Data.Status;
+
+            TOnr = string.Empty;
+            IsTOnrNotAcknowledged = true;
+        }
+
+        private ICommand __OkTOnumber;
+
+        public ICommand OkTOnumber
+        {
+            get
+            {
+                if (__OkTOnumber == null)
+                {
+                    __OkTOnumber = new RelayCommand(
+                        p => this.CanOkExecute(),
+                        p => this.AcknowledgeTONumber());
+                }
+                return __OkTOnumber;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -318,6 +355,19 @@ namespace DCMarker
             }
         }
 
+        public bool IsTOnrNotAcknowledged
+        {
+            get
+            {
+                return _TOnrAcknowledged;
+            }
+            set
+            {
+                _TOnrAcknowledged = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private string _articleNumber;
         private string _batchSize;
         private string _error;
@@ -332,6 +382,7 @@ namespace DCMarker
         private string _testItem;
         private string _TOnr;
         private bool _needUserInput;
+        private bool _TOnrAcknowledged;
 
         // This method is called by the Set accessor of each property.
         // The CallerMemberName attribute that is applied to the optional propertyName

@@ -17,6 +17,24 @@
     mc:Ignorable="d">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <DockPanel LastChildFill="True">
+                            <TextBlock
+                                DockPanel.Dock="Right"
+                                FontSize="12pt"
+                                Foreground="Red"
+                                Text="{Binding ElementName=MyAdorner, Path=AdornedElement.(Validation.Errors).CurrentItem.ErrorContent}" />
+                            <Border BorderBrush="Red" BorderThickness="1">
+                                <AdornedElementPlaceholder Name="MyAdorner" />
+                            </Border>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -119,18 +137,57 @@
                     Margin="139,101,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
+                    Command="{Binding OkTOnumber, Mode=OneTime}"
                     Content="{x:Static p:Resources.OK}"
-                    IsEnabled="{Binding HasKant}"
-                    Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
-                <Button
-                    x:Name="CancelButton"
-                    Width="75"
-                    Margin="219,101,0,0"
+                    Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding Path=(Validation.HasError), ElementName=TOnrTextbox}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Label
+                    x:Name="TOnrLabel"
+                    Margin="37,63,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    Content="{x:Static p:Resources.Cancel}"
-                    IsEnabled="{Binding HasKant}"
-                    Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
+                    Content="{x:Static p:Resources.ToNumber}"
+                    IsEnabled="{Binding HasTOnr}"
+                    Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+                <TextBox
+                    x:Name="TOnrTextbox"
+                    Width="120"
+                    Height="23"
+                    Margin="139,63,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    IsEnabled="{Binding IsTOnrNotAcknowledged}"
+                    IsVisibleChanged="TOnrTextbox_IsVisibleChanged"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}">
+                    <TextBox.Text>
+                        <Binding
+                            Mode="TwoWay"
+                            Path="TOnr"
+                            UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <local:TOnumberValidation
+                                    ErrorMessage="TO number must be 7 numbers."
+                                    MaximumLength="7"
+                                    MinimumLength="7" />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
 
                 <Button
                     x:Name="TestButton"
@@ -148,25 +205,6 @@
                     VerticalAlignment="Top"
                     Click="ExecuteButton_Click"
                     Content="Execute" />
-                <Label
-                    x:Name="TOnrLabel"
-                    Margin="37,63,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="{x:Static p:Resources.ToNumber}"
-                    IsEnabled="{Binding HasTOnr}"
-                    Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
-                <TextBox
-                    x:Name="TOnrTextbox"
-                    Width="120"
-                    Height="23"
-                    Margin="139,63,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    IsEnabled="{Binding HasTOnr}"
-                    Text="{Binding TOnr}"
-                    TextWrapping="Wrap"
-                    Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
             </Grid>
         </GroupBox>
         <StackPanel VerticalAlignment="Bottom">

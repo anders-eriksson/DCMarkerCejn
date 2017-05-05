@@ -22,6 +22,6 @@
   <section name="Machine">
     <entry name="TypeOfMachine">1</entry>
     <entry name="GuiLanguage">sv-SE</entry>
-    <entry name="Debug">False</entry>
+    <entry name="Debug">True</entry>
   </section>
 </profile>

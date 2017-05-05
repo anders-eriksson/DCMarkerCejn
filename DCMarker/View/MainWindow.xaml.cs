@@ -1,8 +1,11 @@
 using Configuration;
 using DCLog;
+using System;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace DCMarker
 {
@@ -74,6 +77,17 @@ namespace DCMarker
         private void ExecuteButton_Click(object sender, RoutedEventArgs e)
         {
             mainViewModel.Execute();
+        }
+
+        private void TOnrTextbox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (this.Visibility == Visibility.Visible)
+            {
+                this.Dispatcher.BeginInvoke((Action)delegate
+                {
+                    Keyboard.Focus(TOnrTextbox);
+                }, DispatcherPriority.Render);
+            }
         }
     }
 }

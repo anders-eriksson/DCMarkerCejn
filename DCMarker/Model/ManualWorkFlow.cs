@@ -29,9 +29,22 @@ namespace DCMarker.Model
 
         public event EventHandler<StatusArgs> ErrorMsgEvent;
 
+        public bool AcknowledgeTONumber(string artikelNumber, string kant, string toNumber)
+        {
+            bool result = true;
+            throw new NotImplementedException();
+
+            return result;
+        }
+
 #pragma warning restore CS0067 // The event 'ManualWorkFlow.UpdateMainViewModelEvent' is never used
 
         public void Close()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CreateHistoryData(string toNumber)
         {
             throw new NotImplementedException();
         }

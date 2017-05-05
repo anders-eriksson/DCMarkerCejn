@@ -68,6 +68,7 @@ namespace Configuration
                 GuiLanguage = _profile.GetValue("Machine", nameof(GuiLanguage), "sv-SE");
                 Debug = _profile.GetValue("Machine", nameof(Debug), false);
                 ClearClipboard = _profile.GetValue("Machine", nameof(ClearClipboard), true);
+                TOnumberLength = _profile.GetValue("Machine", nameof(TOnumberLength), 7);
                 // Laser
                 DeviceAddress = _profile.GetValue("Laser", nameof(DeviceAddress), "127.0.0.1");
                 DeviceTimeout = _profile.GetValue("Laser", nameof(DeviceTimeout), 10);
@@ -76,11 +77,12 @@ namespace Configuration
                 ExecuteTimeout = _profile.GetValue("Laser", nameof(ExecuteTimeout), 10000);
                 IsIoEnabled = _profile.GetValue("Laser", nameof(IsIoEnabled), false);
                 ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x01);
-                MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);
+                MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);    // Not Used! LaserEnd is used to signal that the marking is done. 2017-04-24 AME
                 Error = _profile.GetValue("Laser", nameof(Error), 0x40);
                 ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x02);
                 EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x10);
                 ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x8);
+                ArticleReady = _profile.GetValue("Laser", nameof(ArticleReady), 0x4);
 
                 // TCP Server
                 TcpPort = _profile.GetValue("TcpServer", nameof(TcpPort), 50000);
@@ -102,6 +104,7 @@ namespace Configuration
                 _profile.SetValue("Machine", nameof(GuiLanguage), GuiLanguage);
                 _profile.SetValue("Machine", nameof(Debug), Debug);
                 _profile.SetValue("Machine", nameof(ClearClipboard), ClearClipboard);
+                _profile.SetValue("Machine", nameof(TOnumberLength), TOnumberLength);
                 // Laser
                 _profile.SetValue("Laser", nameof(DeviceAddress), DeviceAddress);
                 _profile.SetValue("Laser", nameof(DeviceTimeout), DeviceTimeout);
@@ -116,6 +119,7 @@ namespace Configuration
                 _profile.SetValue("Laser", nameof(ItemInPlace), ItemInPlace);
                 _profile.SetValue("Laser", nameof(EmergencyError), EmergencyError);
                 _profile.SetValue("Laser", nameof(ResetIo), ResetIo);
+                _profile.SetValue("Laser", nameof(ArticleReady), ArticleReady);
 
                 // TCP Server
                 _profile.SetValue("TcpServer", nameof(TcpPort), TcpPort);
@@ -133,6 +137,7 @@ namespace Configuration
         public int TypeOfMachine { get; set; }
         public bool Debug { get; set; }
         public bool ClearClipboard { get; set; }
+        public int TOnumberLength { get; set; }
 
         #endregion Machine properties
 
@@ -150,6 +155,7 @@ namespace Configuration
         public int ItemInPlace { get; set; }
         public int EmergencyError { get; set; }
         public int ResetIo { get; set; }
+        public int ArticleReady { get; set; }
 
         #endregion Laser properties
 

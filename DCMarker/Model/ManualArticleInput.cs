@@ -17,6 +17,15 @@ namespace DCMarker.Model
             RaiseArticleEvent(null, data);
         }
 
+        public void Close()
+        {
+        }
+
+        public bool AcknowledgeTONumber()
+        {
+            throw new NotImplementedException();
+        }
+
         #region Article Event
 
         public event EventHandler<ArticleArgs> ArticleEvent;
@@ -29,10 +38,6 @@ namespace DCMarker.Model
                 ArticleArgs args = new ArticleArgs(data);
                 handler(sender, args);
             }
-        }
-
-        public void Close()
-        {
         }
 
         #endregion Article Event

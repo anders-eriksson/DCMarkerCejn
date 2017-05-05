@@ -137,33 +137,41 @@ namespace LaserWrapper
         public bool Update(List<LaserObjectData> objectList)
         {
             bool result = true;
-            string objIDs = _doc.getObjectIDs();
-            string[] objArr = objIDs.Split(new char[] { ',' });
-            foreach (var id in objArr)
+            try
             {
-                var updateObject = objectList.Find(o => o.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
-                if (updateObject != null)
+                string objIDs = _doc.getObjectIDs();
+                string[] objArr = objIDs.Split(new char[] { ',' });
+                foreach (var id in objArr)
                 {
-                    int objType = _doc.getObjectType(id);
-                    if (objType == (int)_GraphObjectTypes.CODE_OBJ)
+                    var updateObject = objectList.Find(o => o.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
+                    if (updateObject != null)
                     {
-                        LaserCode code = _doc.getLaserCode(id);
-                        code.text = updateObject.Value;
-                    }
-                    else if (objType == (int)_GraphObjectTypes.STRING_OBJ)
-                    {
-                        LaserString str = _doc.getLaserString(id);
-                        str.text = updateObject.Value;
-                    }
-                    else if (objType == (int)_GraphObjectTypes.IMPORTED_OBJ)
-                    {
-                        LaserImported imp = _doc.getLaserImported(id);
-                        string imgPath = Path.Combine(_imagePath, updateObject.Value);
-                        imp.filename = imgPath;
-                    }
+                        int objType = _doc.getObjectType(id);
+                        if (objType == (int)_GraphObjectTypes.CODE_OBJ)
+                        {
+                            LaserCode code = _doc.getLaserCode(id);
+                            code.text = updateObject.Value;
+                        }
+                        else if (objType == (int)_GraphObjectTypes.STRING_OBJ)
+                        {
+                            LaserString str = _doc.getLaserString(id);
+                            str.text = updateObject.Value;
+                        }
+                        else if (objType == (int)_GraphObjectTypes.IMPORTED_OBJ)
+                        {
+                            LaserImported imp = _doc.getLaserImported(id);
+                            string imgPath = Path.Combine(_imagePath, updateObject.Value);
+                            imp.filename = imgPath;
+                        }
 
-                    _doc.updateDocument();
+                        _doc.updateDocument();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Laser: Error in Update");
+                throw;
             }
 
             return result;
@@ -176,16 +184,11 @@ namespace LaserWrapper
             {
                 _ioPort.checkPort(0);
                 Log.Trace("checkPort(0)");
-                SetPort(0, sig.MASK_ALL);
+                ResetPort(0, sig.MASK_ALL);
                 SetReady(true);
                 Log.Trace("SetReady(true)");
                 RaiseLaserErrorEvent(string.Empty);
             }
-
-            //lock (lockObj)
-            //{
-            //    Monitor.Pulse(lockObj);
-            //}
         }
 
         private void _laserSystem_sigDeviceDisconnected()
@@ -235,7 +238,7 @@ namespace LaserWrapper
                     if (_isIoEnabled)
                     {
                         _ioPort.checkPort(0);
-                        SetPort(0, sig.MASK_ALL);
+                        ResetPort(0, sig.MASK_ALL);
 
                         SetReady(true);
                     }
@@ -265,6 +268,11 @@ namespace LaserWrapper
             _doc.execute(true, true);
         }
 
+        public bool ArticleReady()
+        {
+            return SetPort(0, sig.MASK_ARTICLEREADY);
+        }
+
         #region Digital IO
 
         public int GetPort(int port)
@@ -274,12 +282,37 @@ namespace LaserWrapper
 
         public bool ResetPort(int port, int mask)
         {
+            Log.Trace(string.Format("ResetPort mask: {0} - {1}", mask, GetMaskName(mask)));
             return _ioPort.resetPort(port, mask);
         }
 
         public bool SetPort(int port, int mask)
         {
+            Log.Trace(string.Format("SetPort mask: {0} - {1}", mask, GetMaskName(mask)));
             return _ioPort.setPort(port, mask);
+        }
+
+        private string GetMaskName(int mask)
+        {
+            string result = "Unknown Mask";
+            if ((mask & sig.MASK_ARTICLEREADY) == sig.MASK_ARTICLEREADY)
+            {
+                result = "Article Ready";
+            }
+            else if ((mask & sig.MASK_ERROR) == sig.MASK_ERROR)
+            {
+                result = "Error";
+            }
+            else if ((mask & sig.MASK_MARKINGDONE) == sig.MASK_MARKINGDONE)
+            {
+                result = "Marking Done";
+            }
+            else if ((mask & sig.MASK_READYTOMARK) == sig.MASK_READYTOMARK)
+            {
+                result = "Ready To Mark";
+            }
+
+            return result;
         }
 
         public bool SetReady(bool OnOff)

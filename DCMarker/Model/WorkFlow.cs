@@ -105,6 +105,7 @@ namespace DCMarker.Model
                 UpdateViewModel(emptyList);
                 _laser.SetPort(0, sig.MASK_ERROR);
                 // Can't find article in database.
+                _laser.ArticleReady();
 
                 RaiseErrorEvent(string.Format(WorkFlow_Res.Article_not_defined_in_database_Article0, _articleNumber));
             }
@@ -168,6 +169,14 @@ namespace DCMarker.Model
             }
         }
 
+        /// <summary>
+        /// make sure that the layout name is according to Lighter specification
+        /// MUST end with .xlp
+        /// If LayoutPath has been configured add layout name to the path
+        /// If LayoutPath has not been configured all the layouts must be in the LaserEditor layout directory
+        /// </summary>
+        /// <param name="layoutname">Name of the layout</param>
+        /// <returns>Path to the layout file</returns>
         private string NormalizeLayoutName(string layoutname)
         {
             string result = string.Empty;
@@ -188,6 +197,9 @@ namespace DCMarker.Model
             return result;
         }
 
+        /// <summary>
+        /// Sets the IO masks to whatever is configured
+        /// </summary>
         private void UpdateIoMasks()
         {
             sig.MASK_READYTOMARK = cfg.ReadyToMark;
@@ -235,38 +247,14 @@ namespace DCMarker.Model
                     bool brc = _laser.Load(layoutname);
                     if (brc)
                     {
-                        HistoryData historyData = GetHistoryData(_articleNumber, article.Kant, _hasEdges);
-                        if (_articles.Count > 1)
+                        //bool? enableTO = article.EnableTO;
+                        //if (enableTO.HasValue && enableTO.Value)
+                        //{
+                        //    DisplayTOnumber(article);
+                        //}
+                        //else
                         {
-                            _hasEdges = true;
-                        }
-
-                        if (historyData != null)
-                        {
-                            List<LaserObjectData> historyObjectData = ConvertToLaserObjectData(historyData);
-                            brc = _laser.Update(historyObjectData);
-                            if (brc)
-                            {
-                                // update HistoryData table
-                                var status = _db.AddHistoryDataToDB(historyData);
-                                if (status != null)
-                                {
-                                    // we are ready to mark...
-                                    RaiseStatusEvent(string.Format(WorkFlow_Res.Waiting_for_start_signal_0, layoutname));
-                                    _laser.ResetPort(0, sig.MASK_MARKINGDONE);
-                                    _laser.SetPort(0, sig.MASK_READYTOMARK);
-                                }
-                                else
-                                {
-                                    RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
-                                    _laser.SetPort(0, sig.MASK_ERROR);
-                                }
-                            }
-                            else
-                            {
-                                RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
-                                _laser.SetPort(0, sig.MASK_ERROR);
-                            }
+                            brc = CreateHistoryData(article, layoutname);
                         }
                     }
                     else
@@ -285,6 +273,48 @@ namespace DCMarker.Model
             {
                 RaiseErrorEvent(WorkFlow_Res.ItemInPlace_received_before_Article_Number_is_set);
             }
+        }
+
+        private bool CreateHistoryData(Article article, string layoutname, string toNumber = "")
+        {
+            bool brc = true;
+
+            HistoryData historyData = GetHistoryData(_articleNumber, article.Kant, _hasEdges);
+            if (_articles.Count > 1)
+            {
+                _hasEdges = true;
+            }
+
+            if (historyData != null)
+            {
+                historyData.TOnr = toNumber;
+                List<LaserObjectData> historyObjectData = ConvertToLaserObjectData(historyData);
+                brc = _laser.Update(historyObjectData);
+                if (brc)
+                {
+                    // update HistoryData table
+                    var status = _db.AddHistoryDataToDB(historyData);
+                    if (status != null)
+                    {
+                        // we are ready to mark...
+                        RaiseStatusEvent(string.Format(WorkFlow_Res.Waiting_for_start_signal_0, layoutname));
+                        _laser.ResetPort(0, sig.MASK_MARKINGDONE);
+                        _laser.SetPort(0, sig.MASK_READYTOMARK);
+                    }
+                    else
+                    {
+                        RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                        _laser.SetPort(0, sig.MASK_ERROR);
+                    }
+                }
+                else
+                {
+                    RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                    _laser.SetPort(0, sig.MASK_ERROR);
+                }
+            }
+
+            return brc;
         }
 
         private List<LaserObjectData> ConvertToLaserObjectData(HistoryData historyData)
@@ -320,8 +350,15 @@ namespace DCMarker.Model
             }
             data.Fixture = article.FixtureId;
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
-            data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
+
             data.Template = article.Template;
+
+            data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
+            if (!data.HasTOnr)
+            {
+                // If article is not using TO number send ArticleReady to PLC
+                _laser.ArticleReady();
+            }
 
             RaiseUpdateMainViewModelEvent(data);
         }
@@ -403,6 +440,12 @@ namespace DCMarker.Model
                 var arg = new StatusArgs(msg);
                 handler(null, arg);
             }
+        }
+
+        public bool AcknowledgeTONumber(string articlenumber, string kant, string toNumber)
+        {
+            _db.UpdateTOnumberInLaserData(articlenumber, kant, toNumber);
+            return _laser.ArticleReady();
         }
 
         public class ErrorMsgArgs : EventArgs

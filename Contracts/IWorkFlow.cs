@@ -7,20 +7,24 @@ namespace DCMarker.Model
     {
         event EventHandler<ErrorArgs> ErrorEvent;
 
+        event EventHandler<StatusArgs> ErrorMsgEvent;
+
         event EventHandler<StatusArgs> StatusEvent;
 
         event EventHandler<UpdateMainViewModelArgs> UpdateMainViewModelEvent;
 
-        event EventHandler<StatusArgs> ErrorMsgEvent;
+        bool AcknowledgeTONumber(string articleNumber, string kant, string toNumber);
 
         void Close();
 
-        bool Initialize();
-
-        void SimulateItemInPlace();
+        //void CreateHistoryData(string toNumber);
 
         void Execute();
 
+        bool Initialize();
+
         void ResetAllIoSignals();
+
+        void SimulateItemInPlace();
     }
 }

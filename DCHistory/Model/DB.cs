@@ -65,6 +65,8 @@ namespace DCHistory.Model
             catch (OutOfMemoryException ex)
             {
                 // To many rows in select!
+                Log.Debug("Out of memory! Please use a filter to make selection smaller!");
+
                 ErrorMessage = "Out of memory! Please use a filter to make selection smaller!";
             }
             catch (Exception ex)

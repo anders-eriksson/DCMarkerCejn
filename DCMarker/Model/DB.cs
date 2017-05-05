@@ -34,6 +34,16 @@ namespace DCMarker.Model
             return result;
         }
 
+        public void UpdateTOnumberInLaserData(string articleNumber, string kant, string toNumber)
+        {
+            using (var context = new DCLasermarkContext())
+            {
+                var record = context.LaserData.FirstOrDefault(r => r.F1 == articleNumber && r.Kant == kant);
+                record.TOnr = toNumber;
+                context.SaveChanges();
+            }
+        }
+
         public HistoryData AddHistoryDataToDB(HistoryData historyData)
         {
             HistoryData result = null;
