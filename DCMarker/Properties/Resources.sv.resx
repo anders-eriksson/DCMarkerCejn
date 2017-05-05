@@ -99,4 +99,7 @@
   <data name="Loaded" xml:space="preserve">
     <value>Laddad</value>
   </data>
+  <data name="BatchDone" xml:space="preserve">
+    <value>Märkta</value>
+  </data>
 </root>

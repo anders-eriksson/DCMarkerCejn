@@ -213,4 +213,7 @@
   <data name="Loaded" xml:space="preserve">
     <value>Loaded</value>
   </data>
+  <data name="BatchDone" xml:space="preserve">
+    <value>Done</value>
+  </data>
 </root>

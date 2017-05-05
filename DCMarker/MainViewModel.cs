@@ -25,6 +25,7 @@ namespace DCMarker
             TestItem = string.Empty;
             HasBatchSize = false;
             BatchSize = string.Empty;
+            BatchDone = 0;
             HasTOnr = false;
             TOnr = string.Empty;
             Status = string.Empty;
@@ -158,6 +159,21 @@ namespace DCMarker
             set
             {
                 _batchSize = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private int _BatchDone;
+
+        public int BatchDone
+        {
+            get
+            {
+                return _BatchDone;
+            }
+            set
+            {
+                _BatchDone = value;
                 NotifyPropertyChanged();
             }
         }

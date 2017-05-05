@@ -19,9 +19,9 @@ namespace DCMarker
                     wnd = new MainWindow();
                     break;
 
-                //case 2:
-                //    wnd = new ManualMainWindow();
-                //    break;
+                case 2:
+                    wnd = new ManualMainWindow();
+                    break;
 
                 default:
                     wnd = new ErrorMainWindow();

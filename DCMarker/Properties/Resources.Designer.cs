@@ -106,6 +106,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Done.
+        /// </summary>
+        public static string BatchDone {
+            get {
+                return ResourceManager.GetString("BatchDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Batch Size.
         /// </summary>
         public static string BatchSize {

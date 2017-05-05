@@ -137,6 +137,10 @@
           <source>Loaded</source>
           <target state="translated">Laddad</target>
         </trans-unit>
+        <trans-unit id="BatchDone" translate="yes" xml:space="preserve">
+          <source>Done</source>
+          <target state="translated">Märkta</target>
+        </trans-unit>
       </group>
     </body>
   </file>

@@ -20,7 +20,7 @@
     <entry name="BufferLength">14</entry>
   </section>
   <section name="Machine">
-    <entry name="TypeOfMachine">1</entry>
+    <entry name="TypeOfMachine">2</entry>
     <entry name="GuiLanguage">sv-SE</entry>
     <entry name="Debug">False</entry>
   </section>

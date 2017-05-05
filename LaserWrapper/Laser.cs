@@ -274,17 +274,29 @@ namespace LaserWrapper
 
         public bool ResetPort(int port, int mask)
         {
-            return _ioPort.resetPort(port, mask);
+            if (_ioPort != null)
+            {
+                return _ioPort.resetPort(port, mask);
+            }
+            return false;
         }
 
         public bool SetPort(int port, int mask)
         {
-            return _ioPort.setPort(port, mask);
+            if (_ioPort != null)
+            {
+                return _ioPort.setPort(port, mask);
+            }
+            return false;
         }
 
         public bool SetReady(bool OnOff)
         {
-            return _ioPort.setReady(OnOff);
+            if (_ioPort != null)
+            {
+                return _ioPort.setReady(OnOff);
+            }
+            return false;
         }
 
         private void _ioPort_sigInputChange(int p_nPort, int p_nBits)

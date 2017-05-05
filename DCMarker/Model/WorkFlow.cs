@@ -32,7 +32,11 @@ namespace DCMarker.Model
             try
             {
                 cfg = DCConfig.Instance;
-                //cfg.WriteConfig();
+                if (!File.Exists(cfg.ConfigName))
+                {
+                    // if the config file doesn't exist then we are using default values. Write them to disk.
+                    cfg.WriteConfig();
+                }
                 sig = new IoSignals();
                 UpdateIoMasks();
                 Initialize();
