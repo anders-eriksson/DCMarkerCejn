@@ -9,77 +9,29 @@ namespace DCMarker
 {
     public class RelayCommand : ICommand
     {
-        private Action<object> execute;
+        private Predicate<object> _canExecute;
+        private Action<object> _execute;
 
-        private Predicate<object> canExecute;
-
-        private event EventHandler CanExecuteChangedInternal;
-
-        public RelayCommand(Action<object> execute)
-            : this(execute, DefaultCanExecute)
+        public RelayCommand(Predicate<object> canExecute, Action<object> execute)
         {
-        }
-
-        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
-        {
-            if (execute == null)
-            {
-                throw new ArgumentNullException("execute");
-            }
-
-            if (canExecute == null)
-            {
-                throw new ArgumentNullException("canExecute");
-            }
-
-            this.execute = execute;
-            this.canExecute = canExecute;
+            this._canExecute = canExecute;
+            this._execute = execute;
         }
 
         public event EventHandler CanExecuteChanged
         {
-            add
-            {
-                CommandManager.RequerySuggested += value;
-                this.CanExecuteChangedInternal += value;
-            }
-
-            remove
-            {
-                CommandManager.RequerySuggested -= value;
-                this.CanExecuteChangedInternal -= value;
-            }
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
         }
 
         public bool CanExecute(object parameter)
         {
-            return this.canExecute != null && this.canExecute(parameter);
+            return _canExecute(parameter);
         }
 
         public void Execute(object parameter)
         {
-            this.execute(parameter);
-        }
-
-        public void OnCanExecuteChanged()
-        {
-            EventHandler handler = this.CanExecuteChangedInternal;
-            if (handler != null)
-            {
-                //DispatcherHelper.BeginInvokeOnUIThread(() => handler.Invoke(this, EventArgs.Empty));
-                handler.Invoke(this, EventArgs.Empty);
-            }
-        }
-
-        public void Destroy()
-        {
-            this.canExecute = _ => false;
-            this.execute = _ => { return; };
-        }
-
-        private static bool DefaultCanExecute(object parameter)
-        {
-            return true;
+            _execute(parameter);
         }
     }
 }
