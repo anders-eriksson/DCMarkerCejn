@@ -124,7 +124,7 @@
     <value>Article not defined in database! Article={0}</value>
   </data>
   <data name="BatchSize" xml:space="preserve">
-    <value>Batch Size</value>
+    <value>Quantity</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
@@ -215,5 +215,8 @@
   </data>
   <data name="BatchDone" xml:space="preserve">
     <value>Done</value>
+  </data>
+  <data name="Article_does_not_exist_in_database" xml:space="preserve">
+    <value>Article does not exist in database!</value>
   </data>
 </root>

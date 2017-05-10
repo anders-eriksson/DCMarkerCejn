@@ -14,6 +14,7 @@ namespace DCTcpServer
     {
         private int _port = 50000;
         private int _maxBufferBytes = 14;
+
         private TcpListener _listener;
         private Thread listeningThread;
 
@@ -138,9 +139,11 @@ namespace DCTcpServer
 
         private void UpdateWF(byte[] buffer)
         {
+            // TODO: Split buffer into articleNumber and TOnumber
+
             int count = buffer.Count(bt => bt != 0); // find the first null
             string articleNumber = System.Text.Encoding.ASCII.GetString(buffer, 0, count);
-#if DEBUG
+#if DEBUGx
             RaiseNewArticleNumberEvent(string.Format("Raw:\t\t{0}", articleNumber));
             articleNumber = RemoveNonPrintableChars(articleNumber);
             RaiseNewArticleNumberEvent(string.Format("Used:\t\t{0}", articleNumber));

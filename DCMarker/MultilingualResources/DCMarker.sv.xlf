@@ -11,7 +11,7 @@
           <target state="translated" state-qualifier="mt-suggestion">Artikelnummer</target>
         </trans-unit>
         <trans-unit id="BatchSize" translate="yes" xml:space="preserve">
-          <source>Batch Size</source>
+          <source>Quantity</source>
           <target state="translated">Antal</target>
           <note from="MultilingualEditor" annotates="source" priority="4">Not a direct translation but more of a meaningful one....</note>
         </trans-unit>
@@ -140,6 +140,10 @@
         <trans-unit id="BatchDone" translate="yes" xml:space="preserve">
           <source>Done</source>
           <target state="translated">Märkta</target>
+        </trans-unit>
+        <trans-unit id="Article_does_not_exist_in_database" translate="yes" xml:space="preserve">
+          <source>Article does not exist in database!</source>
+          <target state="translated">Artikel saknas i databasen!</target>
         </trans-unit>
       </group>
     </body>

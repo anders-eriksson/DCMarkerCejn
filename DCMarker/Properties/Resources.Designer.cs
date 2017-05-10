@@ -88,6 +88,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Article does not exist in database!.
+        /// </summary>
+        public static string Article_does_not_exist_in_database {
+            get {
+                return ResourceManager.GetString("Article_does_not_exist_in_database", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Article not defined in database! Article={0}.
         /// </summary>
         public static string Article_not_defined_in_database_Article0 {
@@ -115,7 +124,7 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Batch Size.
+        ///   Looks up a localized string similar to Quantity.
         /// </summary>
         public static string BatchSize {
             get {

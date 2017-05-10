@@ -13,18 +13,14 @@ namespace DCMarker.Model
 {
     public class ManualWorkFlow : IWorkFlow
     {
-        private DB _db;
-        private Laser _laser;
-
-        private List<Article> _articles;
-
         private readonly DCConfig cfg;
-
         private readonly IoSignals sig;
-
         private string _articleNumber;
+        private List<Article> _articles;
         private int _currentEdge;
+        private DB _db;
         private bool _hasEdges;
+        private Laser _laser;
 
         public ManualWorkFlow()
         {
@@ -52,6 +48,19 @@ namespace DCMarker.Model
             _laser.Release();
         }
 
+        public void Execute()
+        {
+            if (_laser != null)
+            {
+                _laser.Execute();
+            }
+        }
+
+        public List<Article> GetArticle(string articleNumber)
+        {
+            return _db.GetArticle(articleNumber);
+        }
+
         public bool Initialize()
         {
             bool result = true;
@@ -72,14 +81,6 @@ namespace DCMarker.Model
         public void SimulateItemInPlace()
         {
             UpdateLayout();
-        }
-
-        public void Execute()
-        {
-            if (_laser != null)
-            {
-                _laser.Execute();
-            }
         }
 
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
@@ -125,6 +126,33 @@ namespace DCMarker.Model
             RaiseErrorEvent(msg);
         }
 
+        private void _laser_QueryStartEvent(string msg)
+        {
+            RaiseStatusEvent(msg);
+        }
+
+        private void _laser_ResetIoEvent()
+        {
+            _laser.ResetPort(0, sig.MASK_ALL);
+            RaiseErrorMsgEvent(string.Empty);
+        }
+
+        private List<LaserObjectData> ConvertToLaserObjectData(HistoryData historyData)
+        {
+            List<LaserObjectData> result;
+            result = DB.ConvertHistoryDataToList(historyData);
+
+            return result;
+        }
+
+        private HistoryData GetHistoryData(string _articleNumber, string kant, bool hasEdges = false)
+        {
+            HistoryData result = null;
+
+            result = _db.CreateHistoryData(_articleNumber, kant, hasEdges);
+            return result;
+        }
+
         private void InitializeDatabase()
         {
             _db = new DB();
@@ -136,20 +164,9 @@ namespace DCMarker.Model
             _laser = new Laser();
             _laser.QueryStartEvent += _laser_QueryStartEvent;
             _laser.LaserEndEvent += _laser_LaserEndEvent;
-            _laser.LaserErrorEvent += _laser_LaserErrorEvent;
+            _laser.DeviceErrorEvent += _laser_LaserErrorEvent;
             _laser.ItemInPositionEvent += _laser_ItemInPositionEvent;
             _laser.ResetIoEvent += _laser_ResetIoEvent;
-        }
-
-        private void _laser_ResetIoEvent()
-        {
-            _laser.ResetPort(0, sig.MASK_ALL);
-            RaiseErrorMsgEvent(string.Empty);
-        }
-
-        private void _laser_QueryStartEvent(string msg)
-        {
-            RaiseStatusEvent(msg);
         }
 
         private void InitializeMachine()
@@ -284,22 +301,6 @@ namespace DCMarker.Model
             }
         }
 
-        private List<LaserObjectData> ConvertToLaserObjectData(HistoryData historyData)
-        {
-            List<LaserObjectData> result;
-            result = DB.ConvertHistoryDataToList(historyData);
-
-            return result;
-        }
-
-        private HistoryData GetHistoryData(string _articleNumber, string kant, bool hasEdges = false)
-        {
-            HistoryData result = null;
-
-            result = _db.CreateHistoryData(_articleNumber, kant, hasEdges);
-            return result;
-        }
-
         private void UpdateViewModel(List<Article> articles)
         {
             var data = new UpdateViewModelData();
@@ -365,6 +366,15 @@ namespace DCMarker.Model
 
         public event EventHandler<StatusArgs> StatusEvent;
 
+        public void ResetAllIoSignals()
+        {
+            if (_laser != null)
+            {
+                _laser.ResetPort(0, sig.MASK_ALL);
+                _laser.SetReady(false);
+            }
+        }
+
         internal void RaiseStatusEvent(string msg)
         {
             var handler = StatusEvent;
@@ -372,15 +382,6 @@ namespace DCMarker.Model
             {
                 var arg = new StatusArgs(msg);
                 handler(null, arg);
-            }
-        }
-
-        public void ResetAllIoSignals()
-        {
-            if (_laser != null)
-            {
-                _laser.ResetPort(0, sig.MASK_ALL);
-                _laser.SetReady(false);
             }
         }
 

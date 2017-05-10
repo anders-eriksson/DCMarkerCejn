@@ -179,7 +179,7 @@ namespace LaserWrapper
                 SetPort(0, sig.MASK_ALL);
                 SetReady(true);
                 Log.Trace("SetReady(true)");
-                RaiseLaserErrorEvent(string.Empty);
+                RaiseDeviceErrorEvent(string.Empty);
             }
 
             //lock (lockObj)
@@ -197,7 +197,7 @@ namespace LaserWrapper
         {
             string msg = string.Format("Laser error: {0}", p_message);
             Log.Error(msg);
-            RaiseLaserErrorEvent(msg);
+            RaiseDeviceErrorEvent(msg);
         }
 
         private void _laserSystem_sigLaserEnd()
@@ -353,11 +353,11 @@ namespace LaserWrapper
 
         public delegate void LaserErrorHandler(string msg);
 
-        public event LaserErrorHandler LaserErrorEvent;
+        public event LaserErrorHandler DeviceErrorEvent;
 
-        internal void RaiseLaserErrorEvent(string msg)
+        internal void RaiseDeviceErrorEvent(string msg)
         {
-            LaserErrorHandler handler = LaserErrorEvent;
+            LaserErrorHandler handler = DeviceErrorEvent;
             if (handler != null)
             {
                 handler(msg);

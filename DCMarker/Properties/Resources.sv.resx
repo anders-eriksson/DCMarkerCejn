@@ -102,4 +102,7 @@
   <data name="BatchDone" xml:space="preserve">
     <value>Märkta</value>
   </data>
+  <data name="Article_does_not_exist_in_database" xml:space="preserve">
+    <value>Artikel saknas i databasen!</value>
+  </data>
 </root>

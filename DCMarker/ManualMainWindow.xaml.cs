@@ -10,11 +10,10 @@ namespace DCMarker
     /// </summary>
     public partial class ManualMainWindow : Window
     {
-        private MainViewModel mainViewModel;
+        private ManualMainViewModel mainViewModel;
 
         public ManualMainWindow()
         {
-
             DCConfig cfg = DCConfig.Instance;
             string language = cfg.GuiLanguage;
             if (!string.IsNullOrWhiteSpace(language))
@@ -22,18 +21,8 @@ namespace DCMarker
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
             InitializeComponent();
-            mainViewModel = new MainViewModel();
+            mainViewModel = new ManualMainViewModel();
             DataContext = mainViewModel;
-        }
-
-        private void InitViewModel()
-        {
-            mainViewModel.ArticleNumber = "123456789012";
-            mainViewModel.Kant = "1";
-            mainViewModel.HasKant = true;
-            mainViewModel.Fixture = "999888777555";
-            mainViewModel.HasFixture = true;
-            mainViewModel.Status = "OffLine";
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -66,6 +55,12 @@ namespace DCMarker
         {
             WPFAboutBox1 dlg = new WPFAboutBox1(this);
             dlg.ShowDialog();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ArticleTextBox.Focus();
+            ArticleTextBox.SelectAll();
         }
     }
 }

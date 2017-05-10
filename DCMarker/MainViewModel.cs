@@ -69,6 +69,10 @@ namespace DCMarker
                     break;
 
                 case 2:
+                    _wf = new WorkFlowWithTOnr();
+                    break;
+
+                case 3:
                     _wf = new ManualWorkFlow();
                     break;
 

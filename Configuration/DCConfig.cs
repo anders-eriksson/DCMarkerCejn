@@ -63,6 +63,13 @@ namespace Configuration
         {
             try
             {
+                /*  Machine Types
+                 *
+                 *  1   Automatic                   e.g. Kenny
+                 *  2   Automatic with TO number    e.g. Filip
+                 *  3   Manual with TO number       e.g. Ultraflow
+                 */
+
                 // Machine
                 TypeOfMachine = _profile.GetValue("Machine", nameof(TypeOfMachine), 1);
                 GuiLanguage = _profile.GetValue("Machine", nameof(GuiLanguage), "sv-SE");
@@ -84,7 +91,9 @@ namespace Configuration
 
                 // TCP Server
                 TcpPort = _profile.GetValue("TcpServer", nameof(TcpPort), 50000);
-                BufferLength = _profile.GetValue("TcpServer", nameof(BufferLength), 12);
+                BufferLength = _profile.GetValue("TcpServer", nameof(BufferLength), 12 + 7 + 2);
+                ArticleNumberLength = _profile.GetValue("TcpServer", nameof(ArticleNumberLength), 12);
+                ToNumberLength = _profile.GetValue("TcpServer", nameof(ToNumberLength), 7);
             }
             catch (Exception ex)
             {
@@ -120,6 +129,8 @@ namespace Configuration
                 // TCP Server
                 _profile.SetValue("TcpServer", nameof(TcpPort), TcpPort);
                 _profile.SetValue("TcpServer", nameof(BufferLength), BufferLength);
+                _profile.SetValue("TcpServer", nameof(ArticleNumberLength), ArticleNumberLength);
+                _profile.SetValue("TcpServer", nameof(ToNumberLength), ToNumberLength);
             }
             catch (Exception ex)
             {
@@ -157,6 +168,8 @@ namespace Configuration
 
         public int TcpPort { get; private set; }
         public int BufferLength { get; private set; }
+        public int ArticleNumberLength { get; set; }
+        public int ToNumberLength { get; set; }
         public string GuiLanguage { get; private set; }
 
         #endregion TcpServer properties

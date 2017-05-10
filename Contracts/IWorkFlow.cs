@@ -2,6 +2,7 @@ namespace DCMarker.Model
 {
     using Contracts;
     using System;
+    using System.Collections.Generic;
 
     public interface IWorkFlow
     {
@@ -22,5 +23,7 @@ namespace DCMarker.Model
         void Execute();
 
         void ResetAllIoSignals();
+
+        List<Article> GetArticle(string articleNumber);
     }
 }
