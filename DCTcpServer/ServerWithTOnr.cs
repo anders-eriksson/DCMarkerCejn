@@ -12,12 +12,12 @@ namespace DCTcpServer
 {
     public class ServerWithTOnr
     {
-        private int _port = 2000;
-        private int _maxBufferBytes = 14;
-        private int _articleNumberLength = 14;
-        private int _toNumberLength = 7;
+        private readonly int _port = 2000;
+        private readonly int _maxBufferBytes = 14;
+        private readonly int _articleNumberLength = 14;
+        private readonly int _toNumberLength = 7;
         private TcpListener _listener;
-        private Thread listeningThread;
+        private readonly Thread listeningThread;
 
         public ServerWithTOnr(int port, int bufferLength, int articleNumberlength, int toNumberLength)
         {
@@ -47,19 +47,15 @@ namespace DCTcpServer
                     var client = _listener.AcceptTcpClient();       // Blocking!
                     Log.Trace("Client connected");
                     // We have connection
-                    //var stream = client.GetStream();
                     var server = client.Client;
                     var buffer = new byte[_maxBufferBytes];
 
-                    var inbuffer = new byte[_maxBufferBytes];
                     var totalReceivedBytes = 0;
                     var readBytes = 0;
 
                     bool hasReceivedAllBytes = false;
                     do
                     {
-                        //readBytes = stream.Read(buffer, totalReceivedBytes, _maxBufferBytes - totalReceivedBytes);
-
                         readBytes = server.Receive(buffer, _maxBufferBytes, SocketFlags.None); // blocking!
                         Log.Debug(string.Format("Read {0} bytes from client", readBytes));
                         Log.Debug(string.Format("string.read: {0}", readBytes));
@@ -71,7 +67,6 @@ namespace DCTcpServer
                             hasReceivedAllBytes = true;
                             UpdateWF(buffer);
 
-                            //stream.Write(buffer, 0, _maxBufferBytes);
                             int writeBytes = server.Send(buffer, _maxBufferBytes, SocketFlags.None);
                             Log.Debug(string.Format("Write {0} bytes to client", writeBytes));
                             buffer = new byte[_maxBufferBytes];
@@ -84,8 +79,6 @@ namespace DCTcpServer
                         return;
                     }
 
-                    //Log.Trace("Client disconnected");
-                    // stream.Close();
                     client.Close();
                     Log.Trace("Client disconnected/closed");
                 }
@@ -137,48 +130,25 @@ namespace DCTcpServer
                 byte[] buffer = System.Text.Encoding.ASCII.GetBytes("ABORT");
                 stream.Write(buffer, 0, buffer.Length);
             }
-            //listeningThread.Abort();
         }
 
         private void UpdateWF(byte[] buffer)
         {
             // TODO: Split buffer into articleNumber and TOnumber
-            string articleNumber;
-            string toNumber;
-            SplitIntoStrings(buffer, out articleNumber, out toNumber);
+            Protocol protocol = new Protocol(buffer);
+            string articleNumber = protocol.ArticleNumber;
+            string toNumber = protocol.TOnumber;
 
 #if DEBUGx
             RaiseNewArticleNumberEvent(string.Format("Raw:\t\t{0}", articleNumber));
             articleNumber = RemoveNonPrintableChars(articleNumber);
             RaiseNewArticleNumberEvent(string.Format("Used:\t\t{0}", articleNumber));
 #else
+
             articleNumber = RemoveNonPrintableChars(articleNumber);
             RaiseNewArticleNumberEvent(articleNumber, toNumber);
+
 #endif
-        }
-
-        private void SplitIntoStrings(byte[] buffer, out string articleNumber, out string toNumber)
-        {
-            articleNumber = string.Empty;
-            toNumber = string.Empty;
-
-            if (buffer.Length >= _articleNumberLength + _toNumberLength)
-            {
-                byte[] articleNumberArray = new byte[_articleNumberLength];
-                Array.Copy(buffer, 0, articleNumberArray, 0, _articleNumberLength);
-                int count = articleNumberArray.Count(bt => bt != 0); // find the first null
-                articleNumber = System.Text.Encoding.ASCII.GetString(articleNumberArray, 0, count);
-
-                byte[] toNumberArray = new byte[_toNumberLength];
-                Array.Copy(buffer, 0, toNumberArray, 0, _toNumberLength);
-                count = toNumberArray.Count(bt => bt != 0); // find the first null
-                toNumber = System.Text.Encoding.ASCII.GetString(toNumberArray, 0, count);
-            }
-            else
-            {
-                int count = buffer.Count(bt => bt != 0); // find the first null
-                articleNumber = System.Text.Encoding.ASCII.GetString(buffer, 0, count);
-            }
         }
 
         private string RemoveNonPrintableChars(string articleNumber)

@@ -11,7 +11,7 @@ using DCLog;
 
 namespace DCMarker.Model
 {
-    public class ManualWorkFlow : IWorkFlow
+    public partial class ManualWorkFlow : IWorkFlow
     {
         private readonly DCConfig cfg;
         private readonly IoSignals sig;
@@ -48,11 +48,23 @@ namespace DCMarker.Model
             _laser.Release();
         }
 
+        public void ResetArticleData()
+        {
+            _articles.Clear();
+            _articleNumber = string.Empty;
+            _laser.ResetDocument();
+        }
+
         public void Execute()
         {
             if (_laser != null)
             {
+                Log.Trace("_laser.Execute");
                 _laser.Execute();
+            }
+            else
+            {
+                Log.Trace("_laser == null");
             }
         }
 
@@ -145,6 +157,14 @@ namespace DCMarker.Model
             return result;
         }
 
+        private HistoryData GetHistoryData(Article article, bool hasEdges)
+        {
+            HistoryData result = null;
+
+            result = _db.CreateHistoryData(article, hasEdges);
+            return result;
+        }
+
         private HistoryData GetHistoryData(string _articleNumber, string kant, bool hasEdges = false)
         {
             HistoryData result = null;
@@ -167,6 +187,12 @@ namespace DCMarker.Model
             _laser.DeviceErrorEvent += _laser_LaserErrorEvent;
             _laser.ItemInPositionEvent += _laser_ItemInPositionEvent;
             _laser.ResetIoEvent += _laser_ResetIoEvent;
+            _laser.LaserBusyEvent += _laser_LaserBusyEvent;
+        }
+
+        private void _laser_LaserBusyEvent(bool busy)
+        {
+            RaiseLaserBusyEvent(busy);
         }
 
         private void InitializeMachine()
@@ -249,7 +275,8 @@ namespace DCMarker.Model
                     bool brc = _laser.Load(layoutname);
                     if (brc)
                     {
-                        HistoryData historyData = GetHistoryData(_articleNumber, article.Kant, _hasEdges);
+                        //HistoryData historyData = GetHistoryData(_articleNumber, article.Kant, _hasEdges);
+                        HistoryData historyData = GetHistoryData(article, _hasEdges);
                         if (_articles.Count > 1)
                         {
                             _hasEdges = true;
@@ -262,7 +289,14 @@ namespace DCMarker.Model
                             if (brc)
                             {
                                 // update HistoryData table
-                                var status = _db.AddHistoryDataToDB(historyData);
+                                HistoryData status = new HistoryData();
+
+                                // only update HistoryData table if the user has not selected the TestItem checkbox
+                                // to make this if statement easier to grasp I have reversed the IsTestItemSelected so it's false when the user has selected the checkbox.
+                                if (article.IsTestItemSelected.HasValue && article.IsTestItemSelected.Value)
+                                {
+                                    status = _db.AddHistoryDataToDB(historyData);
+                                }
                                 if (status != null)
                                 {
                                     // we are ready to mark...
@@ -301,7 +335,27 @@ namespace DCMarker.Model
             }
         }
 
+        public void UpdateWorkflow(Article article)
+        {
+            _articleNumber = article.F1;
+            _articles = _db.GetArticle(_articleNumber);
+
+            // reverse IsTestItemSelected to make it easier for the if statement!
+            for (int i = 0; i < _articles.Count; i++)
+            {
+                _articles[i].TOnumber = article.TOnumber;
+                _articles[i].IsTestItemSelected = !article.IsTestItemSelected;
+            }
+        }
+
         private void UpdateViewModel(List<Article> articles)
+        {
+            UpdateViewModelData data = CreateUpdateViewModelData(articles);
+
+            RaiseUpdateMainViewModelEvent(data);
+        }
+
+        private static UpdateViewModelData CreateUpdateViewModelData(List<Article> articles)
         {
             var data = new UpdateViewModelData();
             Article article = articles[0];
@@ -320,8 +374,7 @@ namespace DCMarker.Model
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
             data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
             data.Template = article.Template;
-
-            RaiseUpdateMainViewModelEvent(data);
+            return data;
         }
 
         #region Error Event
@@ -403,16 +456,24 @@ namespace DCMarker.Model
             }
         }
 
-        public class ErrorMsgArgs : EventArgs
-        {
-            public ErrorMsgArgs(string s)
-            {
-                Text = s;
-            }
+        #endregion Update Error Message Event
 
-            public string Text { get; private set; } // readonly
+        #region Laser Busy Event
+
+        public delegate void LaserBusyHandler(bool busy);
+
+        public event EventHandler<LaserBusyEventArgs> LaserBusyEvent;
+
+        internal void RaiseLaserBusyEvent(bool busy)
+        {
+            var handler = LaserBusyEvent;
+            if (handler != null)
+            {
+                var arg = new LaserBusyEventArgs(busy);
+                handler(null, arg);
+            }
         }
 
-        #endregion Update Error Message Event
+        #endregion Laser Busy Event
     }
 }

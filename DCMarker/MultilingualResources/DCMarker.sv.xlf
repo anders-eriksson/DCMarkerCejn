@@ -145,6 +145,10 @@
           <source>Article does not exist in database!</source>
           <target state="translated">Artikel saknas i databasen!</target>
         </trans-unit>
+        <trans-unit id="TestItem" translate="yes" xml:space="preserve">
+          <source>Test Item</source>
+          <target state="translated">Provbit</target>
+        </trans-unit>
       </group>
     </body>
   </file>

@@ -12,13 +12,15 @@
     Closing="Window_Closing"
     Icon="dclasersystem.ico"
     Loaded="Window_Loaded"
+    ResizeMode="CanMinimize"
     mc:Ignorable="d">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <local:CheckBoxConverter x:Key="CheckBoxConverter" />
     </Window.Resources>
 
     <Grid>
-        <DockPanel>
+        <DockPanel Margin="0,0,0,221">
             <Menu DockPanel.Dock="Top" IsTabStop="False">
                 <MenuItem Header="_File" IsTabStop="False">
 
@@ -58,6 +60,7 @@
             Text="{x:Static p:Resources.Fixture}"
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
+
         <TextBlock
             x:Name="FixtureTextBlock"
             Margin="139,36,0,0"
@@ -82,6 +85,7 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
+            IsEnabled="{Binding OrderInProgress}"
             TabIndex="0"
             TextWrapping="Wrap">
             <TextBox.Text>
@@ -114,6 +118,7 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
+            IsEnabled="{Binding OrderInProgress}"
             TabIndex="1"
             Text="{Binding BatchSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             TextWrapping="Wrap" />
@@ -143,8 +148,7 @@
             Margin="301,127,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Text="{x:Static p:Resources.BatchDone}"
-            Visibility="{Binding Path=MarkingIsInProgress, Converter={StaticResource BoolToVis}}" />
+            Text="{x:Static p:Resources.BatchDone}" />
         <TextBlock
             x:Name="BatchDone"
             Width="143"
@@ -154,7 +158,7 @@
             Text="{Binding BatchesDone}" />
         <TextBlock
             x:Name="TOnrLabel"
-            Margin="42,104,0,0"
+            Margin="42,127,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasTOnr}"
@@ -164,12 +168,12 @@
             x:Name="TOnrTextbox"
             Width="132"
             Height="18"
-            Margin="139,104,0,0"
+            Margin="139,127,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
-            IsEnabled="{Binding HasTOnr}"
-            TabIndex="2"
+            IsEnabled="{Binding OrderInProgress}"
+            TabIndex="3"
             Text="{Binding TOnr, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
@@ -179,29 +183,39 @@
             Margin="143,172,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Command="{Binding OkButtonCommand, Mode=OneTime}"
+            Command="{Binding OkButtonCommand, Mode=OneWay}"
             Content="{x:Static p:Resources.OK}"
-            IsTabStop="False"
             TabIndex="3" />
-        <Button
-            x:Name="CancelButton"
-            Width="75"
-            Margin="223,172,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="{x:Static p:Resources.Cancel}"
-            IsEnabled="{Binding HasKant}"
-            Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
 
         <Button
-            x:Name="TestButton"
+            x:Name="LoadButton"
             Width="75"
-            Margin="381,172,0,0"
+            Margin="387,176,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Click="TestButton_Click"
-            Content="Test"
+            Click="LoadButton_Click"
+            Content="Load"
             IsTabStop="False" />
+        <Button
+            x:Name="ExecuteButton"
+            Width="75"
+            Margin="387,201,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Click="ExecuteButton_Click"
+            Content="Execute"
+            IsTabStop="False" />
+        <Ellipse
+            x:Name="InMarking"
+            Width="20"
+            Height="20"
+            Margin="0,0,26,67"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom">
+            <Ellipse.Fill>
+                <SolidColorBrush Color="{Binding ColorStatus, UpdateSourceTrigger=PropertyChanged}" />
+            </Ellipse.Fill>
+        </Ellipse>
         <StackPanel VerticalAlignment="Bottom">
             <TextBlock
                 x:Name="textBlock"
@@ -210,12 +224,18 @@
                 TextWrapping="Wrap" />
             <StatusBar Margin="0,0,0,0" VerticalAlignment="Bottom">
                 <StatusBarItem>
-                    <TextBlock Text="{x:Static p:Resources.Status}" />
-                </StatusBarItem>
-                <StatusBarItem>
                     <TextBlock Text="{Binding Status}" />
                 </StatusBarItem>
             </StatusBar>
         </StackPanel>
+        <CheckBox
+            Margin="139,104,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            local:FocusAdvancement.AdvancesByEnterKey="True"
+            Content="{x:Static p:Resources.TestItem}"
+            IsChecked="{Binding IsTestItemSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            IsEnabled="{Binding OrderInProgress}"
+            TabIndex="2" />
     </Grid>
 </Window>

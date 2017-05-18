@@ -1,17 +1,22 @@
 using Configuration;
 using Contracts;
+using DCLog;
 using DCMarker.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Media;
 using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
 {
     public class ManualMainViewModel : INotifyPropertyChanged
     {
+        private readonly Color BUSYCOLOR = Colors.Red;
+        private readonly Color WAITINGCOLOR = Colors.LightGreen;
+
         private IWorkFlow _wf = null;
 
         private DCConfig cfg;
@@ -27,14 +32,15 @@ namespace DCMarker
             TestItem = string.Empty;
             HasBatchSize = false;
             BatchSize = string.Empty;
-            BatchDone = 0;
+            BatchesDone = 0;
             HasTOnr = false;
             TOnr = string.Empty;
             Status = string.Empty;
             ErrorMessage = string.Empty;
             NeedUserInput = false;
             MarkingIsInProgress = false;
-
+            IsTestItemSelected = false;
+            OrderInProgress = true;
             try
             {
                 cfg = DCConfig.Instance;
@@ -49,6 +55,8 @@ namespace DCMarker
 
         internal void Test()
         {
+            //MarkingIsInProgress = !MarkingIsInProgress;
+
             if (_wf != null)
             {
                 _wf.SimulateItemInPlace();
@@ -59,6 +67,7 @@ namespace DCMarker
         {
             if (_wf != null)
             {
+                Log.Trace("ManuaMainViewModel: _wf.Execute");
                 _wf.Execute();
             }
         }
@@ -67,11 +76,12 @@ namespace DCMarker
         {
             switch (cfg.TypeOfMachine)
             {
-                case 1:
+                case 1: // PLC controlled. Kenny
+                case 2: // PLC controlled with TO-number.
                     _wf = new WorkFlow();
                     break;
 
-                case 2:
+                case 3:
                     _wf = new ManualWorkFlow();
                     break;
 
@@ -97,6 +107,28 @@ namespace DCMarker
                 _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;
                 _wf.StatusEvent += _wf_StatusEvent;
                 _wf.ErrorMsgEvent += _wf_ErrorMsgEvent;
+                _wf.LaserBusyEvent += _wf_LaserBusyEvent;
+            }
+        }
+
+        private void _wf_LaserBusyEvent(object sender, LaserBusyEventArgs e)
+        {
+            MarkingIsInProgress = e.Busy;
+            if (!e.Busy)
+            {
+                // We have got the LaserEnd event...
+                BatchesDone++;
+
+                if (!string.IsNullOrWhiteSpace(BatchSize) && BatchesDone >= Convert.ToInt32(BatchSize))
+                {
+                    // we are done with the order/batch.
+                    ArticleNumber = string.Empty;
+                    HasTOnr = false;
+                    BatchSize = string.Empty; // Is it nice to remove this or should we leave it???
+                    BatchesDone = 0;
+                    _wf.ResetArticleData();
+                    OrderInProgress = true;
+                }
             }
         }
 
@@ -140,6 +172,21 @@ namespace DCMarker
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private ICommand _ArticleChanged;
+
+        public ICommand ArticleChanged
+        {
+            get
+            {
+                return _ArticleChanged;
+            }
+            set
+            {
+                _ArticleChanged = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private ICommand _LoadArticleCommand;
 
         public ICommand LoadArticleCommand
@@ -164,9 +211,22 @@ namespace DCMarker
                 List<Article> result = _wf.GetArticle(ArticleNumber);
                 if (result.Count > 0)
                 {
+                    Fixture = result[0].FixtureId;
+                    HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
+
                     bool? enableTO = result[0].EnableTO;
                     // only have to check on the first Edge/Kant
                     HasTOnr = enableTO.HasValue ? enableTO.Value : false;
+
+                    if (result.Count > 1)
+                    {
+                        // the article has edges/kant
+                        HasKant = true;
+                    }
+                    else
+                    {
+                        HasKant = false;
+                    }
                 }
                 else
                 {
@@ -215,7 +275,37 @@ namespace DCMarker
 
         private void DoOkButtonCommand()
         {
-            throw new NotImplementedException();
+            Article article = new Article()
+            {
+                F1 = ArticleNumber,
+                Kant = Kant,
+                FixtureId = Fixture,
+                EnableTO = HasTOnr,
+                TOnumber = TOnr,
+                Template = string.Empty,
+                IsTestItemSelected = IsTestItemSelected
+            };
+            BatchesDone = 0;
+            OrderInProgress = false;
+
+            _wf.UpdateWorkflow(article);
+
+            Status = "Waiting for product";
+        }
+
+        private bool _OrderInProgress;
+
+        public bool OrderInProgress
+        {
+            get
+            {
+                return _OrderInProgress;
+            }
+            set
+            {
+                _OrderInProgress = value;
+                NotifyPropertyChanged();
+            }
         }
 
         private bool _MarkingIsInProgress;
@@ -229,6 +319,29 @@ namespace DCMarker
             set
             {
                 _MarkingIsInProgress = value;
+                if (_MarkingIsInProgress)
+                {
+                    ColorStatus = BUSYCOLOR;
+                }
+                else
+                {
+                    ColorStatus = WAITINGCOLOR;
+                }
+                NotifyPropertyChanged();
+            }
+        }
+
+        private Color _ColorStatus;
+
+        public Color ColorStatus
+        {
+            get
+            {
+                return _ColorStatus;
+            }
+            set
+            {
+                _ColorStatus = value;
                 NotifyPropertyChanged();
             }
         }
@@ -265,17 +378,17 @@ namespace DCMarker
             }
         }
 
-        private int _BatchDone;
+        private int _BatchesDone;
 
-        public int BatchDone
+        public int BatchesDone
         {
             get
             {
-                return _BatchDone;
+                return _BatchesDone;
             }
             set
             {
-                _BatchDone = value;
+                _BatchesDone = value;
                 NotifyPropertyChanged();
             }
         }
@@ -315,6 +428,21 @@ namespace DCMarker
             set
             {
                 _hasBatchSize = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool? _IsTestItemSelected;
+
+        public bool? IsTestItemSelected
+        {
+            get
+            {
+                return _IsTestItemSelected;
+            }
+            set
+            {
+                _IsTestItemSelected = value;
                 NotifyPropertyChanged();
             }
         }

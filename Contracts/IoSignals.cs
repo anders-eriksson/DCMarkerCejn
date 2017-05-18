@@ -6,6 +6,7 @@ namespace Contracts
 
         // Out signals
 
+        public int MASK_ARTICLEREADY = 0x04;
         public int MASK_READYTOMARK = 0x01;
         public int MASK_MARKINGDONE = 0x02;
         public int MASK_ERROR = 0x10;

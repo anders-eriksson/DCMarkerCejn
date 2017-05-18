@@ -14,6 +14,8 @@ namespace DCMarker.Model
 
         event EventHandler<StatusArgs> ErrorMsgEvent;
 
+        event EventHandler<LaserBusyEventArgs> LaserBusyEvent;
+
         void Close();
 
         bool Initialize();
@@ -24,6 +26,10 @@ namespace DCMarker.Model
 
         void ResetAllIoSignals();
 
+        void ResetArticleData();
+
         List<Article> GetArticle(string articleNumber);
+
+        void UpdateWorkflow(Article article);
     }
 }

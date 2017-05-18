@@ -63,10 +63,16 @@ namespace LaserWrapper
             sig.MASK_ALL = sig.MASK_ALL | sig.MASK_ERROR | sig.MASK_ITEMINPLACE | sig.MASK_READYTOMARK;
         }
 
+        public void ResetDocument()
+        {
+            _doc = null;
+        }
+
         public int ErrorCode { get; set; }
 
         public bool Execute()
         {
+            Log.Debug("Laser: Execute");
             bool result = false;
             try
             {
@@ -117,8 +123,7 @@ namespace LaserWrapper
             {
                 layout += ".xlp";
             }
-            //layout = Path.Combine(_layoutPath, layout);
-
+            Log.Debug(string.Format("Loading: {0}", layout));
             return _doc.load(layout);
         }
 
@@ -126,6 +131,7 @@ namespace LaserWrapper
         {
             try
             {
+                Log.Trace("Laser: Releasing Laser");
                 _laser.release();
             }
             catch (Exception ex)
@@ -205,6 +211,7 @@ namespace LaserWrapper
             Log.Trace("Laser End");
             ErrorCode = 0;
             RaiseLaserEndEvent();
+            RaiseLaserBusyEvent(false);
         }
 
         private void _laserSystem_sigLaserError(int p_errCode)
@@ -221,7 +228,7 @@ namespace LaserWrapper
                 _laser = new LaserAxApp();
                 Log.Debug("LaserAxApp instance created");
                 _laserSystem = _laser.System;
-                _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
+                _laserSystem.sigLaserStart += _laserSystem_sigLaserStart;
                 _laserSystem.sigLaserEnd += _laserSystem_sigLaserEnd;
                 _laserSystem.sigLaserError += _laserSystem_sigLaserError;
                 if (_isIoEnabled)
@@ -257,11 +264,12 @@ namespace LaserWrapper
             }
         }
 
-        private void _laserSystem_sigQueryStart()
+        private void _laserSystem_sigLaserStart()
         {
             Log.Trace("Start of marking");
             RaiseQueryStartEvent(GlblRes.Marking);
             _ioPort.resetPort(0, sig.MASK_READYTOMARK);
+            RaiseLaserBusyEvent(true);
             _doc.execute(true, true);
         }
 
@@ -331,6 +339,8 @@ namespace LaserWrapper
                 currentBits &= ~sig.MASK_RESET;
             }
         }
+
+        #endregion Digital IO
 
         #region LaserEnd Event
 
@@ -437,7 +447,32 @@ namespace LaserWrapper
 
         #endregion Reset IO Signals Event
 
-        #endregion Digital IO
+        #region Laser Busy Event
+
+        public delegate void LaserBusyHandler(bool busy);
+
+        public event LaserBusyHandler LaserBusyEvent;
+
+        internal void RaiseLaserBusyEvent(bool busy)
+        {
+            LaserBusyHandler handler = LaserBusyEvent;
+            if (handler != null)
+            {
+                handler(busy);
+            }
+        }
+
+        public class LaserBusyEventArgs : EventArgs
+        {
+            public LaserBusyEventArgs(bool busy)
+            {
+                Busy = busy;
+            }
+
+            public bool Busy { get; private set; } // readonly
+        }
+
+        #endregion Laser Busy Event
 
         #region Axis
 

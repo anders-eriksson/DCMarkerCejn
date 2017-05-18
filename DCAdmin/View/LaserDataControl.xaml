@@ -122,8 +122,8 @@
                 Text="{Binding Path=ErrorMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                 TextWrapping="Wrap" />
             <TextBlock
-                VerticalAlignment="Bottom"
                 HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
                 DockPanel.Dock="Bottom"
                 Text="{Binding RowCount, Converter={StaticResource myNumberFormatter}, ConverterParameter=N0, FallbackValue=0}" />
 

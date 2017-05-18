@@ -105,4 +105,7 @@
   <data name="Article_does_not_exist_in_database" xml:space="preserve">
     <value>Artikel saknas i databasen!</value>
   </data>
+  <data name="TestItem" xml:space="preserve">
+    <value>Provbit</value>
+  </data>
 </root>

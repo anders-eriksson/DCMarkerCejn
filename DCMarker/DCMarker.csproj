@@ -97,6 +97,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ArticleValidator.cs" />
+    <Compile Include="CheckBoxConverter.cs" />
     <Compile Include="ErrorMainWindow.xaml.cs">
       <DependentUpon>ErrorMainWindow.xaml</DependentUpon>
     </Compile>

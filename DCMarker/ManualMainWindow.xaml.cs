@@ -1,4 +1,5 @@
 using Configuration;
+using DCLog;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
@@ -21,6 +22,11 @@ namespace DCMarker
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
             InitializeComponent();
+            if (!DCConfig.Instance.Debug)
+            {
+                LoadButton.Visibility = Visibility.Hidden;
+                ExecuteButton.Visibility = Visibility.Hidden;
+            }
             mainViewModel = new ManualMainViewModel();
             DataContext = mainViewModel;
         }
@@ -28,11 +34,6 @@ namespace DCMarker
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             mainViewModel.Abort();
-        }
-
-        private void TestButton_Click(object sender, RoutedEventArgs e)
-        {
-            mainViewModel.Test();
         }
 
         private void ResetSignals_Click(object sender, RoutedEventArgs e)
@@ -61,6 +62,17 @@ namespace DCMarker
         {
             ArticleTextBox.Focus();
             ArticleTextBox.SelectAll();
+        }
+
+        private void LoadButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainViewModel.Test();
+        }
+
+        private void ExecuteButton_Click(object sender, RoutedEventArgs e)
+        {
+            Log.Trace("ExecuteButton_Click");
+            mainViewModel.Execute();
         }
     }
 }

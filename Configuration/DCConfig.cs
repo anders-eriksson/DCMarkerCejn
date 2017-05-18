@@ -82,12 +82,13 @@ namespace Configuration
                 LayoutPath = _profile.GetValue("Laser", nameof(LayoutPath), @"C:\DCMarker\Layouts");
                 ExecuteTimeout = _profile.GetValue("Laser", nameof(ExecuteTimeout), 10000);
                 IsIoEnabled = _profile.GetValue("Laser", nameof(IsIoEnabled), false);
-                ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x01);
-                MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);
-                Error = _profile.GetValue("Laser", nameof(Error), 0x40);
-                ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x02);
-                EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x10);
-                ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x8);
+                ArticleReady = _profile.GetValue("Laser", nameof(ArticleReady), 0x04);                  // OUTPUT 2
+                ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x01);                    // OUTPUT 0
+                MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);                    // OUTPUT 1     NB! Not used!
+                Error = _profile.GetValue("Laser", nameof(Error), 0x40);                                // OUTPUT 6
+                ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x02);                    // INPUT 1
+                EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x10);              // INPUT 4
+                ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x8);                             // INPUT 3
 
                 // TCP Server
                 TcpPort = _profile.GetValue("TcpServer", nameof(TcpPort), 50000);
@@ -119,6 +120,7 @@ namespace Configuration
                 _profile.SetValue("Laser", nameof(ExecuteTimeout), ExecuteTimeout);
                 _profile.SetValue("Laser", nameof(IsIoEnabled), IsIoEnabled);
                 _profile.SetValue("Laser", nameof(IsIoEnabled), IsIoEnabled);
+                _profile.SetValue("Laser", nameof(ArticleReady), ArticleReady);
                 _profile.SetValue("Laser", nameof(ReadyToMark), ReadyToMark);
                 _profile.SetValue("Laser", nameof(MarkingDone), MarkingDone);
                 _profile.SetValue("Laser", nameof(Error), Error);
@@ -155,6 +157,7 @@ namespace Configuration
         public string LayoutPath { get; set; }
         public int ExecuteTimeout { get; set; }
         public bool IsIoEnabled { get; set; }
+        public int ArticleReady { get; set; }
         public int ReadyToMark { get; set; }
         public int MarkingDone { get; set; }
         public int Error { get; set; }

@@ -32,7 +32,6 @@ namespace DCAdmin
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        //public ObservableCollection<Fixture> FixtureCollection { get; set; }
         private ObservableCollection<Fixture> _FixtureCollection;
 
         public ObservableCollection<Fixture> FixtureCollection

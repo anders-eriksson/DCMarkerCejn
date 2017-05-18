@@ -311,6 +311,13 @@ namespace DCMarker.Model
 
         private void UpdateViewModel(List<Article> articles)
         {
+            UpdateViewModelData data = CreateUpdateViewModelData(articles);
+
+            RaiseUpdateMainViewModelEvent(data);
+        }
+
+        private static UpdateViewModelData CreateUpdateViewModelData(List<Article> articles)
+        {
             var data = new UpdateViewModelData();
             Article article = articles[0];
             data.ArticleNumber = article.F1;
@@ -328,9 +335,27 @@ namespace DCMarker.Model
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
             data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
             data.Template = article.Template;
-
-            RaiseUpdateMainViewModelEvent(data);
+            return data;
         }
+
+        // only used by ManualWorkFlow // AME - 2017-05-12
+        public void UpdateWorkflow(Article article)
+        {
+            throw new NotImplementedException();
+        }
+
+        // only used by ManualWorkFlow // AME - 2017-05-12
+        public void ResetArticleData()
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Laser Busy Event
+
+        // only used by ManualWorkFlow // AME - 2017-05-12
+        public event EventHandler<LaserBusyEventArgs> LaserBusyEvent;
+
+        #endregion Laser Busy Event
 
         #region Error Event
 

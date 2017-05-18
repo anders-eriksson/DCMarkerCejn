@@ -66,9 +66,30 @@ namespace DCMarker.Model
             return result;
         }
 
+        public HistoryData CreateHistoryData(Article article, bool hasEdges = false)
+        {
+            HistoryData result;
+            SerialNumber snr;
+
+            if (hasEdges)
+            {
+                snr = GetLastSerialNumber();
+            }
+            else
+            {
+                snr = CreateSerialNumber();
+            }
+            LaserData ldata = GetLaserData(article.F1, article.Kant);
+            ldata.TOnr = article.TOnumber;
+
+            result = FillHistoryData(ldata, snr);
+
+            return result;
+        }
+
         public HistoryData CreateHistoryData(string article, string kant, bool hasEdges = false)
         {
-            HistoryData result = new HistoryData();
+            HistoryData result;
             SerialNumber snr;
 
             if (hasEdges)

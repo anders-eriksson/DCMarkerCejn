@@ -219,4 +219,7 @@
   <data name="Article_does_not_exist_in_database" xml:space="preserve">
     <value>Article does not exist in database!</value>
   </data>
+  <data name="TestItem" xml:space="preserve">
+    <value>Test Item</value>
+  </data>
 </root>

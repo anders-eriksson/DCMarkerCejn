@@ -9,7 +9,7 @@
     <entry name="ExecuteTimeout">10000</entry>
     <entry name="IsIoEnabled">True</entry>
     <entry name="ReadyToMark">1</entry>
-    <entry name="MarkingDone">2</entry>
+    <entry name="MarkingDone">3</entry>
     <entry name="Error">64</entry>
     <entry name="ItemInPlace">2</entry>
     <entry name="EmergencyError">16</entry>
@@ -20,8 +20,8 @@
     <entry name="BufferLength">14</entry>
   </section>
   <section name="Machine">
-    <entry name="TypeOfMachine">2</entry>
+    <entry name="TypeOfMachine">3</entry>
     <entry name="GuiLanguage">sv-SE</entry>
-    <entry name="Debug">False</entry>
+    <entry name="Debug">True</entry>
   </section>
 </profile>

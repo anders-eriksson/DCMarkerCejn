@@ -286,6 +286,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Test Item.
+        /// </summary>
+        public static string TestItem {
+            get {
+                return ResourceManager.GetString("TestItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DCMarker.
         /// </summary>
         public static string Title {
