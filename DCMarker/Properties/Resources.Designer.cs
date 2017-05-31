@@ -97,6 +97,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Article not defined in database {0}.
+        /// </summary>
+        public static string Article_not_defined_in_database_0 {
+            get {
+                return ResourceManager.GetString("Article_not_defined_in_database_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Article not defined in database! Article={0}.
         /// </summary>
         public static string Article_not_defined_in_database_Article0 {
@@ -147,6 +156,24 @@ namespace DCMarker.Properties {
         public static string CreateSerialNumber_Exception {
             get {
                 return ResourceManager.GetString("CreateSerialNumber_Exception", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edge marking is not supported in this version!.
+        /// </summary>
+        public static string Edge_marking_is_not_supported_in_this_version {
+            get {
+                return ResourceManager.GetString("Edge_marking_is_not_supported_in_this_version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error initializing machine.
+        /// </summary>
+        public static string Error_initializing_machine {
+            get {
+                return ResourceManager.GetString("Error_initializing_machine", resourceCulture);
             }
         }
         
@@ -250,6 +277,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not a valid number.
+        /// </summary>
+        public static string Not_a_valid_number {
+            get {
+                return ResourceManager.GetString("Not_a_valid_number", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
         public static string OK {
@@ -264,6 +300,15 @@ namespace DCMarker.Properties {
         public static string OnTopMenuHeader {
             get {
                 return ResourceManager.GetString("OnTopMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quantity must be 1 or larger.
+        /// </summary>
+        public static string Quantity_must_be_1_or_larger {
+            get {
+                return ResourceManager.GetString("Quantity_must_be_1_or_larger", resourceCulture);
             }
         }
         
@@ -336,6 +381,15 @@ namespace DCMarker.Properties {
         public static string Update_didnt_work_on_this_article_and_layout_Article0_Layout1 {
             get {
                 return ResourceManager.GetString("Update_didnt_work_on_this_article_and_layout_Article0_Layout1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting for product.
+        /// </summary>
+        public static string Waiting_for_product {
+            get {
+                return ResourceManager.GetString("Waiting_for_product", resourceCulture);
             }
         }
         

@@ -43,7 +43,7 @@
     <value>Layout inte definierad för denna artikel! Artikel = {0}</value>
   </data>
   <data name="Marking_is_done" xml:space="preserve">
-    <value>Märkningen är klar!</value>
+    <value>Märkning klar!</value>
   </data>
   <data name="Update_didnt_work_on_this_article_and_layout_Article0_Layout1" xml:space="preserve">
     <value>Uppdatering fungerade inte på denna artikel och layout! Artikel = {0}, Layout = {1}</value>
@@ -107,5 +107,20 @@
   </data>
   <data name="TestItem" xml:space="preserve">
     <value>Provbit</value>
+  </data>
+  <data name="Edge_marking_is_not_supported_in_this_version" xml:space="preserve">
+    <value>Hantering av kanter supporteras inte i denna version!</value>
+  </data>
+  <data name="Waiting_for_product" xml:space="preserve">
+    <value>Väntar på produkt</value>
+  </data>
+  <data name="Article_not_defined_in_database_0" xml:space="preserve">
+    <value>Artikel finns inte definierat i databasen {0}</value>
+  </data>
+  <data name="Not_a_valid_number" xml:space="preserve">
+    <value>Felaktigt nummer</value>
+  </data>
+  <data name="Quantity_must_be_1_or_larger" xml:space="preserve">
+    <value>Antal måste vara 1 eller högre</value>
   </data>
 </root>

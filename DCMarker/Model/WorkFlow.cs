@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using WorkFlow_Res = global::DCMarker.Properties.Resources;
 using DCLog;
+using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker.Model
 {
@@ -95,7 +95,7 @@ namespace DCMarker.Model
             RaiseErrorEvent(string.Empty);
             _laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
-            RaiseStatusEvent(string.Format(WorkFlow_Res.Article_0_received, _articleNumber));
+            RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
 
             _articles = _db.GetArticle(_articleNumber);
 
@@ -112,7 +112,7 @@ namespace DCMarker.Model
                 _laser.SetPort(0, sig.MASK_ERROR);
                 // Can't find article in database.
 
-                RaiseErrorEvent(string.Format(WorkFlow_Res.Article_not_defined_in_database_Article0, _articleNumber));
+                RaiseErrorEvent(string.Format(GlblRes.Article_not_defined_in_database_0, _articleNumber));
             }
         }
 
@@ -124,7 +124,7 @@ namespace DCMarker.Model
         private void _laser_LaserEndEvent()
         {
             _laser.SetPort(0, sig.MASK_MARKINGDONE);
-            RaiseStatusEvent(WorkFlow_Res.Marking_is_done);
+            RaiseStatusEvent(GlblRes.Marking_is_done);
         }
 
         private void _laser_LaserErrorEvent(string msg)
@@ -194,9 +194,9 @@ namespace DCMarker.Model
         {
             string result = string.Empty;
 
-            if (layoutname.IndexOf(WorkFlow_Res.xlp) < 0)
+            if (layoutname.IndexOf(".xlp") < 0)
             {
-                layoutname += WorkFlow_Res.xlp;
+                layoutname += ".xlp";
             }
             if (cfg.LayoutPath.Length > 1)
             {
@@ -274,38 +274,38 @@ namespace DCMarker.Model
                                 if (status != null)
                                 {
                                     // we are ready to mark...
-                                    RaiseStatusEvent(string.Format(WorkFlow_Res.Waiting_for_start_signal_0, layoutname));
+                                    RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
                                     _laser.ResetPort(0, sig.MASK_MARKINGDONE);
                                     _laser.SetPort(0, sig.MASK_READYTOMARK);
                                 }
                                 else
                                 {
-                                    RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                    RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
                                     _laser.SetPort(0, sig.MASK_ERROR);
                                 }
                             }
                             else
                             {
-                                RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
                                 _laser.SetPort(0, sig.MASK_ERROR);
                             }
                         }
                     }
                     else
                     {
-                        RaiseErrorEvent(string.Format(WorkFlow_Res.Error_loading_layout_0, layoutname));
+                        RaiseErrorEvent(string.Format(GlblRes.Error_loading_layout_0, layoutname));
                         _laser.SetPort(0, sig.MASK_ERROR);
                     }
                 }
                 else
                 {
-                    RaiseErrorEvent(string.Format(WorkFlow_Res.Layout_not_defined_for_this_article_Article0, _articleNumber));
+                    RaiseErrorEvent(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
                     _laser.SetPort(0, sig.MASK_ERROR);
                 }
             }
             else
             {
-                RaiseErrorEvent(WorkFlow_Res.ItemInPlace_received_before_Article_Number_is_set);
+                RaiseErrorEvent(GlblRes.ItemInPlace_received_before_Article_Number_is_set);
             }
         }
 

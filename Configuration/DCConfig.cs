@@ -66,7 +66,7 @@ namespace Configuration
                 /*  Machine Types
                  *
                  *  1   Automatic                   e.g. Kenny
-                 *  2   Automatic with TO number    e.g. Filip
+                 *  2   Automatic with TO number    e.g. Filip?
                  *  3   Manual with TO number       e.g. Ultraflow
                  */
 
@@ -94,7 +94,10 @@ namespace Configuration
                 TcpPort = _profile.GetValue("TcpServer", nameof(TcpPort), 50000);
                 BufferLength = _profile.GetValue("TcpServer", nameof(BufferLength), 12 + 7 + 2);
                 ArticleNumberLength = _profile.GetValue("TcpServer", nameof(ArticleNumberLength), 12);
-                ToNumberLength = _profile.GetValue("TcpServer", nameof(ToNumberLength), 7);
+                ToNumberLength = _profile.GetValue("TcpServer", nameof(ToNumberLength), 7);             // Also used in ManualMainViewModel - CanOkButtonCommandExecute
+
+                // GUI
+                ResetInputValues = _profile.GetValue("GUI", nameof(ResetInputValues), true);
             }
             catch (Exception ex)
             {
@@ -133,6 +136,9 @@ namespace Configuration
                 _profile.SetValue("TcpServer", nameof(BufferLength), BufferLength);
                 _profile.SetValue("TcpServer", nameof(ArticleNumberLength), ArticleNumberLength);
                 _profile.SetValue("TcpServer", nameof(ToNumberLength), ToNumberLength);
+
+                // GUI
+                _profile.SetValue("GUI", nameof(ResetInputValues), ResetInputValues);
             }
             catch (Exception ex)
             {
@@ -176,5 +182,11 @@ namespace Configuration
         public string GuiLanguage { get; private set; }
 
         #endregion TcpServer properties
+
+        #region GUI
+
+        public bool ResetInputValues { get; set; }
+
+        #endregion GUI
     }
 }

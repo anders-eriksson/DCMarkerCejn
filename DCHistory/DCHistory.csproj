@@ -91,6 +91,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BooleanToVisibilityConverter.cs" />
+    <Compile Include="CheckBoxConverter.cs" />
     <Compile Include="ExpressionBuilder\Filter.cs" />
     <Compile Include="ExpressionBuilder\LinqExpressionBuilder.cs" />
     <Compile Include="ExpressionBuilder\Operators.cs" />

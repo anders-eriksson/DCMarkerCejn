@@ -222,4 +222,22 @@
   <data name="TestItem" xml:space="preserve">
     <value>Test Item</value>
   </data>
+  <data name="Edge_marking_is_not_supported_in_this_version" xml:space="preserve">
+    <value>Edge marking is not supported in this version!</value>
+  </data>
+  <data name="Waiting_for_product" xml:space="preserve">
+    <value>Waiting for product</value>
+  </data>
+  <data name="Error_initializing_machine" xml:space="preserve">
+    <value>Error initializing machine</value>
+  </data>
+  <data name="Article_not_defined_in_database_0" xml:space="preserve">
+    <value>Article not defined in database {0}</value>
+  </data>
+  <data name="Not_a_valid_number" xml:space="preserve">
+    <value>Not a valid number</value>
+  </data>
+  <data name="Quantity_must_be_1_or_larger" xml:space="preserve">
+    <value>Quantity must be 1 or larger</value>
+  </data>
 </root>

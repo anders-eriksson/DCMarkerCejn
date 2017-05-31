@@ -14,6 +14,7 @@
     mc:Ignorable="d">
     <Window.Resources>
         <local:BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+        <local:CheckBoxConverter x:Key="CheckBoxConverter" />
         <local:NumberFormatter x:Key="myNumberFormatter" />
     </Window.Resources>
     <Grid>
@@ -361,13 +362,13 @@
                     x:Name="externTestColumn"
                     Width="*"
                     MinWidth="50"
-                    Binding="{Binding ExternTest, IsAsync=True, FallbackValue=false}"
+                    Binding="{Binding ExternTest, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
                     Header="Extern Test" />
                 <DataGridCheckBoxColumn
                     x:Name="enableTOColumn"
                     Width="*"
                     MinWidth="50"
-                    Binding="{Binding EnableTO, IsAsync=True, FallbackValue=false}"
+                    Binding="{Binding EnableTO, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
                     Header="EnableTO" />
                 <DataGridTextColumn
                     x:Name="tOnrColumn"

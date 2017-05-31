@@ -59,7 +59,7 @@
         </trans-unit>
         <trans-unit id="Marking_is_done" translate="yes" xml:space="preserve">
           <source>Marking is done!</source>
-          <target state="translated" state-qualifier="mt-suggestion">Märkningen är klar!</target>
+          <target state="translated">Märkning klar!</target>
         </trans-unit>
         <trans-unit id="Update_didnt_work_on_this_article_and_layout_Article0_Layout1" translate="yes" xml:space="preserve">
           <source>Update didn't work on this article and layout! Article={0}, Layout={1}</source>
@@ -148,6 +148,30 @@
         <trans-unit id="TestItem" translate="yes" xml:space="preserve">
           <source>Test Item</source>
           <target state="translated">Provbit</target>
+        </trans-unit>
+        <trans-unit id="Edge_marking_is_not_supported_in_this_version" translate="yes" xml:space="preserve">
+          <source>Edge marking is not supported in this version!</source>
+          <target state="translated">Hantering av kanter supporteras inte i denna version!</target>
+        </trans-unit>
+        <trans-unit id="Waiting_for_product" translate="yes" xml:space="preserve">
+          <source>Waiting for product</source>
+          <target state="translated">Väntar på produkt</target>
+        </trans-unit>
+        <trans-unit id="Error_initializing_machine" translate="no" xml:space="preserve">
+          <source>Error initializing machine</source>
+          <target state="final">Error initializing machine</target>
+        </trans-unit>
+        <trans-unit id="Article_not_defined_in_database_0" translate="yes" xml:space="preserve">
+          <source>Article not defined in database {0}</source>
+          <target state="translated">Artikel finns inte definierat i databasen {0}</target>
+        </trans-unit>
+        <trans-unit id="Not_a_valid_number" translate="yes" xml:space="preserve">
+          <source>Not a valid number</source>
+          <target state="translated">Felaktigt nummer</target>
+        </trans-unit>
+        <trans-unit id="Quantity_must_be_1_or_larger" translate="yes" xml:space="preserve">
+          <source>Quantity must be 1 or larger</source>
+          <target state="translated">Antal måste vara 1 eller högre</target>
         </trans-unit>
       </group>
     </body>

@@ -41,6 +41,7 @@ namespace DCMarker
             MarkingIsInProgress = false;
             IsTestItemSelected = false;
             OrderInProgress = true;
+            ArticleFound = false;
             try
             {
                 cfg = DCConfig.Instance;
@@ -87,7 +88,6 @@ namespace DCMarker
 
                 default:
                     throw new Exception(string.Format(GlblRes.Type_of_machine_not_available_Type0, cfg.TypeOfMachine));
-                    // break;       // Leaving this as a reminder if we change throw to something else... 2017-02-10 AME
             }
         }
 
@@ -122,14 +122,25 @@ namespace DCMarker
                 if (!string.IsNullOrWhiteSpace(BatchSize) && BatchesDone >= Convert.ToInt32(BatchSize))
                 {
                     // we are done with the order/batch.
-                    ArticleNumber = string.Empty;
-                    HasTOnr = false;
-                    BatchSize = string.Empty; // Is it nice to remove this or should we leave it???
-                    BatchesDone = 0;
-                    _wf.ResetArticleData();
+                    ResetInputValues();
                     OrderInProgress = true;
                 }
             }
+        }
+
+        private void ResetInputValues()
+        {
+            if (DCConfig.Instance.ResetInputValues)
+            {
+                ArticleNumber = string.Empty;
+                HasTOnr = false;
+                BatchSize = string.Empty;
+                BatchesDone = 0;
+                TOnr = string.Empty;
+            }
+
+            // Always reset article data so that we can't continue to mark without entering new input data!
+            _wf.ResetArticleData();
         }
 
         private void _wf_ErrorMsgEvent(object sender, StatusArgs e)
@@ -205,9 +216,10 @@ namespace DCMarker
 
         private void DoLoadArticleCommand()
         {
+            ErrorMessage = string.Empty;
+            Status = string.Empty;
             if (!string.IsNullOrWhiteSpace(ArticleNumber))
             {
-                ErrorMessage = string.Empty;
                 List<Article> result = _wf.GetArticle(ArticleNumber);
                 if (result.Count > 0)
                 {
@@ -217,22 +229,27 @@ namespace DCMarker
                     bool? enableTO = result[0].EnableTO;
                     // only have to check on the first Edge/Kant
                     HasTOnr = enableTO.HasValue ? enableTO.Value : false;
+                    TOnr = string.Empty;
 
                     if (result.Count > 1)
                     {
                         // the article has edges/kant
-                        HasKant = true;
+                        //HasKant = true;
+                        ErrorMessage = GlblRes.Edge_marking_is_not_supported_in_this_version;
                     }
                     else
                     {
                         HasKant = false;
                     }
+                    ArticleFound = true;
                 }
                 else
                 {
                     // the article doesn't exists show an error!!!
                     ErrorMessage = GlblRes.Article_does_not_exist_in_database;
+
                     HasTOnr = false;
+                    ArticleFound = false;
                 }
             }
         }
@@ -263,7 +280,7 @@ namespace DCMarker
             bool result = false;
             if (HasTOnr)
             {
-                result = !string.IsNullOrWhiteSpace(ArticleNumber) && !string.IsNullOrWhiteSpace(BatchSize) && TOnr.Length == 7;
+                result = !string.IsNullOrWhiteSpace(ArticleNumber) && !string.IsNullOrWhiteSpace(BatchSize) && TOnr.Length == DCConfig.Instance.ToNumberLength;
             }
             else
             {
@@ -273,24 +290,35 @@ namespace DCMarker
             return result;
         }
 
+        public bool ArticleFound { get; set; }
+
         private void DoOkButtonCommand()
         {
-            Article article = new Article()
+            int test;
+            if (int.TryParse(BatchSize, out test) && ArticleFound)
             {
-                F1 = ArticleNumber,
-                Kant = Kant,
-                FixtureId = Fixture,
-                EnableTO = HasTOnr,
-                TOnumber = TOnr,
-                Template = string.Empty,
-                IsTestItemSelected = IsTestItemSelected
-            };
-            BatchesDone = 0;
-            OrderInProgress = false;
+                ErrorMessage = string.Empty;
+                Article article = new Article()
+                {
+                    F1 = ArticleNumber,
+                    Kant = Kant,
+                    FixtureId = Fixture,
+                    EnableTO = HasTOnr,
+                    TOnumber = TOnr,
+                    Template = string.Empty,
+                    IsTestItemSelected = IsTestItemSelected
+                };
+                BatchesDone = 0;
+                //OrderInProgress = false;
 
-            _wf.UpdateWorkflow(article);
+                _wf.UpdateWorkflow(article);
 
-            Status = "Waiting for product";
+                Status = GlblRes.Waiting_for_product;
+            }
+            else
+            {
+                ErrorMessage = "Both Article number and quantity must be entered";
+            }
         }
 
         private bool _OrderInProgress;

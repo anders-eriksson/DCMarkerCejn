@@ -27,6 +27,7 @@ namespace DCAdmin
             string language = DCConfig.Instance.GuiLanguage;
             if (!string.IsNullOrWhiteSpace(language))
             {
+                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
 

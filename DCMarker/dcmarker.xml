@@ -18,10 +18,15 @@
   <section name="TcpServer">
     <entry name="TcpPort">2000</entry>
     <entry name="BufferLength">14</entry>
+    <entry name="ArticleNumberLength">12</entry>
+    <entry name="ToNumberLength">7</entry>
   </section>
   <section name="Machine">
     <entry name="TypeOfMachine">3</entry>
     <entry name="GuiLanguage">sv-SE</entry>
     <entry name="Debug">True</entry>
+  </section>
+  <section name="GUI">
+    <entry name="ResetInputValues">False</entry>
   </section>
 </profile>

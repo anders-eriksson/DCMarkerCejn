@@ -17,6 +17,17 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <local:CheckBoxConverter x:Key="CheckBoxConverter" />
+        <DataTemplate DataType="{x:Type ValidationError}">
+            <TextBlock
+                Width="159"
+                Height="18"
+                Margin="0"
+                HorizontalAlignment="Left"
+                FontSize="10"
+                FontStyle="Italic"
+                Foreground="Red"
+                Text="{Binding Path=ErrorContent}" />
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>
@@ -109,19 +120,34 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.BatchSize}" />
-
+        <ContentPresenter
+            Height="20"
+            Margin="350,40,0,160"
+            Content="{Binding ElementName=BatchSizeTextbox, Path=(Validation.Errors).CurrentItem}" />
         <TextBox
             x:Name="BatchSizeTextbox"
             Width="132"
-            Height="18"
             Margin="350,76,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
             IsEnabled="{Binding OrderInProgress}"
             TabIndex="1"
-            Text="{Binding BatchSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            TextWrapping="Wrap" />
+            TextWrapping="Wrap">
+            <TextBox.Text>
+                <Binding
+                    Mode="TwoWay"
+                    NotifyOnValidationError="True"
+                    Path="BatchSize"
+                    UpdateSourceTrigger="LostFocus"
+                    ValidatesOnDataErrors="True"
+                    ValidatesOnNotifyDataErrors="True">
+                    <Binding.ValidationRules>
+                        <local:QuantityValidator ValidatesOnTargetUpdated="True" />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
 
         <TextBlock
             x:Name="KantLabel"
@@ -167,7 +193,6 @@
         <TextBox
             x:Name="TOnrTextbox"
             Width="132"
-            Height="18"
             Margin="139,127,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
