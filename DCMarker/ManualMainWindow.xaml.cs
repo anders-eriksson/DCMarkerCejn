@@ -3,6 +3,7 @@ using DCLog;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
+using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
 {
@@ -22,7 +23,9 @@ namespace DCMarker
                 CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
+
             InitializeComponent();
+
             if (!DCConfig.Instance.Debug)
             {
                 LoadButton.Visibility = Visibility.Hidden;
@@ -34,6 +37,11 @@ namespace DCMarker
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // We alway save the quantity, but only load it if it's configured
+            var q = mainViewModel.Quantity;
+            Properties.Settings.Default.Quantity = q;
+            Properties.Settings.Default.Save();
+
             mainViewModel.Abort();
         }
 
@@ -74,6 +82,15 @@ namespace DCMarker
         {
             Log.Trace("ExecuteButton_Click");
             mainViewModel.Execute();
+        }
+
+        private void ResetZaxis_Click(object sender, RoutedEventArgs e)
+        {
+            bool brc = mainViewModel.ResetZAxis();
+            if (!brc)
+            {
+                MessageBox.Show(GlblRes.No_Connection_with_Z_axis, GlblRes.ERROR, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

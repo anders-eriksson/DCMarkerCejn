@@ -13,7 +13,7 @@ namespace DCMarker
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            if (value == null || string.IsNullOrWhiteSpace((string)value))
+            if (string.IsNullOrWhiteSpace((string)value))
             {
                 return new ValidationResult(false, "");
             }

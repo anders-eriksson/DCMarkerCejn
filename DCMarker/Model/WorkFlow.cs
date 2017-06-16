@@ -24,6 +24,8 @@ namespace DCMarker.Model
 
         private IoSignals sig;
 
+        public bool FirstMarkingResetZ { get; set; }
+
         public WorkFlow()
         {
             try
@@ -116,7 +118,12 @@ namespace DCMarker.Model
             }
         }
 
+#if DEBUG
+
+        public void _laser_ItemInPositionEvent()
+#else
         private void _laser_ItemInPositionEvent()
+#endif
         {
             UpdateLayout();
         }
@@ -338,17 +345,39 @@ namespace DCMarker.Model
             return data;
         }
 
-        // only used by ManualWorkFlow // AME - 2017-05-12
+        #region only used by ManualWorkFlow // AME - 2017-05-12
+
         public void UpdateWorkflow(Article article)
         {
             throw new NotImplementedException();
         }
 
-        // only used by ManualWorkFlow // AME - 2017-05-12
         public void ResetArticleData()
         {
             throw new NotImplementedException();
         }
+
+        public void ResetArticleReady()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ResetZAxis()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetNextToLast()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ResetNextToLast()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion only used by ManualWorkFlow // AME - 2017-05-12
 
         #region Laser Busy Event
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DCAdmin.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,35 +12,28 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using DCAdmin.ViewModel;
 using GlblRes = global::DCAdmin.Properties.Resources;
 
 namespace DCAdmin
 {
     /// <summary>
-    /// Interaction logic for AddRow.xaml
+    /// Interaction logic for AddFixture.xaml
     /// </summary>
-    public partial class AddRowWindow : Window
+    public partial class AddFixture : Window
     {
-        public AddRowVM RowData { get; set; }
+        public AddFixtureVM FixtureData { get; set; }
 
-        public AddRowWindow()
+        public AddFixture()
         {
-            RowData = new AddRowVM();
-            DataContext = RowData;
-
+            FixtureData = new AddFixtureVM();
+            DataContext = FixtureData;
             InitializeComponent();
-
-            ArticleTextbox.Focus();
+            FixtureTextbox.Focus();
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: MachineId
-            //MachineId = MachineIdTextbox.Text.Trim();
-            RowData.MachineId = "AME";
-            RowData.Article = ArticleTextbox.Text.Trim();
-            RowData.Kant = KantTextbox.Text.Trim();
+            FixtureData.FixtureId = FixtureTextbox.Text.Trim();
             DialogResult = true;
         }
 
@@ -47,18 +41,14 @@ namespace DCAdmin
         {
             if (DialogResult.HasValue && DialogResult.Value)
             {
-                if (!RowData.RowExists())
+                if (!FixtureData.RowExists())
                 {
-                    // Save values for next time
-                    Properties.Settings.Default.MachineId = RowData.MachineId;
-                    Properties.Settings.Default.Article = RowData.Article;
-                    Properties.Settings.Default.Kant = RowData.Kant;
                     e.Cancel = false;
                 }
                 else
                 {
                     // article already exists!
-                    RowData.ErrorMessage = GlblRes.Article_already_exists;
+                    FixtureData.ErrorMessage = GlblRes.Fixture_already_exists;
                     e.Cancel = true;
                     DialogResult = false;
                 }

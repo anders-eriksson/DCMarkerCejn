@@ -194,6 +194,22 @@
           <source>Clear</source>
           <target state="translated">Rensa</target>
         </trans-unit>
+        <trans-unit id="AddFixtureTitle" translate="yes" xml:space="preserve">
+          <source>Add Fixture</source>
+          <target state="translated">Lägg till fixtur</target>
+        </trans-unit>
+        <trans-unit id="FixtureLabel" translate="yes" xml:space="preserve">
+          <source>Fixture Name</source>
+          <target state="translated">Fixturenamn</target>
+        </trans-unit>
+        <trans-unit id="Article_already_exists" translate="yes" xml:space="preserve">
+          <source>Article already exists!</source>
+          <target state="translated">Artikeln finns redan!</target>
+        </trans-unit>
+        <trans-unit id="Fixture_already_exists" translate="yes" xml:space="preserve">
+          <source>Fixture already exists</source>
+          <target state="translated">Fixturen finns redan</target>
+        </trans-unit>
       </group>
     </body>
   </file>

@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using WorkFlow_Res = global::DCMarker.Properties.Resources;
 using DCLog;
+
+using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker.Model
 {
@@ -22,6 +23,8 @@ namespace DCMarker.Model
         private bool _hasEdges;
         private Laser _laser;
 
+        public bool FirstMarkingResetZ { get; set; }
+
         public ManualWorkFlow()
         {
             try
@@ -35,6 +38,7 @@ namespace DCMarker.Model
                 //}
                 sig = new IoSignals();
                 UpdateIoMasks();
+                FirstMarkingResetZ = false;
                 Initialize();
             }
             catch (Exception)
@@ -51,9 +55,24 @@ namespace DCMarker.Model
 
         public void ResetArticleData()
         {
-            _articles.Clear();
+            if (_articles != null)
+            {
+                _articles.Clear();
+            }
             _articleNumber = string.Empty;
             _laser.ResetDocument();
+        }
+
+        public void ResetArticleReady()
+        {
+            if (_laser != null)
+            {
+                _laser.ResetPort(0, sig.MASK_ARTICLEREADY);
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
         }
 
         public void Execute()
@@ -65,7 +84,7 @@ namespace DCMarker.Model
             }
             else
             {
-                Log.Trace("_laser == null");
+                Log.Debug("_laser == null");
             }
         }
 
@@ -101,7 +120,7 @@ namespace DCMarker.Model
             RaiseErrorEvent(string.Empty);
             _laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
-            RaiseStatusEvent(string.Format(WorkFlow_Res.Article_0_received, _articleNumber));
+            RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
 
             _articles = _db.GetArticle(_articleNumber);
 
@@ -118,24 +137,68 @@ namespace DCMarker.Model
                 _laser.SetPort(0, sig.MASK_ERROR);
                 // Can't find article in database.
 
-                RaiseErrorEvent(string.Format(WorkFlow_Res.Article_not_defined_in_database_Article0, _articleNumber));
+                RaiseErrorEvent(string.Format(GlblRes.Article_not_defined_in_database_Article0, _articleNumber));
             }
         }
 
+#if DEBUG
+
+        public void _laser_ItemInPositionEvent()
+#else
+
         private void _laser_ItemInPositionEvent()
+#endif
         {
+#if !DEBUG
+            if (FirstMarkingResetZ)
+            {
+                FirstMarkingResetZ = false;
+                bool brc = ResetZAxis();
+                if (!brc)
+                {
+                    RaiseErrorEvent(GlblRes.No_Connection_with_Z_axis);
+                    return;
+                }
+
+                // We will return in _laser_ZeroReachedEvent
+            }
+            else
+            {
+                UpdateLayout();
+            }
+#else
             UpdateLayout();
+#endif
         }
 
         private void _laser_LaserEndEvent()
         {
-            _laser.SetPort(0, sig.MASK_MARKINGDONE);
-            RaiseStatusEvent(WorkFlow_Res.Marking_is_done);
+            if (_laser != null)
+            {
+                FirstMarkingResetZ = false;
+                _laser.SetPort(0, sig.MASK_MARKINGDONE);
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
+
+            // TODO should this be Waiting for product? And Order done when the whole order is marked?
+            //RaiseStatusEvent(GlblRes.Marking_is_done);
+            RaiseStatusEvent(GlblRes.Waiting_for_product);
         }
 
         private void _laser_LaserErrorEvent(string msg)
         {
-            _laser.SetPort(0, sig.MASK_ERROR);
+            if (_laser != null && !string.IsNullOrWhiteSpace(msg))
+            {
+                _laser.SetPort(0, sig.MASK_ERROR);
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
+
             RaiseErrorEvent(msg);
         }
 
@@ -146,8 +209,43 @@ namespace DCMarker.Model
 
         private void _laser_ResetIoEvent()
         {
-            _laser.ResetPort(0, sig.MASK_ALL);
+            if (_laser != null)
+            {
+                _laser.ResetPort(0, sig.MASK_ALL);
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
+
             RaiseErrorMsgEvent(string.Empty);
+        }
+
+        public void SetNextToLast()
+        {
+            // The IO signal will be set on the next External Start
+            if (_laser != null)
+            {
+                _laser.NextToLast = true;
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
+        }
+
+        public void ResetNextToLast()
+        {
+            // Reset the IO signal directly
+            if (_laser != null)
+            {
+                _laser.NextToLast = false;
+                _laser.ResetPort(0, sig.MASK_NEXTTOLAST);
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
         }
 
         private List<LaserObjectData> ConvertToLaserObjectData(HistoryData historyData)
@@ -189,6 +287,12 @@ namespace DCMarker.Model
             _laser.ItemInPositionEvent += _laser_ItemInPositionEvent;
             _laser.ResetIoEvent += _laser_ResetIoEvent;
             _laser.LaserBusyEvent += _laser_LaserBusyEvent;
+            _laser.ZeroReachedEvent += _laser_ZeroReachedEvent;
+        }
+
+        private void _laser_ZeroReachedEvent(string msg)
+        {
+            UpdateLayout();
         }
 
         private void _laser_LaserBusyEvent(bool busy)
@@ -213,9 +317,9 @@ namespace DCMarker.Model
         {
             string result = string.Empty;
 
-            if (layoutname.IndexOf(WorkFlow_Res.xlp) < 0)
+            if (layoutname.IndexOf(GlblRes.xlp) < 0)
             {
-                layoutname += WorkFlow_Res.xlp;
+                layoutname += GlblRes.xlp;
             }
             if (cfg.LayoutPath.Length > 1)
             {
@@ -229,17 +333,30 @@ namespace DCMarker.Model
             return result;
         }
 
+        public void ResetAllIoSignals()
+        {
+            if (_laser != null)
+            {
+                _laser.ResetPort(0, sig.MASK_ALL);
+                _laser.SetReady(false);
+                RaiseLaserBusyEvent(false);
+            }
+        }
+
         private void UpdateIoMasks()
         {
+            // Out
+            sig.MASK_ARTICLEREADY = cfg.ArticleReady;
             sig.MASK_READYTOMARK = cfg.ReadyToMark;
-
+            sig.MASK_NEXTTOLAST = cfg.NextToLast;
             sig.MASK_MARKINGDONE = cfg.MarkingDone;
             sig.MASK_ERROR = cfg.Error;
+            sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
 
+            // In
             sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
             sig.MASK_EMERGENCY = cfg.EmergencyError;
             sig.MASK_RESET = cfg.ResetIo;
-            sig.MASK_ALL = sig.MASK_ALL | sig.MASK_ERROR | sig.MASK_ITEMINPLACE | sig.MASK_READYTOMARK;
         }
 
         /// <summary>
@@ -247,6 +364,8 @@ namespace DCMarker.Model
         /// </summary>
         private void UpdateLayout()
         {
+            RaiseErrorEvent(string.Empty);
+
             Article article = null;
             if (_articles != null && _articles.Count > 0)
             {
@@ -301,38 +420,38 @@ namespace DCMarker.Model
                                 if (status != null)
                                 {
                                     // we are ready to mark...
-                                    RaiseStatusEvent(string.Format(WorkFlow_Res.Waiting_for_start_signal_0, layoutname));
+                                    RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
                                     _laser.ResetPort(0, sig.MASK_MARKINGDONE);
                                     _laser.SetPort(0, sig.MASK_READYTOMARK);
                                 }
                                 else
                                 {
-                                    RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                    RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
                                     _laser.SetPort(0, sig.MASK_ERROR);
                                 }
                             }
                             else
                             {
-                                RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
                                 _laser.SetPort(0, sig.MASK_ERROR);
                             }
                         }
                     }
                     else
                     {
-                        RaiseErrorEvent(string.Format(WorkFlow_Res.Error_loading_layout_0, layoutname));
+                        RaiseErrorEvent(string.Format(GlblRes.Error_loading_layout_0, layoutname));
                         _laser.SetPort(0, sig.MASK_ERROR);
                     }
                 }
                 else
                 {
-                    RaiseErrorEvent(string.Format(WorkFlow_Res.Layout_not_defined_for_this_article_Article0, _articleNumber));
+                    RaiseErrorEvent(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
                     _laser.SetPort(0, sig.MASK_ERROR);
                 }
             }
             else
             {
-                RaiseErrorEvent(WorkFlow_Res.ItemInPlace_received_before_Article_Number_is_set);
+                RaiseErrorEvent(GlblRes.ItemInPlace_received_before_Article_Number_is_set);
             }
         }
 
@@ -340,6 +459,20 @@ namespace DCMarker.Model
         {
             _articleNumber = article.F1;
             _articles = _db.GetArticle(_articleNumber);
+            if (_articles != null)
+            {
+                FinishUpdateWorkflow(article);
+            }
+            else
+            {
+                // Couldn't find the article! Must have been deleted by someone else...
+                RaiseErrorEvent(string.Format(GlblRes.Article_Number_0_not_found_in_database, _articleNumber));
+            }
+        }
+
+        private void FinishUpdateWorkflow(Article article)
+        {
+            _laser.SetPort(0, sig.MASK_ARTICLEREADY);
 
             // reverse IsTestItemSelected to make it easier for the if statement!
             for (int i = 0; i < _articles.Count; i++)
@@ -420,15 +553,6 @@ namespace DCMarker.Model
 
         public event EventHandler<StatusArgs> StatusEvent;
 
-        public void ResetAllIoSignals()
-        {
-            if (_laser != null)
-            {
-                _laser.ResetPort(0, sig.MASK_ALL);
-                _laser.SetReady(false);
-            }
-        }
-
         internal void RaiseStatusEvent(string msg)
         {
             var handler = StatusEvent;
@@ -473,6 +597,14 @@ namespace DCMarker.Model
                 var arg = new LaserBusyEventArgs(busy);
                 handler(null, arg);
             }
+        }
+
+        public bool ResetZAxis()
+        {
+            Log.Debug("ResetZAxis");
+            bool result = _laser.ResetZAxis();
+
+            return result;
         }
 
         #endregion Laser Busy Event

@@ -246,28 +246,7 @@
   <data name="TO_number_must_be_7_number_long" xml:space="preserve">
     <value>TO number must be 7 number long</value>
   </data>
-  <data name="ResetZAxisMenuHeader" xml:space="preserve">
-    <value>Reset Z Axis</value>
-  </data>
-  <data name="Article_Number_0_not_found_in_database" xml:space="preserve">
-    <value>Article Number: {0} not found in database!</value>
-  </data>
-  <data name="Both_Article_number_and_quantity_must_be_entered" xml:space="preserve">
-    <value>Both Article number and quantity must be entered</value>
-  </data>
   <data name="TO_Number_must_be_0_characters" xml:space="preserve">
     <value>TO Number must be {0} characters</value>
-  </data>
-  <data name="No_Connection_with_Z_axis" xml:space="preserve">
-    <value>No Connection with Z axis!</value>
-  </data>
-  <data name="ERROR" xml:space="preserve">
-    <value>ERROR</value>
-  </data>
-  <data name="OrderBatch_is_done" xml:space="preserve">
-    <value>Order/Batch is done!</value>
-  </data>
-  <data name="Order_is_done" xml:space="preserve">
-    <value>Order is done!</value>
   </data>
 </root>

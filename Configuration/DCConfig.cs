@@ -47,6 +47,7 @@ namespace Configuration
             ConfigName = "dcmarker.xml";
             _profile = new Xml(ConfigName);
             ReadConfig();
+            WriteConfig();
         }
 
         /// <summary>
@@ -82,10 +83,11 @@ namespace Configuration
                 LayoutPath = _profile.GetValue("Laser", nameof(LayoutPath), @"C:\DCMarker\Layouts");
                 ExecuteTimeout = _profile.GetValue("Laser", nameof(ExecuteTimeout), 10000);
                 IsIoEnabled = _profile.GetValue("Laser", nameof(IsIoEnabled), false);
-                ArticleReady = _profile.GetValue("Laser", nameof(ArticleReady), 0x04);                  // OUTPUT 2
                 ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x01);                    // OUTPUT 0
-                MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);                    // OUTPUT 1     NB! Not used!
-                Error = _profile.GetValue("Laser", nameof(Error), 0x40);                                // OUTPUT 6
+                MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);                    // OUTPUT 1
+                ArticleReady = _profile.GetValue("Laser", nameof(ArticleReady), 0x10);                  // OUTPUT 4
+                NextToLast = _profile.GetValue("Laser", nameof(NextToLast), 0x40);                      // OUTPUT 6
+                Error = _profile.GetValue("Laser", nameof(Error), 0x80);                                // OUTPUT 7
                 ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x02);                    // INPUT 1
                 EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x10);              // INPUT 4
                 ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x8);                             // INPUT 3
@@ -98,6 +100,7 @@ namespace Configuration
 
                 // GUI
                 ResetInputValues = _profile.GetValue("GUI", nameof(ResetInputValues), true);
+                KeepQuantity = _profile.GetValue("GUI", nameof(KeepQuantity), false);
             }
             catch (Exception ex)
             {
@@ -122,10 +125,10 @@ namespace Configuration
                 _profile.SetValue("Laser", nameof(LayoutPath), LayoutPath);
                 _profile.SetValue("Laser", nameof(ExecuteTimeout), ExecuteTimeout);
                 _profile.SetValue("Laser", nameof(IsIoEnabled), IsIoEnabled);
-                _profile.SetValue("Laser", nameof(IsIoEnabled), IsIoEnabled);
                 _profile.SetValue("Laser", nameof(ArticleReady), ArticleReady);
                 _profile.SetValue("Laser", nameof(ReadyToMark), ReadyToMark);
                 _profile.SetValue("Laser", nameof(MarkingDone), MarkingDone);
+                _profile.SetValue("Laser", nameof(NextToLast), NextToLast);
                 _profile.SetValue("Laser", nameof(Error), Error);
                 _profile.SetValue("Laser", nameof(ItemInPlace), ItemInPlace);
                 _profile.SetValue("Laser", nameof(EmergencyError), EmergencyError);
@@ -139,6 +142,7 @@ namespace Configuration
 
                 // GUI
                 _profile.SetValue("GUI", nameof(ResetInputValues), ResetInputValues);
+                _profile.SetValue("GUI", nameof(KeepQuantity), KeepQuantity);
             }
             catch (Exception ex)
             {
@@ -166,6 +170,7 @@ namespace Configuration
         public int ArticleReady { get; set; }
         public int ReadyToMark { get; set; }
         public int MarkingDone { get; set; }
+        public int NextToLast { get; set; }
         public int Error { get; set; }
         public int ItemInPlace { get; set; }
         public int EmergencyError { get; set; }
@@ -186,6 +191,7 @@ namespace Configuration
         #region GUI
 
         public bool ResetInputValues { get; set; }
+        public bool KeepQuantity { get; set; }
 
         #endregion GUI
     }

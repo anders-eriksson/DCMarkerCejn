@@ -18,9 +18,11 @@ namespace LaserWrapper
         private IoPort _ioPort;
         private LaserAxApp _laser;
         private laserengineLib.System _laserSystem;
+        private Axis _laserAxis;
         private DCConfig cfg;
         private IoSignals sig;
         private int currentBits;
+        private string _layoutName;
 
         #region Configurable variables
 
@@ -44,23 +46,28 @@ namespace LaserWrapper
             _executeTimeout = cfg.ExecuteTimeout;
             _isIoEnabled = cfg.IsIoEnabled;
 
+            _layoutName = string.Empty;
             sig = new IoSignals();
             UpdateIoMasks();
+            IoFix.Init();
+            NextToLast = false;
 
             InitLaser();
         }
 
         private void UpdateIoMasks()
         {
+            sig.MASK_ARTICLEREADY = cfg.ArticleReady;
             sig.MASK_READYTOMARK = cfg.ReadyToMark;
-
+            sig.MASK_NEXTTOLAST = cfg.NextToLast;
             sig.MASK_MARKINGDONE = cfg.MarkingDone;
             sig.MASK_ERROR = cfg.Error;
+            sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
 
+            // In
             sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
             sig.MASK_EMERGENCY = cfg.EmergencyError;
             sig.MASK_RESET = cfg.ResetIo;
-            sig.MASK_ALL = sig.MASK_ALL | sig.MASK_ERROR | sig.MASK_ITEMINPLACE | sig.MASK_READYTOMARK;
         }
 
         public void ResetDocument()
@@ -69,6 +76,7 @@ namespace LaserWrapper
         }
 
         public int ErrorCode { get; set; }
+        public bool NextToLast { get; set; }
 
         public bool Execute()
         {
@@ -124,7 +132,12 @@ namespace LaserWrapper
                 layout += ".xlp";
             }
             Log.Debug(string.Format("Loading: {0}", layout));
-            return _doc.load(layout);
+            bool brc = _doc.load(layout);
+            if (brc)
+            {
+                _layoutName = layout;
+            }
+            return brc;
         }
 
         public void Release()
@@ -148,6 +161,13 @@ namespace LaserWrapper
             foreach (var id in objArr)
             {
                 var updateObject = objectList.Find(o => o.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
+                if (updateObject == null)
+                {
+                    // if the id is not found in the database objects list, remove 1 character and try again
+                    // Stupid idea of Ola ;-)
+                    var tmp = id.Substring(0, id.Length - 1);
+                    updateObject = objectList.Find(o => o.ID.Equals(tmp, StringComparison.OrdinalIgnoreCase));
+                }
                 if (updateObject != null)
                 {
                     int objType = _doc.getObjectType(id);
@@ -170,6 +190,10 @@ namespace LaserWrapper
 
                     _doc.updateDocument();
                 }
+                else
+                {
+                    Log.Error(string.Format("Laser: Layout: {0} - Can't find a field for ID: {1}", _layoutName, id));
+                }
             }
 
             return result;
@@ -182,7 +206,7 @@ namespace LaserWrapper
             {
                 _ioPort.checkPort(0);
                 Log.Trace("checkPort(0)");
-                SetPort(0, sig.MASK_ALL);
+                ResetPort(0, sig.MASK_ALL);
                 SetReady(true);
                 Log.Trace("SetReady(true)");
                 RaiseDeviceErrorEvent(string.Empty);
@@ -227,8 +251,13 @@ namespace LaserWrapper
             {
                 _laser = new LaserAxApp();
                 Log.Debug("LaserAxApp instance created");
+                _laserAxis = _laser.Axis;
+                _laserAxis.sigZeroReached += _laserAxis_sigZeroReached;
+                _laserAxis.sigAxisError += _laserAxis_sigAxisError;
+
                 _laserSystem = _laser.System;
-                _laserSystem.sigLaserStart += _laserSystem_sigLaserStart;
+                _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
+                //_laserSystem.sigLaserStart += _laserSystem_sigLaserStart;
                 _laserSystem.sigLaserEnd += _laserSystem_sigLaserEnd;
                 _laserSystem.sigLaserError += _laserSystem_sigLaserError;
                 if (_isIoEnabled)
@@ -242,7 +271,7 @@ namespace LaserWrapper
                     if (_isIoEnabled)
                     {
                         _ioPort.checkPort(0);
-                        SetPort(0, sig.MASK_ALL);
+                        ResetPort(0, sig.MASK_ALL);
 
                         SetReady(true);
                     }
@@ -264,11 +293,43 @@ namespace LaserWrapper
             }
         }
 
+        private void _laserAxis_sigAxisError(uint p_nAxis, uint p_nError)
+        {
+            Log.Debug(string.Format("Error: {0} has occurred on axis: {1}", p_nError, p_nAxis));
+            RaiseDeviceErrorEvent(string.Format("Device Error: {0} has occurred on axis: {1}", p_nError, p_nAxis));
+        }
+
+        private void _laserAxis_sigZeroReached(uint p_nAxis)
+        {
+            string[] axisName = new string[] { "X", "Y", "Z", "R" };
+            Log.Debug(string.Format("{0} Axis has reached Zero", p_nAxis));
+            RaiseZeroReachedEvent(string.Format("{0}-Axis has been reset", axisName[p_nAxis]));
+        }
+
+        /// <summary>
+        /// Event for External Start Signal!
+        /// </summary>
+        private void _laserSystem_sigQueryStart()
+        {
+            Log.Trace("Query Start");
+            RaiseQueryStartEvent(GlblRes.Marking);
+            ResetPort(0, sig.MASK_READYTOMARK);
+            RaiseLaserBusyEvent(true);
+            _doc.execute(true, true);
+            if (NextToLast)
+            {
+                SetPort(0, sig.MASK_NEXTTOLAST);
+            }
+        }
+
+        /// <summary>
+        /// Event for Start marking
+        /// </summary>
         private void _laserSystem_sigLaserStart()
         {
             Log.Trace("Start of marking");
             RaiseQueryStartEvent(GlblRes.Marking);
-            _ioPort.resetPort(0, sig.MASK_READYTOMARK);
+            ResetPort(0, sig.MASK_READYTOMARK);
             RaiseLaserBusyEvent(true);
             _doc.execute(true, true);
         }
@@ -284,8 +345,15 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
+                Log.Debug(string.Format("Reset IO Mask: {0}", mask));
+                IoFix.Delete(mask);
                 return _ioPort.resetPort(port, mask);
             }
+            else
+            {
+                Log.Debug(string.Format("IO port is null! Mask: {0}", mask));
+            }
+
             return false;
         }
 
@@ -293,8 +361,16 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
-                return _ioPort.setPort(port, mask);
+                Log.Debug(string.Format("Set IO Mask: {0}", mask));
+                int currentMask = IoFix.Add(mask);
+                Log.Trace(string.Format("Mask: {0} - CurrentMask: {1}", mask, currentMask));
+                return _ioPort.setPort(port, currentMask);
             }
+            else
+            {
+                Log.Debug(string.Format("IO port is null! Mask: {0}", mask));
+            }
+
             return false;
         }
 
@@ -302,16 +378,23 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
+                Log.Debug(string.Format("SetReady {0}", OnOff));
                 return _ioPort.setReady(OnOff);
+            }
+            else
+            {
+                Log.Debug(string.Format("IO port is null! SetReady: {0}", OnOff));
             }
             return false;
         }
 
         private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
         {
+            Log.Debug(string.Format("Port: {0} - Bit: {1}", p_nPort, p_nBits));
             // Item In Place
             if ((p_nBits & sig.MASK_ITEMINPLACE) == sig.MASK_ITEMINPLACE)
             {
+                Log.Debug("MASK_ITEMINPLACE");
                 // bit is set
                 if ((currentBits & sig.MASK_ITEMINPLACE) != sig.MASK_ITEMINPLACE)
                 {
@@ -327,6 +410,7 @@ namespace LaserWrapper
             // Reset IO
             if ((p_nBits & sig.MASK_RESET) == sig.MASK_RESET)
             {
+                Log.Debug("MASK_RESET");
                 // bit is set
                 if ((currentBits & sig.MASK_RESET) != sig.MASK_RESET)
                 {
@@ -476,6 +560,11 @@ namespace LaserWrapper
 
         #region Axis
 
+        private const int X_AXIS = 0;
+        private const int Y_AXIS = 1;
+        private const int Z_AXIS = 2;
+        private const int R_AXIS = 3;
+
         public bool Move(int axis, double position)
         {
             throw new NotImplementedException();
@@ -485,6 +574,40 @@ namespace LaserWrapper
         {
             throw new NotImplementedException();
         }
+
+        public bool ResetZAxis()
+        {
+            bool result = true;
+            result = _laserAxis.reset(Z_AXIS);          // if true then we will get an event sigZeroReached when the axis has been reset!
+            return result;
+        }
+
+        #region Zero Reached Event
+
+        public delegate void ZeroReachedHandler(string msg);
+
+        public event ZeroReachedHandler ZeroReachedEvent;
+
+        internal void RaiseZeroReachedEvent(string msg)
+        {
+            ZeroReachedHandler handler = ZeroReachedEvent;
+            if (handler != null)
+            {
+                handler(msg);
+            }
+        }
+
+        public class ZeroReachedArgs : EventArgs
+        {
+            public ZeroReachedArgs(string s)
+            {
+                Text = s;
+            }
+
+            public string Text { get; private set; } // readonly
+        }
+
+        #endregion Zero Reached Event
 
         #endregion Axis
     }

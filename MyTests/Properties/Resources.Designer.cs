@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DCMarker.Properties {
+namespace MyTests.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace DCMarker.Properties {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DCMarker.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MyTests.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -115,15 +115,6 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Article Number: {0} not found in database!.
-        /// </summary>
-        public static string Article_Number_0_not_found_in_database {
-            get {
-                return ResourceManager.GetString("Article_Number_0_not_found_in_database", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Article Number.
         /// </summary>
         public static string ArticleNumber {
@@ -151,15 +142,6 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Both Article number and quantity must be entered.
-        /// </summary>
-        public static string Both_Article_number_and_quantity_must_be_entered {
-            get {
-                return ResourceManager.GetString("Both_Article_number_and_quantity_must_be_entered", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -183,15 +165,6 @@ namespace DCMarker.Properties {
         public static string Edge_marking_is_not_supported_in_this_version {
             get {
                 return ResourceManager.GetString("Edge_marking_is_not_supported_in_this_version", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ERROR.
-        /// </summary>
-        public static string ERROR {
-            get {
-                return ResourceManager.GetString("ERROR", resourceCulture);
             }
         }
         
@@ -304,15 +277,6 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No Connection with Z axis!.
-        /// </summary>
-        public static string No_Connection_with_Z_axis {
-            get {
-                return ResourceManager.GetString("No_Connection_with_Z_axis", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Not a valid number.
         /// </summary>
         public static string Not_a_valid_number {
@@ -340,24 +304,6 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Order is done!.
-        /// </summary>
-        public static string Order_is_done {
-            get {
-                return ResourceManager.GetString("Order_is_done", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Order/Batch is done!.
-        /// </summary>
-        public static string OrderBatch_is_done {
-            get {
-                return ResourceManager.GetString("OrderBatch_is_done", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Quantity must be 1 or larger.
         /// </summary>
         public static string Quantity_must_be_1_or_larger {
@@ -372,15 +318,6 @@ namespace DCMarker.Properties {
         public static string ResetIOMenuHeader {
             get {
                 return ResourceManager.GetString("ResetIOMenuHeader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset Z Axis.
-        /// </summary>
-        public static string ResetZAxisMenuHeader {
-            get {
-                return ResourceManager.GetString("ResetZAxisMenuHeader", resourceCulture);
             }
         }
         

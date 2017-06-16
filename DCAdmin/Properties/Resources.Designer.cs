@@ -79,11 +79,29 @@ namespace DCAdmin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Fixture.
+        /// </summary>
+        public static string AddFixtureTitle {
+            get {
+                return ResourceManager.GetString("AddFixtureTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding a row is not allowed.
         /// </summary>
         public static string Adding_a_row_is_not_allowed {
             get {
                 return ResourceManager.GetString("Adding_a_row_is_not_allowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Article already exists!.
+        /// </summary>
+        public static string Article_already_exists {
+            get {
+                return ResourceManager.GetString("Article_already_exists", resourceCulture);
             }
         }
         
@@ -273,6 +291,24 @@ namespace DCAdmin.Properties {
         public static string FindButtonHeader {
             get {
                 return ResourceManager.GetString("FindButtonHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fixture already exists.
+        /// </summary>
+        public static string Fixture_already_exists {
+            get {
+                return ResourceManager.GetString("Fixture_already_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fixture Name.
+        /// </summary>
+        public static string FixtureLabel {
+            get {
+                return ResourceManager.GetString("FixtureLabel", resourceCulture);
             }
         }
         

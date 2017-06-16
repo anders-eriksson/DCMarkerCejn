@@ -6,6 +6,9 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using GlblRes = global::DCAdmin.Properties.Resources;
+using DCLog;
+using System.Data.Entity.Core;
+using System.Windows.Media;
 
 namespace DCAdmin
 {
@@ -97,11 +100,19 @@ namespace DCAdmin
                     SelectedWeekCodeRow = entity;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Fatal(ex, "Database Error AddNewWeekCodeRecord!");
                 throw;
             }
 #endif
+        }
+
+        internal void TriggerSelectedRow()
+        {
+            var tmp = SelectedWeekCodeRow;
+            SelectedWeekCodeRow = null;
+            SelectedWeekCodeRow = tmp;
         }
 
         internal void DeleteSelectedRecord()
@@ -124,8 +135,9 @@ namespace DCAdmin
                 var error = ex.EntityValidationErrors.First().ValidationErrors.First();
                 ErrorMessage = string.Format(GlblRes.Error_Saving_to_Database_0, error.ErrorMessage);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Fatal(ex, "Database Error while SaveChanges!");
                 throw;
             }
         }
@@ -144,10 +156,77 @@ namespace DCAdmin
                 WeekCodeCollection = null;
                 WeekCodeCollection = DB.Instance.RefreshWeekCode();
             }
-            catch (Exception)
+            catch (EntityException ex)
             {
+                Log.Fatal(ex, "Database Error while Refreshing!");
+                ErrorMessage = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Database Error while Refreshing!");
+                ErrorMessage = ex.Message;
                 throw;
             }
         }
+
+        private Color _editColor;
+
+        public Color EditColor
+        {
+            get
+            {
+                return _editColor;
+            }
+            internal set
+            {
+                _editColor = value;
+                NotifyPropertyChanged();
+                RaiseEventColorEvent(_editColor);
+            }
+        }
+
+        #region Signal Edit Color Event
+
+        public delegate void EventColorHandler(Color color);
+
+        public event EventColorHandler EventColorEvent;
+
+        internal void RaiseEventColorEvent(Color color)
+        {
+            EventColorHandler handler = EventColorEvent;
+            if (handler != null)
+            {
+                handler(color);
+            }
+        }
+
+        public class EventColorArgs : EventArgs
+        {
+            public EventColorArgs(Color c)
+            {
+                Color = c;
+            }
+
+            public Color Color { get; private set; } // readonly
+        }
+
+        #endregion Signal Edit Color Event
+
+        #region Saved Changes Event
+
+        public delegate void SaveChangesHandler();
+
+        public event SaveChangesHandler SaveChangesEvent;
+
+        internal void RaiseSaveChangesEvent()
+        {
+            SaveChangesHandler handler = SaveChangesEvent;
+            if (handler != null)
+            {
+                handler();
+            }
+        }
+
+        #endregion Saved Changes Event
     }
 }

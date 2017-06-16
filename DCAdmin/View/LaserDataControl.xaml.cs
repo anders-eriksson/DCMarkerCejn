@@ -12,6 +12,7 @@ using System.Data.Entity.Infrastructure;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Media;
+using DCLog;
 
 namespace DCAdmin.View
 {
@@ -31,11 +32,11 @@ namespace DCAdmin.View
             laserVM.EditColor = Colors.Red;
         }
 
-        private void LaserDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
-            laserVM.EditColor = Colors.LimeGreen;
-        }
+        //private void LaserDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        //{
+        //    LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+        //    laserVM.EditColor = Colors.LimeGreen;
+        //}
 
         private void LaserDataDataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
@@ -59,6 +60,7 @@ namespace DCAdmin.View
                             {
                                 DB.Instance.SaveChanges();
                                 laserVM.RaiseSaveChangesEvent();
+                                laserVM.EditColor = Colors.LimeGreen;
                             }
                             catch (DbEntityValidationException ex)
                             {
@@ -77,10 +79,15 @@ namespace DCAdmin.View
                                 errorMessage = ParseInnerExceptionMessage(errorMessage);
                                 laserVM.ErrorMessage = string.Format("Error Saving to Database: {0}", errorMessage);
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
+                                Log.Fatal(ex, "Database Error Saving Changes");
                                 throw;
                             }
+                        }
+                        else
+                        {
+                            laserVM.EditColor = Colors.LimeGreen;
                         }
                         return null;
                     }), DispatcherPriority.Background, new object[] { null });
@@ -222,20 +229,21 @@ namespace DCAdmin.View
             }
         }
 
+        /// <summary>
+        /// Remove all whitespace
+        /// </summary>
+        /// <param name="sender">Not Used</param>
+        /// <param name="e">Reference to the Datagrid Textbox</param>
         private void LaserDataDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             var editedTextbox = e.EditingElement as TextBox;
+            if (editedTextbox != null)
+            {
+                editedTextbox.Text = editedTextbox.Text.Trim();
+            }
 
-            editedTextbox.Text = editedTextbox.Text.Trim();
-
-#if DEBUG
-            var x = e.EditingElement as TextBox;
-            string t = x.Text;
-            Debug.WriteLine("# {0} #", t);
-#endif
-
-            LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
-            laserVM.EditColor = Colors.LimeGreen;
+            //LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
+            //laserVM.EditColor = Colors.LimeGreen;
         }
 
         private string GetCurrentCellValue(TextBox txtCurCell)

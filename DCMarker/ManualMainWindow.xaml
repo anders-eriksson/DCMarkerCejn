@@ -7,8 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:p="clr-namespace:DCMarker.Properties"
     Title="DCMarker"
-    Width="525"
-    Height="287.829"
+    Width="566.349"
+    Height="303.402"
     Closing="Window_Closing"
     Icon="dclasersystem.ico"
     Loaded="Window_Loaded"
@@ -17,6 +17,7 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <local:CheckBoxConverter x:Key="CheckBoxConverter" />
+
         <DataTemplate DataType="{x:Type ValidationError}">
             <TextBlock
                 Width="159"
@@ -31,33 +32,37 @@
     </Window.Resources>
 
     <Grid>
-        <DockPanel Margin="0,0,0,221">
-            <Menu DockPanel.Dock="Top" IsTabStop="False">
-                <MenuItem Header="_File" IsTabStop="False">
+        <DockPanel Margin="0,0,0,239">
+            <Menu DockPanel.Dock="Top" IsTabStop="False" KeyboardNavigation.IsTabStop="False" Height="35">
+                <MenuItem Header="{x:Static p:Resources.FileMenuHeader}" IsTabStop="False">
 
                     <MenuItem
                         x:Name="Exit"
                         Click="Exit_Click"
-                        Header="_Exit" />
+                        Header="{x:Static p:Resources.ExitMenuHeader}" />
                 </MenuItem>
-                <MenuItem Header="_Tools" IsTabStop="False">
+                <MenuItem Header="{x:Static p:Resources.ToolsMenuHeader}" IsTabStop="False">
+                    <MenuItem
+                        x:Name="ResetZaxis"
+                        Click="ResetZaxis_Click"
+                        Header="{x:Static p:Resources.ResetZAxisMenuHeader}" />
                     <MenuItem
                         x:Name="ResetSignals"
                         Click="ResetSignals_Click"
-                        Header="Reset IO" />
+                        Header="{x:Static p:Resources.ResetIOMenuHeader}" />
                 </MenuItem>
-                <MenuItem Header="_Window" IsTabStop="False">
+                <MenuItem Header="{x:Static p:Resources.WindowMenuHeader}" IsTabStop="False">
                     <MenuItem
                         x:Name="OnTop"
                         Click="OnTop_Click"
-                        Header="_OnTop"
+                        Header="{x:Static p:Resources.OnTopMenuHeader}"
                         IsCheckable="True" />
                 </MenuItem>
-                <MenuItem Header="_Help" IsTabStop="False">
+                <MenuItem Header="{x:Static p:Resources.HelpMenuHeader}" IsTabStop="False">
                     <MenuItem
                         x:Name="About"
                         Click="About_Click"
-                        Header="_About" />
+                        Header="{x:Static p:Resources.AboutMenuHeader}" />
                 </MenuItem>
             </Menu>
         </DockPanel>
@@ -96,62 +101,61 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
-            IsEnabled="{Binding OrderInProgress}"
+            IsEnabled="{Binding OrderNotStarted}"
             TabIndex="0"
-            TextWrapping="Wrap">
-            <TextBox.Text>
-                <Binding
-                    Mode="TwoWay"
-                    NotifyOnValidationError="True"
-                    Path="ArticleNumber"
-                    UpdateSourceTrigger="LostFocus"
-                    ValidatesOnDataErrors="True"
-                    ValidatesOnNotifyDataErrors="True">
-                    <Binding.ValidationRules>
-                        <local:ArticleValidator ValidatesOnTargetUpdated="True" />
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
+            Text="{Binding ArticleNumber, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
+            TextWrapping="Wrap" />
+
+        <TextBlock
+            x:Name="TOnrLabel"
+            Margin="301,76,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{x:Static p:Resources.ToNumber}"
+             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+        <ContentPresenter
+            Height="20"
+            Margin="350,103,10,148"
+            Content="{Binding ElementName=TOnrTextbox, Path=(Validation.Errors).CurrentItem}"
+            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+        <TextBox
+            x:Name="TOnrTextbox"
+            Width="132"
+            Margin="350,76,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            IsEnabled="{Binding OrderNotStarted}"
+            local:FocusAdvancement.AdvancesByEnterKey="True"
+            TabIndex="2"
+            Text="{Binding TOnr, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            TextWrapping="Wrap"
+            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
 
         <TextBlock
             x:Name="BatchSizeLabel"
-            Margin="301,78,0,0"
+            Margin="42,122,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.BatchSize}" />
         <ContentPresenter
             Height="20"
-            Margin="350,40,0,160"
+            Margin="139,143,264,108"
             Content="{Binding ElementName=BatchSizeTextbox, Path=(Validation.Errors).CurrentItem}" />
         <TextBox
             x:Name="BatchSizeTextbox"
             Width="132"
-            Margin="350,76,0,0"
+            Margin="139,121,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
-            IsEnabled="{Binding OrderInProgress}"
+            IsEnabled="{Binding OrderNotStarted}"
             TabIndex="1"
-            TextWrapping="Wrap">
-            <TextBox.Text>
-                <Binding
-                    Mode="TwoWay"
-                    NotifyOnValidationError="True"
-                    Path="BatchSize"
-                    UpdateSourceTrigger="LostFocus"
-                    ValidatesOnDataErrors="True"
-                    ValidatesOnNotifyDataErrors="True">
-                    <Binding.ValidationRules>
-                        <local:QuantityValidator ValidatesOnTargetUpdated="True" />
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
+             Text="{Binding Quantity, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            TextWrapping="Wrap" />
 
         <TextBlock
             x:Name="KantLabel"
-            Margin="301,104,0,0"
+            Margin="301,124,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasKant}"
@@ -161,7 +165,7 @@
         <TextBlock
             x:Name="KantTextBlock"
             Width="143"
-            Margin="350,104,0,0"
+            Margin="350,124,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasKant}"
@@ -171,51 +175,40 @@
 
         <TextBlock
             x:Name="BatchDoneLabel"
-            Margin="301,127,0,0"
+            Margin="301,147,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.BatchDone}" />
         <TextBlock
             x:Name="BatchDone"
             Width="143"
-            Margin="350,127,0,0"
+            Margin="350,147,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{Binding BatchesDone}" />
-        <TextBlock
-            x:Name="TOnrLabel"
-            Margin="42,127,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            IsEnabled="{Binding HasTOnr}"
-            Text="{x:Static p:Resources.ToNumber}"
-            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
-        <TextBox
-            x:Name="TOnrTextbox"
-            Width="132"
-            Margin="139,127,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            local:FocusAdvancement.AdvancesByEnterKey="True"
-            IsEnabled="{Binding OrderInProgress}"
-            TabIndex="3"
-            Text="{Binding TOnr, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            TextWrapping="Wrap"
-            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+
         <Button
             x:Name="OkButton"
             Width="75"
-            Margin="143,172,0,0"
+            Margin="139,195,0,0"
+            IsEnabled="{Binding OrderNotStarted}"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Command="{Binding OkButtonCommand, Mode=OneWay}"
             Content="{x:Static p:Resources.OK}"
-            TabIndex="3" />
-
+            TabIndex="4" />
+        <Button
+            x:Name="CancelButton"
+            Command="{Binding CancelButtonCommand, Mode=OneWay}"
+            Content="{x:Static p:Resources.Cancel}"
+            HorizontalAlignment="Left"
+            Margin="219,195,0,0"
+            VerticalAlignment="Top"
+            Width="75" />
         <Button
             x:Name="LoadButton"
             Width="75"
-            Margin="387,176,0,0"
+            Margin="392,183,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Click="LoadButton_Click"
@@ -224,7 +217,7 @@
         <Button
             x:Name="ExecuteButton"
             Width="75"
-            Margin="387,201,0,0"
+            Margin="392,210,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Click="ExecuteButton_Click"
@@ -254,13 +247,14 @@
             </StatusBar>
         </StackPanel>
         <CheckBox
-            Margin="139,104,0,0"
+            Margin="139,173,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
             Content="{x:Static p:Resources.TestItem}"
             IsChecked="{Binding IsTestItemSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            IsEnabled="{Binding OrderInProgress}"
-            TabIndex="2" />
+            IsEnabled="{Binding OrderNotStarted}"
+            IsTabStop="False"
+            TabIndex="3" />
     </Grid>
 </Window>

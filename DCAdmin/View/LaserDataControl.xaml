@@ -86,7 +86,7 @@
                                 Height="23"
                                 Content="Enable/Disable"
                                 IsChecked="{Binding IsFilterBoolChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                Visibility="{Binding IsFilterBool, Converter={StaticResource BoolToVisConverter}}" />
+                                Visibility="{Binding IsFilterBool, Converter={StaticResource BoolToVisConverter},FallbackValue=Hidden}" />
                         </Grid>
                         <TextBlock
                             Width="10"

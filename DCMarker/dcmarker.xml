@@ -1,16 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <profile>
   <section name="Laser">
-    <entry name="DeviceAddress">127.0.0.1</entry>
+    <entry name="DeviceAddress">192.168.0.10</entry>
     <entry name="DeviceTimeout">10</entry>
     <entry name="ImagePath">C:\DCMarker\Images</entry>
-    <entry name="LayoutPath">
-    </entry>
+    <entry name="LayoutPath">C:\DCMarker\Layouts</entry>
     <entry name="ExecuteTimeout">10000</entry>
     <entry name="IsIoEnabled">True</entry>
+    <entry name="ArticleReady">32</entry>
     <entry name="ReadyToMark">1</entry>
-    <entry name="MarkingDone">3</entry>
-    <entry name="Error">64</entry>
+    <entry name="MarkingDone">2</entry>
+    <entry name="NextToLast">64</entry>
+    <entry name="Error">128</entry>
     <entry name="ItemInPlace">2</entry>
     <entry name="EmergencyError">16</entry>
     <entry name="ResetIo">8</entry>
@@ -25,8 +26,10 @@
     <entry name="TypeOfMachine">3</entry>
     <entry name="GuiLanguage">sv-SE</entry>
     <entry name="Debug">False</entry>
+    <entry name="ClearClipboard">True</entry>
   </section>
   <section name="GUI">
     <entry name="ResetInputValues">False</entry>
+    <entry name="KeepQuantity">False</entry>
   </section>
 </profile>

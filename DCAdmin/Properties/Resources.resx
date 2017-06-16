@@ -258,4 +258,16 @@
   <data name="ClearFilterButtonHeader" xml:space="preserve">
     <value>Clear</value>
   </data>
+  <data name="AddFixtureTitle" xml:space="preserve">
+    <value>Add Fixture</value>
+  </data>
+  <data name="FixtureLabel" xml:space="preserve">
+    <value>Fixture Name</value>
+  </data>
+  <data name="Article_already_exists" xml:space="preserve">
+    <value>Article already exists!</value>
+  </data>
+  <data name="Fixture_already_exists" xml:space="preserve">
+    <value>Fixture already exists</value>
+  </data>
 </root>

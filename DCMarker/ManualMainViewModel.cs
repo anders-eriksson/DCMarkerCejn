@@ -9,10 +9,12 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
 using GlblRes = global::DCMarker.Properties.Resources;
+using System.Collections;
+using System.Diagnostics;
 
 namespace DCMarker
 {
-    public class ManualMainViewModel : INotifyPropertyChanged
+    public class ManualMainViewModel : INotifyPropertyChanged, IDataErrorInfo
     {
         private readonly Color BUSYCOLOR = Colors.Red;
         private readonly Color WAITINGCOLOR = Colors.LightGreen;
@@ -31,7 +33,7 @@ namespace DCMarker
             HasTestItem = false;
             TestItem = string.Empty;
             HasBatchSize = false;
-            BatchSize = string.Empty;
+            Quantity = string.Empty;
             BatchesDone = 0;
             HasTOnr = false;
             TOnr = string.Empty;
@@ -41,12 +43,19 @@ namespace DCMarker
             MarkingIsInProgress = false;
             IsTestItemSelected = false;
             OrderInProgress = true;
+            OrderNotStarted = true;
             ArticleFound = false;
             try
             {
                 cfg = DCConfig.Instance;
+
+                DCConfig.Instance.WriteConfig();
                 InitializeMachine();
                 InitializeWorkflow();
+                if (DCConfig.Instance.KeepQuantity)
+                {
+                    Quantity = Properties.Settings.Default.Quantity;
+                }
             }
             catch (Exception ex)
             {
@@ -57,11 +66,13 @@ namespace DCMarker
         internal void Test()
         {
             //MarkingIsInProgress = !MarkingIsInProgress;
-
+#if DEBUG
             if (_wf != null)
             {
-                _wf.SimulateItemInPlace();
+                _wf._laser_ItemInPositionEvent();
+                //_wf.SimulateItemInPlace();
             }
+#endif
         }
 
         internal void Execute()
@@ -99,6 +110,18 @@ namespace DCMarker
             }
         }
 
+        internal bool ResetZAxis()
+        {
+            bool result = false;
+
+            if (_wf != null)
+            {
+                result = _wf.ResetZAxis();
+            }
+
+            return result;
+        }
+
         private void InitializeWorkflow()
         {
             if (_wf != null)
@@ -119,11 +142,25 @@ namespace DCMarker
                 // We have got the LaserEnd event...
                 BatchesDone++;
 
-                if (!string.IsNullOrWhiteSpace(BatchSize) && BatchesDone >= Convert.ToInt32(BatchSize))
+                if (!string.IsNullOrWhiteSpace(Quantity))
                 {
-                    // we are done with the order/batch.
-                    ResetInputValues();
-                    OrderInProgress = true;
+                    // Check if the next marking is the second to last
+                    if (BatchesDone == Convert.ToInt32(Quantity) - 2)
+                    {
+                        Log.Debug(string.Format("Currently marking the second to last. Batches Done:{0} - Quantity: {1}", BatchesDone, Quantity));
+                        _wf.SetNextToLast();
+                    }
+                    if (BatchesDone >= Convert.ToInt32(Quantity))
+                    {
+                        // we are done with the order/batch.
+                        _wf.ResetArticleReady();
+                        _wf.ResetNextToLast();
+                        ResetInputValues();
+                        Log.Debug(GlblRes.OrderBatch_is_done);
+                        OrderNotStarted = true;
+                        OrderInProgress = true;
+                        Status = GlblRes.Order_is_done;
+                    }
                 }
             }
         }
@@ -133,8 +170,9 @@ namespace DCMarker
             if (DCConfig.Instance.ResetInputValues)
             {
                 ArticleNumber = string.Empty;
+                HasFixture = false;
                 HasTOnr = false;
-                BatchSize = string.Empty;
+                Quantity = string.Empty;
                 BatchesDone = 0;
                 TOnr = string.Empty;
             }
@@ -183,6 +221,8 @@ namespace DCMarker
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
         private ICommand _ArticleChanged;
 
         public ICommand ArticleChanged
@@ -214,28 +254,31 @@ namespace DCMarker
             }
         }
 
-        private void DoLoadArticleCommand()
+        private string DoLoadArticleCommand()
         {
+            string result = null;
+
             ErrorMessage = string.Empty;
             Status = string.Empty;
             if (!string.IsNullOrWhiteSpace(ArticleNumber))
             {
-                List<Article> result = _wf.GetArticle(ArticleNumber);
-                if (result.Count > 0)
+                List<Article> dbResult = _wf.GetArticle(ArticleNumber);
+                if (dbResult.Count > 0)
                 {
-                    Fixture = result[0].FixtureId;
+                    Fixture = dbResult[0].FixtureId;
                     HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
 
-                    bool? enableTO = result[0].EnableTO;
+                    bool? enableTO = dbResult[0].EnableTO;
                     // only have to check on the first Edge/Kant
                     HasTOnr = enableTO.HasValue ? enableTO.Value : false;
                     TOnr = string.Empty;
 
-                    if (result.Count > 1)
+                    if (dbResult.Count > 1)
                     {
                         // the article has edges/kant
                         //HasKant = true;
                         ErrorMessage = GlblRes.Edge_marking_is_not_supported_in_this_version;
+                        result = ErrorMessage;
                     }
                     else
                     {
@@ -247,11 +290,13 @@ namespace DCMarker
                 {
                     // the article doesn't exists show an error!!!
                     ErrorMessage = GlblRes.Article_does_not_exist_in_database;
+                    result = ErrorMessage;
 
                     HasTOnr = false;
                     ArticleFound = false;
                 }
             }
+            return result;
         }
 
         private bool CanLoadArticleCommandExecute()
@@ -277,17 +322,53 @@ namespace DCMarker
 
         private bool CanOkButtonCommandExecute()
         {
-            bool result = false;
-            if (HasTOnr)
-            {
-                result = !string.IsNullOrWhiteSpace(ArticleNumber) && !string.IsNullOrWhiteSpace(BatchSize) && TOnr.Length == DCConfig.Instance.ToNumberLength;
-            }
-            else
-            {
-                result = !string.IsNullOrWhiteSpace(ArticleNumber) && !string.IsNullOrWhiteSpace(BatchSize);
-            }
+            var result = IsValid;
+            //bool result = false;
+            //if (HasTOnr)
+            //{
+            //    result = !HasInputError; // !string.IsNullOrWhiteSpace(ArticleNumber) && !string.IsNullOrWhiteSpace(Quantity) && TOnr.Length == DCConfig.Instance.ToNumberLength;
+            //}
+            //else
+            //{
+            //    result = !string.IsNullOrWhiteSpace(ArticleNumber) && !string.IsNullOrWhiteSpace(Quantity);
+            //}
 
             return result;
+        }
+
+        private ICommand _CancelButtonCommand;
+
+        public ICommand CancelButtonCommand
+        {
+            get
+            {
+                if (_CancelButtonCommand == null)
+                {
+                    _CancelButtonCommand = new RelayCommand(
+                        p => this.CanCancelButtonCommandExecute(),
+                        p => this.DoCancelButtonCommand());
+                }
+                return _CancelButtonCommand;
+            }
+        }
+
+        private bool CanCancelButtonCommandExecute()
+        {
+            return true;
+        }
+
+        private void DoCancelButtonCommand()
+        {
+            ErrorMessage = string.Empty;
+
+            _wf.ResetArticleReady();
+            _wf.ResetNextToLast();
+            ResetInputValues();
+            Status = string.Empty;
+
+            // TODO remove this since we don't use it.... // AME 2017-06-13
+            OrderInProgress = true;
+            OrderNotStarted = true;
         }
 
         public bool ArticleFound { get; set; }
@@ -295,7 +376,7 @@ namespace DCMarker
         private void DoOkButtonCommand()
         {
             int test;
-            if (int.TryParse(BatchSize, out test) && ArticleFound)
+            if (int.TryParse(Quantity, out test) && ArticleFound)
             {
                 ErrorMessage = string.Empty;
                 Article article = new Article()
@@ -310,15 +391,18 @@ namespace DCMarker
                 };
                 BatchesDone = 0;
                 //OrderInProgress = false;
+                OrderNotStarted = false;
 
                 _wf.UpdateWorkflow(article);
+                _wf.FirstMarkingResetZ = true;
 
                 Status = GlblRes.Waiting_for_product;
             }
             else
             {
-                ErrorMessage = "Both Article number and quantity must be entered";
+                ErrorMessage = GlblRes.Both_Article_number_and_quantity_must_be_entered;
             }
+            //ResetZAxis();
         }
 
         private bool _OrderInProgress;
@@ -332,6 +416,21 @@ namespace DCMarker
             set
             {
                 _OrderInProgress = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool _OrderNotStarted;
+
+        public bool OrderNotStarted
+        {
+            get
+            {
+                return _OrderNotStarted;
+            }
+            set
+            {
+                _OrderNotStarted = value;
                 NotifyPropertyChanged();
             }
         }
@@ -388,20 +487,19 @@ namespace DCMarker
                 }
 
                 _articleNumber = value;
-                DoLoadArticleCommand();
                 NotifyPropertyChanged();
             }
         }
 
-        public string BatchSize
+        public string Quantity
         {
             get
             {
-                return _batchSize;
+                return _quantity;
             }
             set
             {
-                _batchSize = value;
+                _quantity = value;
                 NotifyPropertyChanged();
             }
         }
@@ -592,8 +690,156 @@ namespace DCMarker
             }
         }
 
+        #region IDataErrorInfo
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
+        public string Error
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string this[string propertyName]
+        {
+            get { var error = GetValidationError(propertyName); return error; }
+        }
+
+        private static readonly string[] ValidatedProperties = { "ArticleNumber", "TOnr", "Quantity" };
+
+        /// <summary>
+        /// Contains the valid state of the Validated Properties.
+        /// </summary>
+        private static bool[] ValidatedPropertiesState = new bool[ValidatedProperties.Length];
+
+        public bool IsValid
+        {
+            get
+            {
+                foreach (bool state in ValidatedPropertiesState)
+                {
+                    if (!state)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        private string GetValidationError(string propertyName)
+        {
+            string result = null;
+            switch (propertyName)
+            {
+                case nameof(ArticleNumber):
+                    {
+                        result = ValidateArticleNumber();
+                        break;
+                    }
+                case nameof(TOnr):
+                    {
+                        result = ValidateToNumber();
+                        break;
+                    }
+                case nameof(Quantity):
+                    {
+                        result = ValidateQuantity();
+                        break;
+                    }
+            };
+            return result;
+        }
+
+        private string ValidateArticleNumber()
+        {
+            string result = null;
+            ValidatedPropertiesState[GetIndex("ArticleNumber")] = false;
+
+            if (string.IsNullOrWhiteSpace(ArticleNumber))
+            {
+                result = "!"; // string.Empty; // "Article Number is required";
+            }
+            else
+            {
+                result = DoLoadArticleCommand();
+                if (result == null)
+                {
+                    ValidatedPropertiesState[GetIndex("ArticleNumber")] = true;
+                }
+            }
+
+            return result;
+        }
+
+        private string ValidateQuantity()
+        {
+            string result = null;
+            ValidatedPropertiesState[GetIndex("Quantity")] = false;
+            if (string.IsNullOrWhiteSpace(_quantity))
+            {
+                result = "!";// string.Empty; // "Quantity is required";
+            }
+            else
+            {
+                int quantity;
+                bool brc = int.TryParse(_quantity, out quantity);
+                if (!brc)
+                {
+                    result = GlblRes.Not_a_valid_number;
+                }
+                else if (quantity < 1)
+                {
+                    result = GlblRes.Quantity_must_be_1_or_larger;
+                }
+                else
+                {
+                    ValidatedPropertiesState[GetIndex("Quantity")] = true;
+                }
+            }
+
+            return result;
+        }
+
+        private static int GetIndex(string v)
+        {
+            return Array.IndexOf(ValidatedProperties, v);
+        }
+
+        private string ValidateToNumber()
+        {
+            string result = null;
+
+            if (HasTOnr)
+            {
+                ValidatedPropertiesState[GetIndex("TOnr")] = false;
+
+                if (string.IsNullOrWhiteSpace(TOnr))
+                {
+                    result = "!"; // string.Empty; // "TO Number is required";
+                }
+                else if (TOnr.Length != DCConfig.Instance.ToNumberLength)
+                {
+                    result = string.Format(GlblRes.TO_Number_must_be_0_characters, DCConfig.Instance.ToNumberLength);
+                }
+                else
+                {
+                    ValidatedPropertiesState[GetIndex("TOnr")] = true;
+                }
+            }
+            else
+            {
+                ValidatedPropertiesState[GetIndex("TOnr")] = true;
+            }
+
+            return result;
+        }
+
+        #endregion IDataErrorInfo
+
         private string _articleNumber;
-        private string _batchSize;
+        private string _quantity;
         private string _error;
         private string _fixture;
         private bool _hasBatchSize;
