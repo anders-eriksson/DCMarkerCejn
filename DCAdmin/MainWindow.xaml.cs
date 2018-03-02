@@ -57,10 +57,10 @@ namespace DCAdmin
 
         private void InitializeViewModels()
         {
-            InitLaserDataViewModel();
             InitQuarterCodeViewModel();
             InitWeekCodeViewModel();
             InitFixtureViewModel();
+            InitLaserDataViewModel();
         }
 
         private void InitFixtureViewModel()

@@ -31,6 +31,7 @@ namespace DCMarker.Model
                 result.Add(hrec);
             }
 
+            Log.Trace(string.Format("Result list: {0}", result.Count));
             return result;
         }
 
@@ -44,6 +45,7 @@ namespace DCMarker.Model
                 {
                     result = _context.HistoryData.Add(historyData);
                     _context.SaveChanges();
+                    Log.Trace("Added record to HistoryData table");
                 }
                 catch (DbEntityValidationException dbEx)
                 {
@@ -99,10 +101,12 @@ namespace DCMarker.Model
             else
             {
                 snr = CreateSerialNumber();
+                Log.Trace(string.Format("Serial Number: {0}", snr));
             }
             LaserData ldata = GetLaserData(article, kant);
+            Log.Trace(string.Format("LaserData: {0}", ldata == null ? "null" : "Found"));
             result = FillHistoryData(ldata, snr);
-
+            Log.Trace(string.Format("FillHistoryData: {0}", result == null ? "null" : "OK"));
             return result;
         }
 

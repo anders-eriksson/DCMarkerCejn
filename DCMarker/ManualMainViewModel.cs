@@ -49,7 +49,7 @@ namespace DCMarker
             {
                 cfg = DCConfig.Instance;
 
-                DCConfig.Instance.WriteConfig();
+                //DCConfig.Instance.WriteConfig();
                 InitializeMachine();
                 InitializeWorkflow();
                 if (DCConfig.Instance.KeepQuantity)

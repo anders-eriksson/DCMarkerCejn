@@ -34,7 +34,7 @@ namespace DCMarker.Model
                 if (!File.Exists(cfg.ConfigName))
                 {
                     // if the config file doesn't exist then we are using default values. Write them to disk.
-                    cfg.WriteConfig();
+                    //cfg.WriteConfig();
                 }
                 sig = new IoSignals();
                 UpdateIoMasks();
@@ -122,6 +122,7 @@ namespace DCMarker.Model
 
         public void _laser_ItemInPositionEvent()
 #else
+
         private void _laser_ItemInPositionEvent()
 #endif
         {
@@ -136,7 +137,18 @@ namespace DCMarker.Model
 
         private void _laser_LaserErrorEvent(string msg)
         {
-            _laser.SetPort(0, sig.MASK_ERROR);
+            if (_laser != null)
+            {
+                if (!string.IsNullOrWhiteSpace(msg))
+                {
+                    _laser.SetPort(0, sig.MASK_ERROR);
+                }
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
+
             RaiseErrorEvent(msg);
         }
 
@@ -276,6 +288,7 @@ namespace DCMarker.Model
                             brc = _laser.Update(historyObjectData);
                             if (brc)
                             {
+                                Log.Trace("Layout updated OK");
                                 // update HistoryData table
                                 var status = _db.AddHistoryDataToDB(historyData);
                                 if (status != null)
@@ -284,35 +297,47 @@ namespace DCMarker.Model
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
                                     _laser.ResetPort(0, sig.MASK_MARKINGDONE);
                                     _laser.SetPort(0, sig.MASK_READYTOMARK);
+                                    Log.Trace("UpdateLayout OK");
                                 }
                                 else
                                 {
                                     RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                    Log.Trace(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
                                     _laser.SetPort(0, sig.MASK_ERROR);
                                 }
                             }
                             else
                             {
-                                RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                RaiseErrorEvent(string.Format(GlblRes.HistoryData_Not_Created, _articleNumber, layoutname));
+                                Log.Trace(string.Format(GlblRes.HistoryData_Not_Created, _articleNumber, layoutname));
                                 _laser.SetPort(0, sig.MASK_ERROR);
                             }
+                        }
+                        else
+                        {
+                            RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                            Log.Trace(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                            _laser.SetPort(0, sig.MASK_ERROR);
                         }
                     }
                     else
                     {
                         RaiseErrorEvent(string.Format(GlblRes.Error_loading_layout_0, layoutname));
+                        Log.Trace(string.Format(GlblRes.Error_loading_layout_0, layoutname));
                         _laser.SetPort(0, sig.MASK_ERROR);
                     }
                 }
                 else
                 {
                     RaiseErrorEvent(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
+                    Log.Trace(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
                     _laser.SetPort(0, sig.MASK_ERROR);
                 }
             }
             else
             {
                 RaiseErrorEvent(GlblRes.ItemInPlace_received_before_Article_Number_is_set);
+                Log.Trace(GlblRes.ItemInPlace_received_before_Article_Number_is_set);
             }
         }
 

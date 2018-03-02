@@ -270,4 +270,7 @@
   <data name="Order_is_done" xml:space="preserve">
     <value>Order is done!</value>
   </data>
+  <data name="HistoryData_Not_Created" xml:space="preserve">
+    <value>History Data not Created! Article={0}, Layout={1}</value>
+  </data>
 </root>

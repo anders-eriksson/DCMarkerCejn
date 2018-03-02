@@ -153,4 +153,7 @@
   <data name="Order_is_done" xml:space="preserve">
     <value>Ordern är färdigmärkt!</value>
   </data>
+  <data name="HistoryData_Not_Created" xml:space="preserve">
+    <value>Kan inte skapa Historikdata! Article={0}, Layout={1}</value>
+  </data>
 </root>

@@ -47,7 +47,7 @@ namespace Configuration
             ConfigName = "dcmarker.xml";
             _profile = new Xml(ConfigName);
             ReadConfig();
-            WriteConfig();
+            //WriteConfig();
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Configuration
                 ImagePath = _profile.GetValue("Laser", nameof(ImagePath), @"C:\DCMarker\Images");
                 LayoutPath = _profile.GetValue("Laser", nameof(LayoutPath), @"C:\DCMarker\Layouts");
                 ExecuteTimeout = _profile.GetValue("Laser", nameof(ExecuteTimeout), 10000);
-                IsIoEnabled = _profile.GetValue("Laser", nameof(IsIoEnabled), false);
+                IsIoEnabled = _profile.GetValue("Laser", nameof(IsIoEnabled), true);
                 ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x01);                    // OUTPUT 0
                 MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);                    // OUTPUT 1
                 ArticleReady = _profile.GetValue("Laser", nameof(ArticleReady), 0x10);                  // OUTPUT 4

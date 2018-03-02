@@ -87,13 +87,16 @@ namespace DCTcpServer
                     {
                         // a blocking listen has been cancelled
                         _listener.Stop();
+                        Log.Trace("Connection Interrupted");
 
                         return;
                     }
                     else if (ex.SocketErrorCode == SocketError.ConnectionAborted
                             || ex.SocketErrorCode == SocketError.ConnectionReset)
                     {
-                        Log.Trace("Connection Aborted");
+                        // SocketError.ConnectionAborted == 10053
+                        // SocketError.ConnectionReset   == 10054
+                        Log.Trace(string.Format("Connection Aborted ({0})", ex.SocketErrorCode));
                     }
                     else
                     {

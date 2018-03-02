@@ -4,7 +4,7 @@
     <entry name="DeviceAddress">192.168.0.10</entry>
     <entry name="DeviceTimeout">10</entry>
     <entry name="ImagePath">C:\DCMarker\Images</entry>
-    <entry name="LayoutPath">C:\DCMarker\Layouts</entry>
+    <entry name="LayoutPath">C:\DCMarkerCejn\Layouts 8855</entry>
     <entry name="ExecuteTimeout">10000</entry>
     <entry name="IsIoEnabled">True</entry>
     <entry name="ArticleReady">32</entry>

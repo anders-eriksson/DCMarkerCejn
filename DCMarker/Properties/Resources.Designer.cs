@@ -259,6 +259,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to History Data not Created! Article={0}, Layout={1}.
+        /// </summary>
+        public static string HistoryData_Not_Created {
+            get {
+                return ResourceManager.GetString("HistoryData_Not_Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ItemInPlace signal received before Article Number is set.
         /// </summary>
         public static string ItemInPlace_received_before_Article_Number_is_set {

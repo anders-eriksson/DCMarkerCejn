@@ -157,7 +157,8 @@ namespace LaserWrapper
         {
             bool result = true;
             string objIDs = _doc.getObjectIDs();
-            string[] objArr = objIDs.Split(new char[] { ',' });
+            Log.Trace(string.Format("objIDs: {0}", objIDs));
+            string[] objArr = objIDs.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var id in objArr)
             {
                 var updateObject = objectList.Find(o => o.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
@@ -187,7 +188,7 @@ namespace LaserWrapper
                         string imgPath = Path.Combine(_imagePath, updateObject.Value);
                         imp.filename = imgPath;
                     }
-
+                    Log.Trace(string.Format("Laser: Updated ID:{0}", id));
                     _doc.updateDocument();
                 }
                 else
@@ -196,6 +197,7 @@ namespace LaserWrapper
                 }
             }
 
+            Log.Trace(string.Format("Laser: Update {0} returns {1}", _layoutName, result));
             return result;
         }
 

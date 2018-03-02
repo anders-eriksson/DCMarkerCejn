@@ -190,9 +190,12 @@ namespace DCMarker.Model
 
         private void _laser_LaserErrorEvent(string msg)
         {
-            if (_laser != null && !string.IsNullOrWhiteSpace(msg))
+            if (_laser != null)
             {
-                _laser.SetPort(0, sig.MASK_ERROR);
+                if (!string.IsNullOrWhiteSpace(msg))
+                {
+                    _laser.SetPort(0, sig.MASK_ERROR);
+                }
             }
             else
             {
