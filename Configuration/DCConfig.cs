@@ -69,6 +69,7 @@ namespace Configuration
                  *  1   Automatic                   e.g. Kenny
                  *  2   Automatic with TO number    e.g. Filip?
                  *  3   Manual with TO number       e.g. Ultraflow
+                 *  4   Automatic with ADAM         e.g. Nippel- & flödeskoppling
                  */
 
                 // Machine
@@ -76,6 +77,7 @@ namespace Configuration
                 GuiLanguage = _profile.GetValue("Machine", nameof(GuiLanguage), "sv-SE");
                 Debug = _profile.GetValue("Machine", nameof(Debug), false);
                 ClearClipboard = _profile.GetValue("Machine", nameof(ClearClipboard), true);
+                CommunicationModule = _profile.GetValue("Machine", nameof(CommunicationModule), 1); // Default to ADAM
                 // Laser
                 DeviceAddress = _profile.GetValue("Laser", nameof(DeviceAddress), "127.0.0.1");
                 DeviceTimeout = _profile.GetValue("Laser", nameof(DeviceTimeout), 10);
@@ -98,6 +100,10 @@ namespace Configuration
                 ArticleNumberLength = _profile.GetValue("TcpServer", nameof(ArticleNumberLength), 12);
                 ToNumberLength = _profile.GetValue("TcpServer", nameof(ToNumberLength), 7);             // Also used in ManualMainViewModel - CanOkButtonCommandExecute
 
+                // ADAM 6052
+                AdamIpAddress = _profile.GetValue("Adam", nameof(AdamIpAddress), "10.0.0.100");
+                AdamIpPort = _profile.GetValue("Adam", nameof(AdamIpPort), 502);
+                AdamInvertSignal = _profile.GetValue("Adam", nameof(AdamInvertSignal), false);
                 // GUI
                 ResetInputValues = _profile.GetValue("GUI", nameof(ResetInputValues), true);
                 KeepQuantity = _profile.GetValue("GUI", nameof(KeepQuantity), false);
@@ -118,6 +124,8 @@ namespace Configuration
                 _profile.SetValue("Machine", nameof(GuiLanguage), GuiLanguage);
                 _profile.SetValue("Machine", nameof(Debug), Debug);
                 _profile.SetValue("Machine", nameof(ClearClipboard), ClearClipboard);
+                _profile.SetValue("Machine", nameof(CommunicationModule), CommunicationModule);
+
                 // Laser
                 _profile.SetValue("Laser", nameof(DeviceAddress), DeviceAddress);
                 _profile.SetValue("Laser", nameof(DeviceTimeout), DeviceTimeout);
@@ -140,6 +148,10 @@ namespace Configuration
                 _profile.SetValue("TcpServer", nameof(ArticleNumberLength), ArticleNumberLength);
                 _profile.SetValue("TcpServer", nameof(ToNumberLength), ToNumberLength);
 
+                // ADAM 6052
+                _profile.SetValue("Adam", nameof(AdamIpAddress), AdamIpAddress);
+                _profile.SetValue("Adam", nameof(AdamIpPort), AdamIpPort);
+                _profile.SetValue("Adam", nameof(AdamInvertSignal), AdamInvertSignal);
                 // GUI
                 _profile.SetValue("GUI", nameof(ResetInputValues), ResetInputValues);
                 _profile.SetValue("GUI", nameof(KeepQuantity), KeepQuantity);
@@ -156,6 +168,8 @@ namespace Configuration
         public int TypeOfMachine { get; set; }
         public bool Debug { get; set; }
         public bool ClearClipboard { get; set; }
+
+        public int CommunicationModule { get; set; }
 
         #endregion Machine properties
 
@@ -187,6 +201,15 @@ namespace Configuration
         public string GuiLanguage { get; private set; }
 
         #endregion TcpServer properties
+
+        #region ADAM
+
+        public string AdamIpAddress { get; set; }
+        public int AdamIpPort { get; set; }
+
+        public bool AdamInvertSignal { get; set; }
+
+        #endregion ADAM
 
         #region GUI
 

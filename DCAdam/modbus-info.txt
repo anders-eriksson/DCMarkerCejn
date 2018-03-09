@@ -1,0 +1,19 @@
+Coils Status (0X)
+Item				Length	Base
+DI Status				08	0001
+DO Status				08	0017
+Counter switch			32	0033
+Clear GCL counter		08	0301
+
+Holding Registers (4X)
+Item						Length	Base
+Counter frequency				16	0001
+Pulse output low level width	16	0017
+Pulse output high level width	16	0033
+Set absolute pulse				16	0049
+Set incremental pulse			16	0065
+Module name						02	0211
+DI status						01	0301
+DO status						01	0303
+GCL flag						01	0305
+GCL counter						16	0311

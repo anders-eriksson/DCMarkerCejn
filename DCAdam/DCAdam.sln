@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCAdam", "DCAdam\DCAdam.csproj", "{24EF1AB1-97E7-46AE-9B9F-2108503E5436}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuration", "..\DCMarker\Configuration\Configuration.csproj", "{6D98C06D-7A94-4BE5-932C-733DF4BFA391}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{330710C4-7290-44A1-B44B-4B72E394B45E}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\LIBRARY\AdamApax.NET Class Library\Document\adam-rada-6000-manual.pdf = ..\..\..\LIBRARY\AdamApax.NET Class Library\Document\adam-rada-6000-manual.pdf
+		..\..\..\LIBRARY\AdamApax.NET Class Library\Document\Advantech AdamApax .NET Class Library Documentation.chm = ..\..\..\LIBRARY\AdamApax.NET Class Library\Document\Advantech AdamApax .NET Class Library Documentation.chm
+		..\..\..\..\..\_kunddata\Cejn\Projects\Uppdateringsomgång 2\Nippelflöde-kopplingsflöde\PLC Kommunikation\Beskrivning pc - plc kommunikation via ADAM.pdf = ..\..\..\..\..\_kunddata\Cejn\Projects\Uppdateringsomgång 2\Nippelflöde-kopplingsflöde\PLC Kommunikation\Beskrivning pc - plc kommunikation via ADAM.pdf
+		..\..\..\..\..\_kunddata\Cejn\Projects\Uppdateringsomgång 2\Nippelflöde-kopplingsflöde\PLC Kommunikation\IAG_FAQ_ADAM-4XXX & ADAM6XXX, What is system WDT in ADAM module.pdf = ..\..\..\..\..\_kunddata\Cejn\Projects\Uppdateringsomgång 2\Nippelflöde-kopplingsflöde\PLC Kommunikation\IAG_FAQ_ADAM-4XXX & ADAM6XXX, What is system WDT in ADAM module.pdf
+		modbus-info.txt = modbus-info.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.csproj", "{D0623AD5-BBDA-48D2-B099-4A35DE672771}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCAdamTests1", "DCAdamTests1\DCAdamTests1.csproj", "{F009C574-CE1C-4A83-8BA0-7BC4AD25BB0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunicationService", "CommunicationService\CommunicationService.csproj", "{14CE5FEE-AF7B-4262-A99F-3B9C3E723FB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{D398149E-B048-4C98-A00C-806C8A5ED461}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApplication1", "WpfApplication1\WpfApplication1.csproj", "{5C8B2625-B743-4365-A2B0-CD9894FF7401}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication2", "ConsoleApplication2\ConsoleApplication2.csproj", "{3A8A60CD-A973-438D-A0FB-A912E8E5266A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{24EF1AB1-97E7-46AE-9B9F-2108503E5436}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24EF1AB1-97E7-46AE-9B9F-2108503E5436}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24EF1AB1-97E7-46AE-9B9F-2108503E5436}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24EF1AB1-97E7-46AE-9B9F-2108503E5436}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D98C06D-7A94-4BE5-932C-733DF4BFA391}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D98C06D-7A94-4BE5-932C-733DF4BFA391}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D98C06D-7A94-4BE5-932C-733DF4BFA391}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D98C06D-7A94-4BE5-932C-733DF4BFA391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0623AD5-BBDA-48D2-B099-4A35DE672771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0623AD5-BBDA-48D2-B099-4A35DE672771}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0623AD5-BBDA-48D2-B099-4A35DE672771}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0623AD5-BBDA-48D2-B099-4A35DE672771}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F009C574-CE1C-4A83-8BA0-7BC4AD25BB0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F009C574-CE1C-4A83-8BA0-7BC4AD25BB0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F009C574-CE1C-4A83-8BA0-7BC4AD25BB0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F009C574-CE1C-4A83-8BA0-7BC4AD25BB0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14CE5FEE-AF7B-4262-A99F-3B9C3E723FB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14CE5FEE-AF7B-4262-A99F-3B9C3E723FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14CE5FEE-AF7B-4262-A99F-3B9C3E723FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14CE5FEE-AF7B-4262-A99F-3B9C3E723FB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D398149E-B048-4C98-A00C-806C8A5ED461}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D398149E-B048-4C98-A00C-806C8A5ED461}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D398149E-B048-4C98-A00C-806C8A5ED461}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D398149E-B048-4C98-A00C-806C8A5ED461}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C8B2625-B743-4365-A2B0-CD9894FF7401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C8B2625-B743-4365-A2B0-CD9894FF7401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C8B2625-B743-4365-A2B0-CD9894FF7401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C8B2625-B743-4365-A2B0-CD9894FF7401}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A8A60CD-A973-438D-A0FB-A912E8E5266A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A8A60CD-A973-438D-A0FB-A912E8E5266A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A8A60CD-A973-438D-A0FB-A912E8E5266A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A8A60CD-A973-438D-A0FB-A912E8E5266A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
