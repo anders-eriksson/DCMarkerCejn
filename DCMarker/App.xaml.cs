@@ -16,12 +16,13 @@ namespace DCMarker
             switch (cfg.TypeOfMachine)
             {
                 case 1:
+                case 2:
                     wnd = new MainWindow();
                     break;
 
-                //case 2:
-                //    wnd = new ManualMainWindow();
-                //    break;
+                case 3:
+                    wnd = new ManualMainWindow();
+                    break;
 
                 default:
                     wnd = new ErrorMainWindow();

@@ -31,6 +31,7 @@ namespace DCMarker.Model
                 result.Add(hrec);
             }
 
+            Log.Trace(string.Format("Result list: {0}", result.Count));
             return result;
         }
 
@@ -44,6 +45,7 @@ namespace DCMarker.Model
                 {
                     result = _context.HistoryData.Add(historyData);
                     _context.SaveChanges();
+                    Log.Trace("Added record to HistoryData table");
                 }
                 catch (DbEntityValidationException dbEx)
                 {
@@ -66,9 +68,9 @@ namespace DCMarker.Model
             return result;
         }
 
-        public HistoryData CreateHistoryData(string article, string kant, bool hasEdges = false)
+        public HistoryData CreateHistoryData(Article article, bool hasEdges = false)
         {
-            HistoryData result = new HistoryData();
+            HistoryData result;
             SerialNumber snr;
 
             if (hasEdges)
@@ -79,9 +81,32 @@ namespace DCMarker.Model
             {
                 snr = CreateSerialNumber();
             }
-            LaserData ldata = GetLaserData(article, kant);
+            LaserData ldata = GetLaserData(article.F1, article.Kant);
+            ldata.TOnr = article.TOnumber;
+
             result = FillHistoryData(ldata, snr);
 
+            return result;
+        }
+
+        public HistoryData CreateHistoryData(string article, string kant, bool hasEdges = false)
+        {
+            HistoryData result;
+            SerialNumber snr;
+
+            if (hasEdges)
+            {
+                snr = GetLastSerialNumber();
+            }
+            else
+            {
+                snr = CreateSerialNumber();
+                Log.Trace(string.Format("Serial Number: {0}", snr));
+            }
+            LaserData ldata = GetLaserData(article, kant);
+            Log.Trace(string.Format("LaserData: {0}", ldata == null ? "null" : "Found"));
+            result = FillHistoryData(ldata, snr);
+            Log.Trace(string.Format("FillHistoryData: {0}", result == null ? "null" : "OK"));
             return result;
         }
 

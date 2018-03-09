@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 using System;
 using System.Data.Entity.Validation;
 using System.Linq;
+using System.Data.Entity.Core;
+using DCLog;
+using System.Windows.Media;
+using AutoMapper;
 
 namespace DCAdmin
 {
@@ -98,16 +102,37 @@ namespace DCAdmin
                     SelectedQuarterCodeRow = entity;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                DCLog.Log.Fatal(ex, "Database Error AddNewQuartalCodeRecord!");
                 throw;
             }
+        }
+
+        internal object AddRowFromSelected()
+        {
+            Mapper.Initialize(cfg => cfg.CreateMap<QuarterCode, QuarterCode>());
+            QuarterCode newRecord = Mapper.Map<QuarterCode, QuarterCode>(SelectedQuarterCodeRow);
+            // TODO: MachineId
+            //newRecord.MachineId = machineId,
+            newRecord.QYear = string.Empty;
+            DB.Instance.AddNewQuartalCodeRecord(ref newRecord);
+            SelectedQuarterCodeRow = newRecord;
+
+            return newRecord;
         }
 
         internal void DeleteSelectedRecord()
         {
             ErrorMessage = string.Empty;
             DB.Instance.DeleteQuarterCodeRecord(SelectedQuarterCodeRow);
+        }
+
+        internal void TriggerSelectedRow()
+        {
+            var tmp = SelectedQuarterCodeRow;
+            SelectedQuarterCodeRow = null;
+            SelectedQuarterCodeRow = tmp;
         }
 
         internal void SaveChanges()
@@ -122,8 +147,9 @@ namespace DCAdmin
                 var error = ex.EntityValidationErrors.First().ValidationErrors.First();
                 ErrorMessage = string.Format("Error Saving to Database: {0}", error.ErrorMessage);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                DCLog.Log.Fatal(ex, "Database Error while SaveChanges!");
                 throw;
             }
         }
@@ -142,10 +168,77 @@ namespace DCAdmin
                 QuarterCodeCollection = null;
                 QuarterCodeCollection = DB.Instance.RefreshQuarterCode();
             }
-            catch (Exception)
+            catch (EntityException ex)
             {
+                Log.Fatal(ex, "Database Error while Refreshing!");
+                ErrorMessage = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Database Error while Refreshing!");
+                ErrorMessage = ex.Message;
                 throw;
             }
         }
+
+        private Color _editColor;
+
+        public Color EditColor
+        {
+            get
+            {
+                return _editColor;
+            }
+            internal set
+            {
+                _editColor = value;
+                NotifyPropertyChanged();
+                RaiseEventColorEvent(_editColor);
+            }
+        }
+
+        #region Signal Edit Color Event
+
+        public delegate void EventColorHandler(Color color);
+
+        public event EventColorHandler EventColorEvent;
+
+        internal void RaiseEventColorEvent(Color color)
+        {
+            EventColorHandler handler = EventColorEvent;
+            if (handler != null)
+            {
+                handler(color);
+            }
+        }
+
+        public class EventColorArgs : EventArgs
+        {
+            public EventColorArgs(Color c)
+            {
+                Color = c;
+            }
+
+            public Color Color { get; private set; } // readonly
+        }
+
+        #endregion Signal Edit Color Event
+
+        #region Saved Changes Event
+
+        public delegate void SaveChangesHandler();
+
+        public event SaveChangesHandler SaveChangesEvent;
+
+        internal void RaiseSaveChangesEvent()
+        {
+            SaveChangesHandler handler = SaveChangesEvent;
+            if (handler != null)
+            {
+                handler();
+            }
+        }
+
+        #endregion Saved Changes Event
     }
 }

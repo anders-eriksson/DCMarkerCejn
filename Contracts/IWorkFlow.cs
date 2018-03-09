@@ -2,9 +2,12 @@ namespace DCMarker.Model
 {
     using Contracts;
     using System;
+    using System.Collections.Generic;
 
     public interface IWorkFlow
     {
+        bool FirstMarkingResetZ { get; set; }
+
         event EventHandler<ErrorArgs> ErrorEvent;
 
         event EventHandler<StatusArgs> StatusEvent;
@@ -12,6 +15,8 @@ namespace DCMarker.Model
         event EventHandler<UpdateMainViewModelArgs> UpdateMainViewModelEvent;
 
         event EventHandler<StatusArgs> ErrorMsgEvent;
+
+        event EventHandler<LaserBusyEventArgs> LaserBusyEvent;
 
         void Close();
 
@@ -22,5 +27,25 @@ namespace DCMarker.Model
         void Execute();
 
         void ResetAllIoSignals();
+
+        void ResetArticleData();
+
+        void SetNextToLast();
+
+        void ResetNextToLast();
+
+        List<Article> GetArticle(string articleNumber);
+
+        void UpdateWorkflow(Article article);
+
+        bool ResetZAxis();
+
+        void ResetArticleReady();
+
+#if DEBUG
+
+        void _laser_ItemInPositionEvent();
+
+#endif
     }
 }

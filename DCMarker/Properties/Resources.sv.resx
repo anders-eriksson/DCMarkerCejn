@@ -43,7 +43,7 @@
     <value>Layout inte definierad för denna artikel! Artikel = {0}</value>
   </data>
   <data name="Marking_is_done" xml:space="preserve">
-    <value>Märkningen är klar!</value>
+    <value>Märkning klar!</value>
   </data>
   <data name="Update_didnt_work_on_this_article_and_layout_Article0_Layout1" xml:space="preserve">
     <value>Uppdatering fungerade inte på denna artikel och layout! Artikel = {0}, Layout = {1}</value>
@@ -98,5 +98,62 @@
   </data>
   <data name="Loaded" xml:space="preserve">
     <value>Laddad</value>
+  </data>
+  <data name="BatchDone" xml:space="preserve">
+    <value>Märkta</value>
+  </data>
+  <data name="Article_does_not_exist_in_database" xml:space="preserve">
+    <value>Artikel saknas i databasen!</value>
+  </data>
+  <data name="TestItem" xml:space="preserve">
+    <value>Provbit</value>
+  </data>
+  <data name="Edge_marking_is_not_supported_in_this_version" xml:space="preserve">
+    <value>Hantering av kanter supporteras inte i denna version!</value>
+  </data>
+  <data name="Waiting_for_product" xml:space="preserve">
+    <value>Väntar på produkt</value>
+  </data>
+  <data name="Article_not_defined_in_database_0" xml:space="preserve">
+    <value>Artikel finns inte definierat i databasen {0}</value>
+  </data>
+  <data name="Not_a_valid_number" xml:space="preserve">
+    <value>Felaktigt nummer</value>
+  </data>
+  <data name="Quantity_must_be_1_or_larger" xml:space="preserve">
+    <value>Antal måste vara 1 eller högre</value>
+  </data>
+  <data name="TO_number_must_be_7_number_long_ee_1234567" xml:space="preserve">
+    <value>TO-nummer måste vara 7 tecken långt (T ex 1234567)</value>
+  </data>
+  <data name="TO_number_must_be_7_number_long" xml:space="preserve">
+    <value>TO-nummer måste vara 7 tecken</value>
+  </data>
+  <data name="ResetZAxisMenuHeader" xml:space="preserve">
+    <value>Referenskör Z axel</value>
+  </data>
+  <data name="Article_Number_0_not_found_in_database" xml:space="preserve">
+    <value>Artiklenummer: {0} finns inte i databasen!</value>
+  </data>
+  <data name="Both_Article_number_and_quantity_must_be_entered" xml:space="preserve">
+    <value>Både Artikelnummer och antal måste anges</value>
+  </data>
+  <data name="TO_Number_must_be_0_characters" xml:space="preserve">
+    <value>TO-nummer måste vara {0} characters</value>
+  </data>
+  <data name="No_Connection_with_Z_axis" xml:space="preserve">
+    <value>Ingen kontakt med Z-axeln!</value>
+  </data>
+  <data name="ERROR" xml:space="preserve">
+    <value>FEL</value>
+  </data>
+  <data name="OrderBatch_is_done" xml:space="preserve">
+    <value>Ordern är färdigmärkt!</value>
+  </data>
+  <data name="Order_is_done" xml:space="preserve">
+    <value>Ordern är färdigmärkt!</value>
+  </data>
+  <data name="HistoryData_Not_Created" xml:space="preserve">
+    <value>Kan inte skapa Historikdata! Article={0}, Layout={1}</value>
   </data>
 </root>

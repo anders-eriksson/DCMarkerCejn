@@ -5,6 +5,7 @@
     xmlns:common="clr-namespace:ValidationToolkit;assembly=ValidationToolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:DCAdmin"
+    xmlns:p="clr-namespace:DCAdmin.Properties"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Add"
     Width="300"

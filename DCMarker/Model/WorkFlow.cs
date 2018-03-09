@@ -6,33 +6,36 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using WorkFlow_Res = global::DCMarker.Properties.Resources;
 using DCLog;
+using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker.Model
 {
     public class WorkFlow : IWorkFlow
     {
         private IArticleInput _articleInput;
-        private DB _db;
-        private Laser _laser;
-
+        private string _articleNumber;
         private List<Article> _articles;
-
+        private int _currentEdge;
+        private DB _db;
+        private bool _hasEdges;
+        private Laser _laser;
         private DCConfig cfg;
 
         private IoSignals sig;
 
-        private string _articleNumber;
-        private int _currentEdge;
-        private bool _hasEdges;
+        public bool FirstMarkingResetZ { get; set; }
 
         public WorkFlow()
         {
             try
             {
                 cfg = DCConfig.Instance;
-                //cfg.WriteConfig();
+                if (!File.Exists(cfg.ConfigName))
+                {
+                    // if the config file doesn't exist then we are using default values. Write them to disk.
+                    //cfg.WriteConfig();
+                }
                 sig = new IoSignals();
                 UpdateIoMasks();
                 Initialize();
@@ -48,6 +51,19 @@ namespace DCMarker.Model
             ResetAllIoSignals();
             _laser.Release();
             _articleInput.Close();
+        }
+
+        public void Execute()
+        {
+            if (_laser != null)
+            {
+                _laser.Execute();
+            }
+        }
+
+        public List<Article> GetArticle(string articleNumber)
+        {
+            return _db.GetArticle(articleNumber);
         }
 
         public bool Initialize()
@@ -76,20 +92,12 @@ namespace DCMarker.Model
             UpdateLayout();
         }
 
-        public void Execute()
-        {
-            if (_laser != null)
-            {
-                _laser.Execute();
-            }
-        }
-
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
         {
             RaiseErrorEvent(string.Empty);
             _laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
-            RaiseStatusEvent(string.Format(WorkFlow_Res.Article_0_received, _articleNumber));
+            RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
 
             _articles = _db.GetArticle(_articleNumber);
 
@@ -106,11 +114,17 @@ namespace DCMarker.Model
                 _laser.SetPort(0, sig.MASK_ERROR);
                 // Can't find article in database.
 
-                RaiseErrorEvent(string.Format(WorkFlow_Res.Article_not_defined_in_database_Article0, _articleNumber));
+                RaiseErrorEvent(string.Format(GlblRes.Article_not_defined_in_database_0, _articleNumber));
             }
         }
 
+#if DEBUG
+
+        public void _laser_ItemInPositionEvent()
+#else
+
         private void _laser_ItemInPositionEvent()
+#endif
         {
             UpdateLayout();
         }
@@ -118,13 +132,51 @@ namespace DCMarker.Model
         private void _laser_LaserEndEvent()
         {
             _laser.SetPort(0, sig.MASK_MARKINGDONE);
-            RaiseStatusEvent(WorkFlow_Res.Marking_is_done);
+            RaiseStatusEvent(GlblRes.Marking_is_done);
         }
 
         private void _laser_LaserErrorEvent(string msg)
         {
-            _laser.SetPort(0, sig.MASK_ERROR);
+            if (_laser != null)
+            {
+                if (!string.IsNullOrWhiteSpace(msg))
+                {
+                    _laser.SetPort(0, sig.MASK_ERROR);
+                }
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
+
             RaiseErrorEvent(msg);
+        }
+
+        private void _laser_QueryStartEvent(string msg)
+        {
+            RaiseStatusEvent(msg);
+        }
+
+        private void _laser_ResetIoEvent()
+        {
+            _laser.ResetPort(0, sig.MASK_ALL);
+            RaiseErrorMsgEvent(string.Empty);
+        }
+
+        private List<LaserObjectData> ConvertToLaserObjectData(HistoryData historyData)
+        {
+            List<LaserObjectData> result;
+            result = DB.ConvertHistoryDataToList(historyData);
+
+            return result;
+        }
+
+        private HistoryData GetHistoryData(string _articleNumber, string kant, bool hasEdges = false)
+        {
+            HistoryData result = null;
+
+            result = _db.CreateHistoryData(_articleNumber, kant, hasEdges);
+            return result;
         }
 
         private void InitializeDatabase()
@@ -138,20 +190,9 @@ namespace DCMarker.Model
             _laser = new Laser();
             _laser.QueryStartEvent += _laser_QueryStartEvent;
             _laser.LaserEndEvent += _laser_LaserEndEvent;
-            _laser.LaserErrorEvent += _laser_LaserErrorEvent;
+            _laser.DeviceErrorEvent += _laser_LaserErrorEvent;
             _laser.ItemInPositionEvent += _laser_ItemInPositionEvent;
             _laser.ResetIoEvent += _laser_ResetIoEvent;
-        }
-
-        private void _laser_ResetIoEvent()
-        {
-            _laser.ResetPort(0, sig.MASK_ALL);
-            RaiseErrorMsgEvent(string.Empty);
-        }
-
-        private void _laser_QueryStartEvent(string msg)
-        {
-            RaiseStatusEvent(msg);
         }
 
         private void InitializeMachine()
@@ -172,9 +213,9 @@ namespace DCMarker.Model
         {
             string result = string.Empty;
 
-            if (layoutname.IndexOf(WorkFlow_Res.xlp) < 0)
+            if (layoutname.IndexOf(".xlp") < 0)
             {
-                layoutname += WorkFlow_Res.xlp;
+                layoutname += ".xlp";
             }
             if (cfg.LayoutPath.Length > 1)
             {
@@ -247,63 +288,67 @@ namespace DCMarker.Model
                             brc = _laser.Update(historyObjectData);
                             if (brc)
                             {
+                                Log.Trace("Layout updated OK");
                                 // update HistoryData table
                                 var status = _db.AddHistoryDataToDB(historyData);
                                 if (status != null)
                                 {
                                     // we are ready to mark...
-                                    RaiseStatusEvent(string.Format(WorkFlow_Res.Waiting_for_start_signal_0, layoutname));
+                                    RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
                                     _laser.ResetPort(0, sig.MASK_MARKINGDONE);
                                     _laser.SetPort(0, sig.MASK_READYTOMARK);
+                                    Log.Trace("UpdateLayout OK");
                                 }
                                 else
                                 {
-                                    RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                    RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                    Log.Trace(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
                                     _laser.SetPort(0, sig.MASK_ERROR);
                                 }
                             }
                             else
                             {
-                                RaiseErrorEvent(string.Format(WorkFlow_Res.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                RaiseErrorEvent(string.Format(GlblRes.HistoryData_Not_Created, _articleNumber, layoutname));
+                                Log.Trace(string.Format(GlblRes.HistoryData_Not_Created, _articleNumber, layoutname));
                                 _laser.SetPort(0, sig.MASK_ERROR);
                             }
+                        }
+                        else
+                        {
+                            RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                            Log.Trace(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                            _laser.SetPort(0, sig.MASK_ERROR);
                         }
                     }
                     else
                     {
-                        RaiseErrorEvent(string.Format(WorkFlow_Res.Error_loading_layout_0, layoutname));
+                        RaiseErrorEvent(string.Format(GlblRes.Error_loading_layout_0, layoutname));
+                        Log.Trace(string.Format(GlblRes.Error_loading_layout_0, layoutname));
                         _laser.SetPort(0, sig.MASK_ERROR);
                     }
                 }
                 else
                 {
-                    RaiseErrorEvent(string.Format(WorkFlow_Res.Layout_not_defined_for_this_article_Article0, _articleNumber));
+                    RaiseErrorEvent(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
+                    Log.Trace(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
                     _laser.SetPort(0, sig.MASK_ERROR);
                 }
             }
             else
             {
-                RaiseErrorEvent(WorkFlow_Res.ItemInPlace_received_before_Article_Number_is_set);
+                RaiseErrorEvent(GlblRes.ItemInPlace_received_before_Article_Number_is_set);
+                Log.Trace(GlblRes.ItemInPlace_received_before_Article_Number_is_set);
             }
         }
 
-        private List<LaserObjectData> ConvertToLaserObjectData(HistoryData historyData)
-        {
-            List<LaserObjectData> result;
-            result = DB.ConvertHistoryDataToList(historyData);
-
-            return result;
-        }
-
-        private HistoryData GetHistoryData(string _articleNumber, string kant, bool hasEdges = false)
-        {
-            HistoryData result = null;
-
-            result = _db.CreateHistoryData(_articleNumber, kant, hasEdges);
-            return result;
-        }
-
         private void UpdateViewModel(List<Article> articles)
+        {
+            UpdateViewModelData data = CreateUpdateViewModelData(articles);
+
+            RaiseUpdateMainViewModelEvent(data);
+        }
+
+        private static UpdateViewModelData CreateUpdateViewModelData(List<Article> articles)
         {
             var data = new UpdateViewModelData();
             Article article = articles[0];
@@ -322,9 +367,49 @@ namespace DCMarker.Model
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
             data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
             data.Template = article.Template;
-
-            RaiseUpdateMainViewModelEvent(data);
+            return data;
         }
+
+        #region only used by ManualWorkFlow // AME - 2017-05-12
+
+        public void UpdateWorkflow(Article article)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ResetArticleData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ResetArticleReady()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ResetZAxis()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetNextToLast()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ResetNextToLast()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion only used by ManualWorkFlow // AME - 2017-05-12
+
+        #region Laser Busy Event
+
+        // only used by ManualWorkFlow // AME - 2017-05-12
+        public event EventHandler<LaserBusyEventArgs> LaserBusyEvent;
+
+        #endregion Laser Busy Event
 
         #region Error Event
 
@@ -368,6 +453,15 @@ namespace DCMarker.Model
 
         public event EventHandler<StatusArgs> StatusEvent;
 
+        public void ResetAllIoSignals()
+        {
+            if (_laser != null)
+            {
+                _laser.ResetPort(0, sig.MASK_ALL);
+                _laser.SetReady(false);
+            }
+        }
+
         internal void RaiseStatusEvent(string msg)
         {
             var handler = StatusEvent;
@@ -375,15 +469,6 @@ namespace DCMarker.Model
             {
                 var arg = new StatusArgs(msg);
                 handler(null, arg);
-            }
-        }
-
-        public void ResetAllIoSignals()
-        {
-            if (_laser != null)
-            {
-                _laser.ResetPort(0, sig.MASK_ALL);
-                _laser.SetReady(false);
             }
         }
 

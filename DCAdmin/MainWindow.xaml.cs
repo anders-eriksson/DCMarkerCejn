@@ -27,6 +27,7 @@ namespace DCAdmin
             string language = DCConfig.Instance.GuiLanguage;
             if (!string.IsNullOrWhiteSpace(language))
             {
+                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
 
@@ -56,10 +57,10 @@ namespace DCAdmin
 
         private void InitializeViewModels()
         {
-            InitLaserDataViewModel();
             InitQuarterCodeViewModel();
             InitWeekCodeViewModel();
             InitFixtureViewModel();
+            InitLaserDataViewModel();
         }
 
         private void InitFixtureViewModel()
@@ -76,6 +77,8 @@ namespace DCAdmin
         {
             this.WeekCodeRoot.DataContext = null;
             weekVM = new WeekCodeViewModel();
+            weekVM.EventColorEvent += EventColorEvent;
+            weekVM.SaveChangesEvent += SaveChangesEvent;
             weekVM.RefreshDatabase(false);
             WeekCodeRoot.DataContext = weekVM;
             WeekCodeGrid.weekCodeDataGrid.Items.Refresh();
@@ -86,6 +89,8 @@ namespace DCAdmin
         {
             this.QuarterCodeRoot.DataContext = null;
             quarterVM = new QuarterCodeViewModel();
+            quarterVM.EventColorEvent += EventColorEvent;
+            quarterVM.SaveChangesEvent += SaveChangesEvent;
             quarterVM.RefreshDatabase(false);
             QuarterCodeRoot.DataContext = quarterVM;
             QuarterCodeGrid.quarterCodeDataGrid.Items.Refresh();
@@ -172,7 +177,18 @@ namespace DCAdmin
                     }
                 case (int)ViewModelEnum.FixtureViewModel:
                     {
-                        fixtureVM.AddNewRecord();
+                        AddFixture dlg = new AddFixture()
+                        {
+                            Owner = Window.GetWindow(this)
+                        };
+                        bool? rc = dlg.ShowDialog();
+                        FixtureGrid.fixtureDataGrid.Focus();
+                        if (rc.HasValue && rc.Value)
+                        {
+                            object item = fixtureVM.AddRow(dlg.FixtureData.FixtureId);
+
+                            fixtureVM.TriggerSelectedRow();
+                        }
                         break;
                     }
                 default:
@@ -205,17 +221,30 @@ namespace DCAdmin
                     }
                 case (int)ViewModelEnum.WeekCodeViewModel:
                     {
-                        weekVM.AddNewRecord();
+                        //weekVM.AddNewRecord();
                         break;
                     }
                 case (int)ViewModelEnum.QuarterCodeViewModel:
                     {
-                        quarterVM.AddNewRecord();
+                        //quarterVM.AddNewRecord();
+                        quarterVM.AddRowFromSelected();
+                        quarterVM.TriggerSelectedRow();
                         break;
                     }
                 case (int)ViewModelEnum.FixtureViewModel:
                     {
-                        fixtureVM.AddNewRecord();
+                        AddFixture dlg = new AddFixture()
+                        {
+                            Owner = Window.GetWindow(this)
+                        };
+                        bool? rc = dlg.ShowDialog();
+                        FixtureGrid.fixtureDataGrid.Focus();
+                        if (rc.HasValue && rc.Value)
+                        {
+                            object item = fixtureVM.AddRowFromSelected(dlg.FixtureData.FixtureId);
+
+                            fixtureVM.TriggerSelectedRow();
+                        }
                         break;
                     }
                 default:
@@ -365,34 +394,50 @@ namespace DCAdmin
             {
                 case (int)ViewModelEnum.LaserDataViewModel:
                     {
-                        if (IsChangesPending())
-                        {
-                            laserVM.SaveChanges();
-                        }
+                        //if (IsChangesPending())
+                        //{
+                        //    laserVM.SaveChanges();
+                        //}
+
+                        // TODO figure out why it takes 2
+                        LaserDataGrid.laserDataDataGrid.CommitEdit();
+                        LaserDataGrid.laserDataDataGrid.CommitEdit();
                         break;
                     }
                 case (int)ViewModelEnum.WeekCodeViewModel:
                     {
-                        if (IsChangesPending())
-                        {
-                            weekVM.SaveChanges();
-                        }
+                        //if (IsChangesPending())
+                        //{
+                        //    weekVM.SaveChanges();
+                        //}
+
+                        // TODO figure out why it takes 2
+                        WeekCodeGrid.weekCodeDataGrid.CommitEdit();
+                        WeekCodeGrid.weekCodeDataGrid.CommitEdit();
                         break;
                     }
                 case (int)ViewModelEnum.QuarterCodeViewModel:
                     {
-                        if (IsChangesPending())
-                        {
-                            quarterVM.SaveChanges();
-                        }
+                        //if (IsChangesPending())
+                        //{
+                        //    quarterVM.SaveChanges();
+                        //}
+
+                        // TODO figure out why it takes 2
+                        QuarterCodeGrid.quarterCodeDataGrid.CommitEdit();
+                        QuarterCodeGrid.quarterCodeDataGrid.CommitEdit();
                         break;
                     }
                 case (int)ViewModelEnum.FixtureViewModel:
                     {
-                        if (IsChangesPending())
-                        {
-                            fixtureVM.SaveChanges();
-                        }
+                        //if (IsChangesPending())
+                        //{
+                        //    fixtureVM.SaveChanges();
+                        //}
+
+                        // TODO figure out why it takes 2
+                        FixtureGrid.fixtureDataGrid.CommitEdit();
+                        FixtureGrid.fixtureDataGrid.CommitEdit();
                         break;
                     }
                 default:

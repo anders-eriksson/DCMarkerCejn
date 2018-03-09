@@ -20,6 +20,7 @@ namespace DCMarker
             Log.Debug(string.Format("GUI Language: {0}", language));
             if (!string.IsNullOrWhiteSpace(language))
             {
+                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
             InitializeComponent();

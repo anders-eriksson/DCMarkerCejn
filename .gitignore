@@ -10,6 +10,9 @@ _SYNCAPP/
 # temp directory
 [Tt]emp/
 
+#Sync directory
+_SYNCAPP/
+
 # User-specific files
 *.suo
 *.user

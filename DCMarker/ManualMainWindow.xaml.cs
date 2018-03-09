@@ -1,7 +1,9 @@
 using Configuration;
+using DCLog;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
+using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
 {
@@ -10,40 +12,37 @@ namespace DCMarker
     /// </summary>
     public partial class ManualMainWindow : Window
     {
-        private MainViewModel mainViewModel;
+        private ManualMainViewModel mainViewModel;
 
         public ManualMainWindow()
         {
-
             DCConfig cfg = DCConfig.Instance;
             string language = cfg.GuiLanguage;
             if (!string.IsNullOrWhiteSpace(language))
             {
+                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
             }
-            InitializeComponent();
-            mainViewModel = new MainViewModel();
-            DataContext = mainViewModel;
-        }
 
-        private void InitViewModel()
-        {
-            mainViewModel.ArticleNumber = "123456789012";
-            mainViewModel.Kant = "1";
-            mainViewModel.HasKant = true;
-            mainViewModel.Fixture = "999888777555";
-            mainViewModel.HasFixture = true;
-            mainViewModel.Status = "OffLine";
+            InitializeComponent();
+
+            if (!DCConfig.Instance.Debug)
+            {
+                LoadButton.Visibility = Visibility.Hidden;
+                ExecuteButton.Visibility = Visibility.Hidden;
+            }
+            mainViewModel = new ManualMainViewModel();
+            DataContext = mainViewModel;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            mainViewModel.Abort();
-        }
+            // We alway save the quantity, but only load it if it's configured
+            var q = mainViewModel.Quantity;
+            Properties.Settings.Default.Quantity = q;
+            Properties.Settings.Default.Save();
 
-        private void TestButton_Click(object sender, RoutedEventArgs e)
-        {
-            mainViewModel.Test();
+            mainViewModel.Abort();
         }
 
         private void ResetSignals_Click(object sender, RoutedEventArgs e)
@@ -66,6 +65,32 @@ namespace DCMarker
         {
             WPFAboutBox1 dlg = new WPFAboutBox1(this);
             dlg.ShowDialog();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ArticleTextBox.Focus();
+            ArticleTextBox.SelectAll();
+        }
+
+        private void LoadButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainViewModel.Test();
+        }
+
+        private void ExecuteButton_Click(object sender, RoutedEventArgs e)
+        {
+            Log.Trace("ExecuteButton_Click");
+            mainViewModel.Execute();
+        }
+
+        private void ResetZaxis_Click(object sender, RoutedEventArgs e)
+        {
+            bool brc = mainViewModel.ResetZAxis();
+            if (!brc)
+            {
+                MessageBox.Show(GlblRes.No_Connection_with_Z_axis, GlblRes.ERROR, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

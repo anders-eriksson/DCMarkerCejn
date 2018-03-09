@@ -60,10 +60,11 @@ namespace DCAdmin
             try
             {
                 var x = _context.LaserData.Add(d);
-                _context.SaveChanges();
+                SaveChanges();
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex, "Database Error while Adding LaserData");
                 throw;
             }
         }
@@ -71,8 +72,19 @@ namespace DCAdmin
         public bool ExistsLaserData(string machineId, string article, string kant)
         {
             bool result = false;
-            //var found = _context.LaserData.Where(x => x.F1 == article && x.Kant == kant).FirstOrDefault();
             var found = _context.LaserData.FirstOrDefault(p => p.F1 == article && p.Kant == kant);
+            if (found != null)
+            {
+                result = true;
+            }
+
+            return result;
+        }
+
+        public bool ExistsFixture(string fixtureId)
+        {
+            bool result = false;
+            var found = _context.Fixture.FirstOrDefault(p => p.FixturId == fixtureId);
             if (found != null)
             {
                 result = true;
@@ -323,6 +335,9 @@ namespace DCAdmin
         {
             try
             {
+#if DEBUG
+                bool brc = IsChangesPending();
+#endif
                 _context.SaveChanges();
             }
             catch (DbEntityValidationException dbEx)
@@ -335,6 +350,7 @@ namespace DCAdmin
                                             error.PropertyName, error.ErrorMessage));
                     }
                 }
+
                 throw;
             }
             catch (Exception ex)
@@ -355,6 +371,20 @@ namespace DCAdmin
             return result;
         }
 
+        internal void AddNewFixtureRecord(ref Fixture fixture)
+        {
+            try
+            {
+                var x = _context.Fixture.Add(fixture);
+                SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Database Error while Adding Fixture Data");
+                throw;
+            }
+        }
+
         internal LaserData AddNewLaserDataRecord()
         {
             LaserData result;
@@ -373,6 +403,20 @@ namespace DCAdmin
             result = _context.QuarterCode.Add(entity);
 
             return result;
+        }
+
+        internal void AddNewQuartalCodeRecord(ref QuarterCode qcode)
+        {
+            try
+            {
+                var x = _context.QuarterCode.Add(qcode);
+                SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Database Error while Adding QuartalCode Data");
+                throw;
+            }
         }
 
         /// <summary>

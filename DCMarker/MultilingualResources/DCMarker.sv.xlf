@@ -11,7 +11,7 @@
           <target state="translated" state-qualifier="mt-suggestion">Artikelnummer</target>
         </trans-unit>
         <trans-unit id="BatchSize" translate="yes" xml:space="preserve">
-          <source>Batch Size</source>
+          <source>Quantity</source>
           <target state="translated">Antal</target>
           <note from="MultilingualEditor" annotates="source" priority="4">Not a direct translation but more of a meaningful one....</note>
         </trans-unit>
@@ -59,7 +59,7 @@
         </trans-unit>
         <trans-unit id="Marking_is_done" translate="yes" xml:space="preserve">
           <source>Marking is done!</source>
-          <target state="translated" state-qualifier="mt-suggestion">Märkningen är klar!</target>
+          <target state="translated">Märkning klar!</target>
         </trans-unit>
         <trans-unit id="Update_didnt_work_on_this_article_and_layout_Article0_Layout1" translate="yes" xml:space="preserve">
           <source>Update didn't work on this article and layout! Article={0}, Layout={1}</source>
@@ -136,6 +136,86 @@
         <trans-unit id="Loaded" translate="yes" xml:space="preserve">
           <source>Loaded</source>
           <target state="translated">Laddad</target>
+        </trans-unit>
+        <trans-unit id="BatchDone" translate="yes" xml:space="preserve">
+          <source>Done</source>
+          <target state="translated">Märkta</target>
+        </trans-unit>
+        <trans-unit id="Article_does_not_exist_in_database" translate="yes" xml:space="preserve">
+          <source>Article does not exist in database!</source>
+          <target state="translated">Artikel saknas i databasen!</target>
+        </trans-unit>
+        <trans-unit id="TestItem" translate="yes" xml:space="preserve">
+          <source>Test Item</source>
+          <target state="translated">Provbit</target>
+        </trans-unit>
+        <trans-unit id="Edge_marking_is_not_supported_in_this_version" translate="yes" xml:space="preserve">
+          <source>Edge marking is not supported in this version!</source>
+          <target state="translated">Hantering av kanter supporteras inte i denna version!</target>
+        </trans-unit>
+        <trans-unit id="Waiting_for_product" translate="yes" xml:space="preserve">
+          <source>Waiting for product</source>
+          <target state="translated">Väntar på produkt</target>
+        </trans-unit>
+        <trans-unit id="Error_initializing_machine" translate="no" xml:space="preserve">
+          <source>Error initializing machine</source>
+          <target state="final">Error initializing machine</target>
+        </trans-unit>
+        <trans-unit id="Article_not_defined_in_database_0" translate="yes" xml:space="preserve">
+          <source>Article not defined in database {0}</source>
+          <target state="translated">Artikel finns inte definierat i databasen {0}</target>
+        </trans-unit>
+        <trans-unit id="Not_a_valid_number" translate="yes" xml:space="preserve">
+          <source>Not a valid number</source>
+          <target state="translated">Felaktigt nummer</target>
+        </trans-unit>
+        <trans-unit id="Quantity_must_be_1_or_larger" translate="yes" xml:space="preserve">
+          <source>Quantity must be 1 or larger</source>
+          <target state="translated">Antal måste vara 1 eller högre</target>
+        </trans-unit>
+        <trans-unit id="TO_number_must_be_7_number_long_ee_1234567" translate="yes" xml:space="preserve">
+          <source>TO number must be 7 number long (e.e 1234567)</source>
+          <target state="translated">TO-nummer måste vara 7 tecken långt (T ex 1234567)</target>
+        </trans-unit>
+        <trans-unit id="TO_number_must_be_7_number_long" translate="yes" xml:space="preserve">
+          <source>TO number must be 7 number long</source>
+          <target state="translated">TO-nummer måste vara 7 tecken</target>
+        </trans-unit>
+        <trans-unit id="ResetZAxisMenuHeader" translate="yes" xml:space="preserve">
+          <source>Reset Z Axis</source>
+          <target state="translated">Referenskör Z axel</target>
+        </trans-unit>
+        <trans-unit id="Article_Number_0_not_found_in_database" translate="yes" xml:space="preserve">
+          <source>Article Number: {0} not found in database!</source>
+          <target state="translated">Artiklenummer: {0} finns inte i databasen!</target>
+        </trans-unit>
+        <trans-unit id="Both_Article_number_and_quantity_must_be_entered" translate="yes" xml:space="preserve">
+          <source>Both Article number and quantity must be entered</source>
+          <target state="translated">Både Artikelnummer och antal måste anges</target>
+        </trans-unit>
+        <trans-unit id="TO_Number_must_be_0_characters" translate="yes" xml:space="preserve">
+          <source>TO Number must be {0} characters</source>
+          <target state="translated">TO-nummer måste vara {0} characters</target>
+        </trans-unit>
+        <trans-unit id="No_Connection_with_Z_axis" translate="yes" xml:space="preserve">
+          <source>No Connection with Z axis!</source>
+          <target state="translated">Ingen kontakt med Z-axeln!</target>
+        </trans-unit>
+        <trans-unit id="ERROR" translate="yes" xml:space="preserve">
+          <source>ERROR</source>
+          <target state="translated">FEL</target>
+        </trans-unit>
+        <trans-unit id="OrderBatch_is_done" translate="yes" xml:space="preserve">
+          <source>Order/Batch is done!</source>
+          <target state="translated">Ordern är färdigmärkt!</target>
+        </trans-unit>
+        <trans-unit id="Order_is_done" translate="yes" xml:space="preserve">
+          <source>Order is done!</source>
+          <target state="translated">Ordern är färdigmärkt!</target>
+        </trans-unit>
+        <trans-unit id="HistoryData_Not_Created" translate="yes" xml:space="preserve">
+          <source>History Data not Created! Article={0}, Layout={1}</source>
+          <target state="translated">Kan inte skapa Historikdata! Article={0}, Layout={1}</target>
         </trans-unit>
       </group>
     </body>

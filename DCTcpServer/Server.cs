@@ -14,6 +14,7 @@ namespace DCTcpServer
     {
         private int _port = 50000;
         private int _maxBufferBytes = 14;
+
         private TcpListener _listener;
         private Thread listeningThread;
 
@@ -43,19 +44,16 @@ namespace DCTcpServer
                     var client = _listener.AcceptTcpClient();       // Blocking!
                     Log.Trace("Client connected");
                     // We have connection
-                    //var stream = client.GetStream();
                     var server = client.Client;
                     var buffer = new byte[_maxBufferBytes];
 
-                    var inbuffer = new byte[_maxBufferBytes];
+                    //var inbuffer = new byte[_maxBufferBytes];
                     var totalReceivedBytes = 0;
                     var readBytes = 0;
 
                     bool hasReceivedAllBytes = false;
                     do
                     {
-                        //readBytes = stream.Read(buffer, totalReceivedBytes, _maxBufferBytes - totalReceivedBytes);
-
                         readBytes = server.Receive(buffer, _maxBufferBytes, SocketFlags.None); // blocking!
                         Log.Debug(string.Format("Read {0} bytes from client", readBytes));
                         Log.Debug(string.Format("string.read: {0}", readBytes));
@@ -67,7 +65,6 @@ namespace DCTcpServer
                             hasReceivedAllBytes = true;
                             UpdateWF(buffer);
 
-                            //stream.Write(buffer, 0, _maxBufferBytes);
                             int writeBytes = server.Send(buffer, _maxBufferBytes, SocketFlags.None);
                             Log.Debug(string.Format("Write {0} bytes to client", writeBytes));
                             buffer = new byte[_maxBufferBytes];
@@ -80,7 +77,6 @@ namespace DCTcpServer
                         return;
                     }
 
-                    //Log.Trace("Client disconnected");
                     // stream.Close();
                     client.Close();
                     Log.Trace("Client disconnected/closed");
@@ -91,13 +87,16 @@ namespace DCTcpServer
                     {
                         // a blocking listen has been cancelled
                         _listener.Stop();
+                        Log.Trace("Connection Interrupted");
 
                         return;
                     }
                     else if (ex.SocketErrorCode == SocketError.ConnectionAborted
                             || ex.SocketErrorCode == SocketError.ConnectionReset)
                     {
-                        Log.Trace("Connection Aborted");
+                        // SocketError.ConnectionAborted == 10053
+                        // SocketError.ConnectionReset   == 10054
+                        Log.Trace(string.Format("Connection Aborted ({0})", ex.SocketErrorCode));
                     }
                     else
                     {
@@ -133,14 +132,13 @@ namespace DCTcpServer
                 byte[] buffer = System.Text.Encoding.ASCII.GetBytes("ABORT");
                 stream.Write(buffer, 0, buffer.Length);
             }
-            //listeningThread.Abort();
         }
 
         private void UpdateWF(byte[] buffer)
         {
             int count = buffer.Count(bt => bt != 0); // find the first null
             string articleNumber = System.Text.Encoding.ASCII.GetString(buffer, 0, count);
-#if DEBUG
+#if TESTTCPSERVER
             RaiseNewArticleNumberEvent(string.Format("Raw:\t\t{0}", articleNumber));
             articleNumber = RemoveNonPrintableChars(articleNumber);
             RaiseNewArticleNumberEvent(string.Format("Used:\t\t{0}", articleNumber));

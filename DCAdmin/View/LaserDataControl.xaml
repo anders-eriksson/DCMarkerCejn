@@ -86,7 +86,7 @@
                                 Height="23"
                                 Content="Enable/Disable"
                                 IsChecked="{Binding IsFilterBoolChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                Visibility="{Binding IsFilterBool, Converter={StaticResource BoolToVisConverter}}" />
+                                Visibility="{Binding IsFilterBool, Converter={StaticResource BoolToVisConverter},FallbackValue=Hidden}" />
                         </Grid>
                         <TextBlock
                             Width="10"
@@ -122,8 +122,8 @@
                 Text="{Binding Path=ErrorMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                 TextWrapping="Wrap" />
             <TextBlock
-                VerticalAlignment="Bottom"
                 HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
                 DockPanel.Dock="Bottom"
                 Text="{Binding RowCount, Converter={StaticResource myNumberFormatter}, ConverterParameter=N0, FallbackValue=0}" />
 

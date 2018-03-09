@@ -25,6 +25,7 @@ namespace DCMarker
             TestItem = string.Empty;
             HasBatchSize = false;
             BatchSize = string.Empty;
+            BatchDone = 0;
             HasTOnr = false;
             TOnr = string.Empty;
             Status = string.Empty;
@@ -68,6 +69,11 @@ namespace DCMarker
                     break;
 
                 case 2:
+                    // TODO change this to WorkFlowWithTOnr()
+                    _wf = new WorkFlow();
+                    break;
+
+                case 3:
                     _wf = new ManualWorkFlow();
                     break;
 
@@ -158,6 +164,21 @@ namespace DCMarker
             set
             {
                 _batchSize = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private int _BatchDone;
+
+        public int BatchDone
+        {
+            get
+            {
+                return _BatchDone;
+            }
+            set
+            {
+                _BatchDone = value;
                 NotifyPropertyChanged();
             }
         }

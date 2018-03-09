@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using DCAdmin.ViewModel;
+using GlblRes = global::DCAdmin.Properties.Resources;
 
 namespace DCAdmin
 {
@@ -57,7 +58,7 @@ namespace DCAdmin
                 else
                 {
                     // article already exists!
-                    RowData.ErrorMessage = "Article already exists!";
+                    RowData.ErrorMessage = GlblRes.Article_already_exists;
                     e.Cancel = true;
                     DialogResult = false;
                 }

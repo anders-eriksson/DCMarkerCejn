@@ -9,6 +9,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using AutoMapper;
+using DCLog;
+using System.Data.Entity.Core;
 
 namespace DCAdmin.ViewModel
 {
@@ -23,10 +25,6 @@ namespace DCAdmin.ViewModel
         {
             try
             {
-                KeyCollection = DB.Instance.GetLaserDataColumns();
-#if TEST
-                _LaserDataCollection = new ObservableCollection<LaserData>();
-#endif
                 // enable Filter Textbox
                 IsFilterTextbox = true;
 
@@ -35,6 +33,12 @@ namespace DCAdmin.ViewModel
 
                 // Set init value for checkbox to false
                 IsFilterBoolChecked = false;
+
+                KeyCollection = DB.Instance.GetLaserDataColumns();
+#if TEST
+                _LaserDataCollection = new ObservableCollection<LaserData>();
+#endif
+
 #if DEBUG
                 ErrorMessage = "Hello World!";
 #else
@@ -294,8 +298,9 @@ namespace DCAdmin.ViewModel
                     SelectedLaserDataRow = entity;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Fatal(ex, "Database Error AddNewLaserDataRecord!");
                 throw;
             }
         }
@@ -321,8 +326,9 @@ namespace DCAdmin.ViewModel
                 ErrorMessage = string.Format("Error Adding to Database: {0}", error.ErrorMessage);
                 d = null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Fatal(ex, "Database Error AddRow!");
                 throw;
             }
 
@@ -380,8 +386,9 @@ namespace DCAdmin.ViewModel
                 var error = ex.EntityValidationErrors.First().ValidationErrors.First();
                 ErrorMessage = string.Format("Error Saving to Database: {0}", error.ErrorMessage);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Fatal(ex, "Database Error while SaveChanges!");
                 throw;
             }
         }
@@ -412,8 +419,15 @@ namespace DCAdmin.ViewModel
                 LaserDataCollection = DB.Instance.LoadLaserData();
                 RowCount = LaserDataCollection != null ? LaserDataCollection.Count.ToString() : string.Empty;
             }
-            catch (Exception)
+            catch (EntityException ex)
             {
+                Log.Fatal(ex, "Database Error while Refreshing!");
+                ErrorMessage = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Database Error while Refreshing!");
+                ErrorMessage = ex.Message;
                 throw;
             }
         }

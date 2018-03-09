@@ -132,4 +132,16 @@
   <data name="ClearFilterButtonHeader" xml:space="preserve">
     <value>Rensa</value>
   </data>
+  <data name="AddFixtureTitle" xml:space="preserve">
+    <value>Lägg till fixtur</value>
+  </data>
+  <data name="FixtureLabel" xml:space="preserve">
+    <value>Fixturenamn</value>
+  </data>
+  <data name="Article_already_exists" xml:space="preserve">
+    <value>Artikeln finns redan!</value>
+  </data>
+  <data name="Fixture_already_exists" xml:space="preserve">
+    <value>Fixturen finns redan</value>
+  </data>
 </root>

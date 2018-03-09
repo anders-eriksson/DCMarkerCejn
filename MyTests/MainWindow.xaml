@@ -1,0 +1,71 @@
+﻿<Window x:Class="MyTests.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyTests"
+        mc:Ignorable="d"
+        Loaded="Window_Loaded"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <TextBlock
+            x:Name="ArticleTextblock"
+            Margin="42,78,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="Article"
+            TextWrapping="Wrap" />
+        <TextBox
+            x:Name="ArticleTextBox"
+            Width="132"
+            Margin="139,76,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            local:FocusAdvancement.AdvancesByEnterKey="True"
+            TabIndex="0"
+            Text="{Binding ArticleNumber, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
+            TextWrapping="Wrap" />
+
+        <TextBlock
+            x:Name="TOnrLabel"
+            Margin="301,76,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="TO" />
+        <ContentPresenter
+            Height="20"
+            Margin="301,112,10,120"
+            Content="{Binding ElementName=TOnrTextbox, Path=(Validation.Errors).CurrentItem}" />
+        <TextBox
+            x:Name="TOnrTextbox"
+            Width="132"
+            Margin="350,76,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            local:FocusAdvancement.AdvancesByEnterKey="True"
+            TabIndex="1"
+            Text="{Binding TOnr, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
+            TextWrapping="Wrap" />
+
+        <TextBlock
+            x:Name="BatchSizeLabel"
+            Margin="42,122,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="Quant" />
+        <ContentPresenter
+            Height="20"
+            Margin="118,148,232,85"
+            Content="{Binding ElementName=BatchSizeTextbox, Path=(Validation.Errors).CurrentItem}" />
+        <TextBox
+            x:Name="BatchSizeTextbox"
+            Width="132"
+            Margin="139,121,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            local:FocusAdvancement.AdvancesByEnterKey="True"
+            TabIndex="2"
+             Text="{Binding Quantity, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            TextWrapping="Wrap" />
+    </Grid>
+</Window>

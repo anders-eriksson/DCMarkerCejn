@@ -5,6 +5,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace DCAdmin.View
@@ -49,6 +50,8 @@ namespace DCAdmin.View
                             try
                             {
                                 DB.Instance.SaveChanges();
+                                viewModel.RaiseSaveChangesEvent();
+                                viewModel.EditColor = Colors.LimeGreen;
                             }
                             catch (DbEntityValidationException ex)
                             {
