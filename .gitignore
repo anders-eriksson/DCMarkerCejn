@@ -4,6 +4,9 @@
 # Archived installations
 Archieve Installations/
 
+# FreeFileSync
+_SYNCAPP/
+
 # temp directory
 [Tt]emp/
 
@@ -12,6 +15,7 @@ Archieve Installations/
 *.user
 *.userosscache
 *.sln.docstates
+*.bak
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
