@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
+using Configuration;
 
 namespace CommunicationService
 {
@@ -11,9 +12,31 @@ namespace CommunicationService
     {
         public string Parameter { get; set; }
 
+        public ArtNoCommand(ICommunicationModule comm)
+        {
+            _comm = comm;
+        }
+
         public override void Run()
         {
-            throw new NotImplementedException();
+            DateTime startTime = DateTime.Now;
+            byte data = Constants.ArtNrCode;
+            bool timeout = false;
+            _comm.Write(Constants.DOstartAddress, data);
+            // Wait for ACK
+            do
+            {
+                data = _comm.Read(Constants.DOstartAddress, Constants.DOtotalPoints);
+                timeout = IsTimeout(startTime);
+            } while (!timeout && data != Constants.ACK);
+            _comm.Write(Constants.DOstartAddress, data);
+        }
+
+        private static bool IsTimeout(DateTime startTime)
+        {
+            TimeSpan ts = DateTime.Now - startTime;
+            bool result = ts.Seconds > DCConfig.Instance.AdamErrorTimeout;
+            return result;
         }
     }
 

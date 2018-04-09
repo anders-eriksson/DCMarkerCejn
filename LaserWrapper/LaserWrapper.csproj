@@ -37,11 +37,9 @@
     <SuppressPseudoWarning Condition="'$(Configuration)' == 'Debug'">true</SuppressPseudoWarning>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DCLog">
-      <HintPath>..\..\..\..\_LIBRARY\DCLog\bin\Release\DCLog.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\..\..\..\_LIBRARY\DCLog\bin\Release\NLog.dll</HintPath>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\LIBRARY\DCLog\bin\Release\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,6 +69,10 @@
       <Project>{c32736b8-267f-4dca-aaaa-7d781855d141}</Project>
       <Name>Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DCLog\DCLog.csproj">
+      <Project>{f0ad10ca-c138-469e-8a99-cb12b3d364a2}</Project>
+      <Name>DCLog</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -80,6 +82,9 @@
     <EmbeddedResource Include="Properties\Resources.sv.resx" />
   </ItemGroup>
   <ItemGroup>
+    <XliffResource Include="MultilingualResources\LaserWrapper.sv.xlf" />
+  </ItemGroup>
+  <ItemGroup>
     <COMReference Include="laserengineLib">
       <Guid>{6B16E6C7-FC82-419F-9231-0772AAD1A6AC}</Guid>
       <VersionMajor>5</VersionMajor>
@@ -87,11 +92,8 @@
       <Lcid>0</Lcid>
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
-  </ItemGroup>
-  <ItemGroup>
-    <XliffResource Include="MultilingualResources\LaserWrapper.sv.xlf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets" Label="MultilingualAppToolkit" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\v$(MultilingualAppToolkitVersion)\Microsoft.Multilingual.ResxResources.targets')" />

@@ -99,6 +99,19 @@ namespace LaserWrapper
             return result;
         }
 
+        public bool StopMarking()
+        {
+            bool result = true;
+
+            Log.Debug("Laser: StopMarking");
+            if (_laserSystem != null)
+            {
+                result = _laserSystem.stopLaser();
+            }
+
+            return result;
+        }
+
         public List<string> GetDocumentsList()
         {
             List<string> result = new List<string>();
@@ -262,6 +275,7 @@ namespace LaserWrapper
                 //_laserSystem.sigLaserStart += _laserSystem_sigLaserStart;
                 _laserSystem.sigLaserEnd += _laserSystem_sigLaserEnd;
                 _laserSystem.sigLaserError += _laserSystem_sigLaserError;
+
                 if (_isIoEnabled)
                 {
                     _ioPort = _laser.IoPort;
@@ -306,6 +320,19 @@ namespace LaserWrapper
             string[] axisName = new string[] { "X", "Y", "Z", "R" };
             Log.Debug(string.Format("{0} Axis has reached Zero", p_nAxis));
             RaiseZeroReachedEvent(string.Format("{0}-Axis has been reset", axisName[p_nAxis]));
+        }
+
+        public void SaveDoc()
+        {
+            if (_doc != null)
+            {
+                string fname = _doc.filename;
+                if (!string.IsNullOrWhiteSpace(fname))
+                {
+                    fname = Path.Combine(@"C:\temp", Path.GetFileName(fname));
+                    _doc.saveAs(fname);
+                }
+            }
         }
 
         /// <summary>
@@ -392,7 +419,8 @@ namespace LaserWrapper
 
         private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
         {
-            Log.Debug(string.Format("Port: {0} - Bit: {1}", p_nPort, p_nBits));
+#if DEBUG
+            Log.Trace(string.Format("Port: {0} - Bit: {1}", p_nPort, p_nBits));
             // Item In Place
             if ((p_nBits & sig.MASK_ITEMINPLACE) == sig.MASK_ITEMINPLACE)
             {
@@ -424,6 +452,7 @@ namespace LaserWrapper
             {
                 currentBits &= ~sig.MASK_RESET;
             }
+#endif
         }
 
         #endregion Digital IO

@@ -9,6 +9,8 @@
     Title="DCMarker"
     Width="566.349"
     Height="303.402"
+    d:DataContext="{d:DesignInstance local:StaticMainViewModel,
+                                     IsDesignTimeCreatable=True}"
     Closing="Window_Closing"
     Icon="dclasersystem.ico"
     Loaded="Window_Loaded"
@@ -66,7 +68,15 @@
                 </MenuItem>
             </Menu>
         </DockPanel>
-        <TextBlock
+        <GroupBox
+            Height="170"
+            Margin="10,30,10,0"
+            VerticalAlignment="Top"
+            BorderBrush="Black"
+            BorderThickness="1"
+            Header="{x:Static p:Resources.Loaded}">
+            <Grid Margin="0,0,0,2">
+                <TextBlock
             x:Name="FixtureLabel"
             Margin="37,36,0,0"
             HorizontalAlignment="Left"
@@ -77,7 +87,7 @@
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
 
-        <TextBlock
+                <TextBlock
             x:Name="FixtureTextBlock"
             Margin="139,36,0,0"
             HorizontalAlignment="Left"
@@ -87,14 +97,14 @@
             Text="{Binding Fixture}"
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
-        <TextBlock
+                <TextBlock
             x:Name="ArticleTextblock"
             Margin="42,78,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.ArticleNumber}"
             TextWrapping="Wrap" />
-        <TextBox
+                <TextBox
             x:Name="ArticleTextBox"
             Width="132"
             Margin="139,76,0,0"
@@ -106,19 +116,19 @@
             Text="{Binding ArticleNumber, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
             TextWrapping="Wrap" />
 
-        <TextBlock
+                <TextBlock
             x:Name="TOnrLabel"
             Margin="301,76,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.ToNumber}"
              Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
-        <ContentPresenter
+                <ContentPresenter
             Height="20"
             Margin="350,103,10,148"
             Content="{Binding ElementName=TOnrTextbox, Path=(Validation.Errors).CurrentItem}"
             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
-        <TextBox
+                <TextBox
             x:Name="TOnrTextbox"
             Width="132"
             Margin="350,76,0,0"
@@ -131,17 +141,17 @@
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
 
-        <TextBlock
+                <TextBlock
             x:Name="BatchSizeLabel"
             Margin="42,122,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.BatchSize}" />
-        <ContentPresenter
+                <ContentPresenter
             Height="20"
             Margin="139,143,264,108"
             Content="{Binding ElementName=BatchSizeTextbox, Path=(Validation.Errors).CurrentItem}" />
-        <TextBox
+                <TextBox
             x:Name="BatchSizeTextbox"
             Width="132"
             Margin="139,121,0,0"
@@ -153,7 +163,7 @@
              Text="{Binding Quantity, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             TextWrapping="Wrap" />
 
-        <TextBlock
+                <TextBlock
             x:Name="KantLabel"
             Margin="301,124,0,0"
             HorizontalAlignment="Left"
@@ -162,7 +172,7 @@
             Text="{x:Static p:Resources.Kant}"
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
-        <TextBlock
+                <TextBlock
             x:Name="KantTextBlock"
             Width="143"
             Margin="350,124,0,0"
@@ -173,13 +183,13 @@
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
 
-        <TextBlock
+                <TextBlock
             x:Name="BatchDoneLabel"
             Margin="301,147,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.BatchDone}" />
-        <TextBlock
+                <TextBlock
             x:Name="BatchDone"
             Width="143"
             Margin="350,147,0,0"
@@ -187,7 +197,7 @@
             VerticalAlignment="Top"
             Text="{Binding BatchesDone}" />
 
-        <Button
+                <Button
             x:Name="OkButton"
             Width="75"
             Margin="139,195,0,0"
@@ -197,7 +207,7 @@
             Command="{Binding OkButtonCommand, Mode=OneWay}"
             Content="{x:Static p:Resources.OK}"
             TabIndex="4" />
-        <Button
+                <Button
             x:Name="CancelButton"
             Command="{Binding CancelButtonCommand, Mode=OneWay}"
             Content="{x:Static p:Resources.Cancel}"
@@ -205,7 +215,7 @@
             Margin="219,195,0,0"
             VerticalAlignment="Top"
             Width="75" />
-        <Button
+                <Button
             x:Name="LoadButton"
             Width="75"
             Margin="392,183,0,0"
@@ -214,7 +224,7 @@
             Click="LoadButton_Click"
             Content="Load"
             IsTabStop="False" />
-        <Button
+                <Button
             x:Name="ExecuteButton"
             Width="75"
             Margin="392,210,0,0"
@@ -223,17 +233,19 @@
             Click="ExecuteButton_Click"
             Content="Execute"
             IsTabStop="False" />
-        <Ellipse
+                <Ellipse
             x:Name="InMarking"
             Width="20"
             Height="20"
             Margin="0,0,26,67"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom">
-            <Ellipse.Fill>
-                <SolidColorBrush Color="{Binding ColorStatus, UpdateSourceTrigger=PropertyChanged}" />
-            </Ellipse.Fill>
-        </Ellipse>
+                    <Ellipse.Fill>
+                        <SolidColorBrush Color="{Binding ColorStatus, UpdateSourceTrigger=PropertyChanged}" />
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Grid>
+        </GroupBox>
         <StackPanel VerticalAlignment="Bottom">
             <TextBlock
                 x:Name="textBlock"

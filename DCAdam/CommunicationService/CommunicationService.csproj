@@ -34,8 +34,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ardalis.GuardClauses, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ardalis.GuardClauses.1.2.3\lib\net40\Ardalis.GuardClauses.dll</HintPath>
+      <HintPath>..\..\packages\Ardalis.GuardClauses.1.2.3\lib\net40\Ardalis.GuardClauses.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Configuration">
+      <HintPath>..\..\Configuration\bin\Debug\Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\..\..\LIBRARY\DCLog\bin\Release\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,12 +54,17 @@
     <Compile Include="CommandQueue.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="CommService.cs" />
+    <Compile Include="CommServiceEvents.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Contracts\Contracts.csproj">
-      <Project>{d398149e-b048-4c98-a00c-806c8a5ed461}</Project>
+    <ProjectReference Include="..\..\Contracts\Contracts.csproj">
+      <Project>{c32736b8-267f-4dca-aaaa-7d781855d141}</Project>
       <Name>Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DCLog\DCLog.csproj">
+      <Project>{f0ad10ca-c138-469e-8a99-cb12b3d364a2}</Project>
+      <Name>DCLog</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

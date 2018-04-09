@@ -42,6 +42,8 @@ namespace DCMarker.Model
 
         void ResetArticleReady();
 
+        bool StartPoll(int pollInterval, int errorTimeout);
+
 #if DEBUG
 
         void _laser_ItemInPositionEvent();

@@ -11,6 +11,7 @@
     Height="308"
     d:DataContext="{d:DesignInstance local:StaticMainViewModel,
                                      IsDesignTimeCreatable=True}"
+    Loaded="Window_Loaded"
     Closing="Window_Closing"
     Icon="dclasersystem.ico"
     ResizeMode="CanMinimize"
@@ -44,6 +45,10 @@
                         IsCheckable="True" />
                 </MenuItem>
                 <MenuItem Header="{x:Static p:Resources.HelpMenuHeader}">
+                    <MenuItem
+                        x:Name="LogFiles"
+                        Click="LogFiles_Click"
+                        Header="{x:Static p:Resources.LogfileMenuHeader}" />
                     <MenuItem
                         x:Name="About"
                         Click="About_Click"
@@ -112,25 +117,22 @@
                     Text="{Binding Kant}"
                     TextWrapping="Wrap"
                     Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
-
-                <Button
-                    x:Name="OkButton"
-                    Width="75"
-                    Margin="139,101,0,0"
+                <TextBlock
+                    x:Name="ProvbitLabel"
+                    Margin="37,60,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    Content="{x:Static p:Resources.OK}"
-                    IsEnabled="{Binding HasKant}"
-                    Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
-                <Button
-                    x:Name="CancelButton"
-                    Width="75"
-                    Margin="219,101,0,0"
+                    Text="{x:Static p:Resources.Provbit}"
+                    Visibility="Hidden"
+                    TextWrapping="Wrap" />
+                <CheckBox
+                    x:Name="ProvbitCheckbox"
+                    Margin="139,63,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    Content="{x:Static p:Resources.Cancel}"
-                    IsEnabled="{Binding HasKant}"
-                    Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
+                    IsChecked="{Binding IsTestItemSelected,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"
+                    IsEnabled="False"
+                    Visibility="Hidden" />
 
                 <Button
                     x:Name="TestButton"
@@ -155,7 +157,8 @@
                     VerticalAlignment="Top"
                     Content="{x:Static p:Resources.ToNumber}"
                     IsEnabled="{Binding HasTOnr}"
-                    Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+                    Visibility="Hidden" />
+                <!-- {Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}"-->
                 <TextBox
                     x:Name="TOnrTextbox"
                     Width="120"
@@ -166,7 +169,8 @@
                     IsEnabled="{Binding HasTOnr}"
                     Text="{Binding TOnr}"
                     TextWrapping="Wrap"
-                    Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+                    Visibility="Hidden" />
+                <!-- {Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}"-->
             </Grid>
         </GroupBox>
         <StackPanel VerticalAlignment="Bottom">
@@ -180,7 +184,7 @@
             <StatusBar Margin="0,0,0,0" VerticalAlignment="Bottom">
                 <StatusBarItem />
                 <StatusBarItem>
-                    <TextBlock Text="{Binding Status}" />
+                    <TextBlock Text="{Binding Status}" Width="577" />
                 </StatusBarItem>
             </StatusBar>
         </StackPanel>

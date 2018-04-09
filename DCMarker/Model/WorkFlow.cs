@@ -402,6 +402,19 @@ namespace DCMarker.Model
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Starts polling of an IO service
+        /// Only used in connection of a hardware that don't use Events
+        /// </summary>
+        /// <param name="pollInterval">number of milliseconds between each poll</param>
+        /// <param name="errorTimeout">number of milliseconds untile an error timeout is triggered</param>
+        /// <returns>true if successful, otherwise false</returns>
+
+        public bool StartPoll(int pollInterval, int errorTimeout)
+        {
+            return true;
+        }
+
         #endregion only used by ManualWorkFlow // AME - 2017-05-12
 
         #region Laser Busy Event

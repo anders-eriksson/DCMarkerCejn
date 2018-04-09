@@ -18,6 +18,7 @@ namespace DCHistory
             }
             catch (Exception ex)
             {
+                DCLog.Log.Error(ex, "Error converting value to string!");
             }
             return value;
         }

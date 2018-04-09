@@ -66,6 +66,7 @@ namespace DCHistory.Model
             {
                 // To many rows in select!
                 ErrorMessage = "Out of memory! Please use a filter to make selection smaller!";
+                Log.Error(ex, ErrorMessage);
             }
             catch (Exception ex)
             {
@@ -118,6 +119,7 @@ namespace DCHistory.Model
             {
                 // To many rows in select!
                 ErrorMessage = "Out of memory! Please use a filter to make selection smaller!";
+                Log.Error(ex, ErrorMessage);
             }
             catch (Exception ex)
             {
@@ -173,6 +175,7 @@ namespace DCHistory.Model
             {
                 // To many rows in select!
                 ErrorMessage = "Out of memory! Please use a filter to make selection smaller!";
+                Log.Error(ex, ErrorMessage);
             }
             catch (Exception ex)
             {

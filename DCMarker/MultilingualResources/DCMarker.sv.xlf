@@ -217,6 +217,18 @@
           <source>History Data not Created! Article={0}, Layout={1}</source>
           <target state="translated">Kan inte skapa Historikdata! Article={0}, Layout={1}</target>
         </trans-unit>
+        <trans-unit id="LogfileMenuHeader" translate="yes" xml:space="preserve">
+          <source>Open Logfile Directory</source>
+          <target state="translated">Öppna logfilskatalogen</target>
+        </trans-unit>
+        <trans-unit id="Provbit" translate="yes" xml:space="preserve">
+          <source>Test item</source>
+          <target state="translated">Provbit</target>
+        </trans-unit>
+        <trans-unit id="Error_Creating_MainWindow_Aborting" translate="yes" xml:space="preserve">
+          <source>Error Creating MainWindow. Aborting!</source>
+          <target state="translated">Kan inte starta DCMarker! Mera info i loggfilen. Avbryter!</target>
+        </trans-unit>
       </group>
     </body>
   </file>

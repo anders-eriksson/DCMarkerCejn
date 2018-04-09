@@ -507,8 +507,8 @@ namespace DCAdmin
                     }
                     catch (System.Exception ex)
                     {
+                        DCLog.Log.Fatal(ex, "Error saving to database!");
                         e.Cancel = true;
-                        //ErrorMessage.Text = GetFirstExceptionMessage(ex);
                     }
                 }
             }

@@ -5,14 +5,27 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using GlblRes = global::DCMarker.Properties.Resources;
+using System.Timers;
 
 namespace DCMarker
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     public class NippleMainViewModel : INotifyPropertyChanged
     {
         private IWorkFlow _wf = null;
 
         private DCConfig cfg;
+
+        private System.Timers.Timer _pollTimer;
+
+        // Destructor
+        ~NippleMainViewModel()
+        {
+            if (_pollTimer != null)
+            {
+                _pollTimer.Dispose();
+            }
+        }
 
         public NippleMainViewModel()
         {
@@ -31,6 +44,7 @@ namespace DCMarker
             Status = string.Empty;
             ErrorMessage = string.Empty;
             NeedUserInput = false;
+            IsTestItemSelected = false;
 
             try
             {
@@ -62,28 +76,35 @@ namespace DCMarker
 
         private void InitializeMachine()
         {
-            switch (cfg.TypeOfMachine)
+            try
             {
-                case 1:
-                    _wf = new WorkFlow();
-                    break;
+                switch (cfg.TypeOfMachine)
+                {
+                    case 1:
+                        _wf = new WorkFlow();
+                        break;
 
-                case 2:
-                    // TODO change this to WorkFlowWithTOnr()
-                    _wf = new WorkFlow();
-                    break;
+                    case 2:
+                        // TODO change this to WorkFlowWithTOnr()
+                        _wf = new WorkFlow();
+                        break;
 
-                case 3:
-                    _wf = new ManualWorkFlow();
-                    break;
+                    case 3:
+                        _wf = new ManualWorkFlow();
+                        break;
 
-                case 4:
-                    _wf = new NippleWorkFlow();
-                    break;
+                    case 4:
+                        _wf = new NippleWorkFlow();
+                        break;
 
-                default:
-                    throw new Exception(string.Format(GlblRes.Type_of_machine_not_available_Type0, cfg.TypeOfMachine));
-                    // break;       // Leaving this as a reminder if we change throw to something else... 2017-02-10 AME
+                    default:
+                        throw new Exception(string.Format(GlblRes.Type_of_machine_not_available_Type0, cfg.TypeOfMachine));
+                        // break;       // Leaving this as a reminder if we change throw to something else... 2017-02-10 AME
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
@@ -103,7 +124,26 @@ namespace DCMarker
                 _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;
                 _wf.StatusEvent += _wf_StatusEvent;
                 _wf.ErrorMsgEvent += _wf_ErrorMsgEvent;
+
+                try
+                {
+                    _pollTimer = new System.Timers.Timer();
+                    _pollTimer.Interval = 1000;
+                    _pollTimer.Elapsed += StartPoll;
+                    _pollTimer.Start();
+                }
+                catch (Exception)
+                {
+                    ErrorMessage = "Can't start timer for polling ADAM Module";
+                    throw;
+                }
             }
+        }
+
+        private void StartPoll(object sender, ElapsedEventArgs e)
+        {
+            _pollTimer.Stop();
+            _wf.StartPoll(DCConfig.Instance.AdamPollInterval, DCConfig.Instance.AdamErrorTimeout);
         }
 
         private void _wf_ErrorMsgEvent(object sender, StatusArgs e)
@@ -137,6 +177,7 @@ namespace DCMarker
             HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
             ArticleNumber = e.Data.ArticleNumber;
             Kant = e.Data.Kant;
+            IsTestItemSelected = e.Data.Provbit;
             HasKant = string.IsNullOrWhiteSpace(Kant) ? false : true;
             HasTOnr = e.Data.HasTOnr;
             HasBatchSize = e.Data.HasBatchSize;
@@ -274,6 +315,21 @@ namespace DCMarker
             set
             {
                 _hasTOnr = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool? _IsTestItemSelected;
+
+        public bool? IsTestItemSelected
+        {
+            get
+            {
+                return _IsTestItemSelected;
+            }
+            set
+            {
+                _IsTestItemSelected = value;
                 NotifyPropertyChanged();
             }
         }

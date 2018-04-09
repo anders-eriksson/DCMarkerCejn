@@ -156,4 +156,13 @@
   <data name="HistoryData_Not_Created" xml:space="preserve">
     <value>Kan inte skapa Historikdata! Article={0}, Layout={1}</value>
   </data>
+  <data name="LogfileMenuHeader" xml:space="preserve">
+    <value>Öppna logfilskatalogen</value>
+  </data>
+  <data name="Provbit" xml:space="preserve">
+    <value>Provbit</value>
+  </data>
+  <data name="Error_Creating_MainWindow_Aborting" xml:space="preserve">
+    <value>Kan inte starta DCMarker! Mera info i loggfilen. Avbryter!</value>
+  </data>
 </root>

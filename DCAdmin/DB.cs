@@ -226,6 +226,7 @@ namespace DCAdmin
             {
                 // To many rows in select!
                 ErrorMessage = GlblRes.Out_of_memory_Please_use_a_filter_to_make_selection_smaller;
+                Log.Fatal(ex, GlblRes.Out_of_memory_Please_use_a_filter_to_make_selection_smaller);
             }
             catch (Exception ex)
             {
@@ -280,6 +281,7 @@ namespace DCAdmin
             {
                 // To many rows in select!
                 ErrorMessage = "Out of memory! Please use a filter to make selection smaller!";
+                Log.Error(ex, ErrorMessage);
             }
             catch (Exception ex)
             {

@@ -17,6 +17,8 @@ namespace DCLog
          */
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
+        private static object logLock = new object();
+
         public static void Debug(string message)
         {
             dclog(LogLevel.Debug, message);
@@ -89,13 +91,21 @@ namespace DCLog
             }
             message += stackmsg;
 #endif
-            LogEventInfo logEvent = new LogEventInfo(level, _logger.Name, message);
-            if (ex != null)
-            {
-                logEvent.Exception = ex;
-            }
+#if false
+            return;
+#else
 
-            _logger.Log(typeof(Log), logEvent);
+            lock (logLock)
+            {
+                LogEventInfo logEvent = new LogEventInfo(level, _logger.Name, message);
+                if (ex != null)
+                {
+                    logEvent.Exception = ex;
+                }
+
+                _logger.Log(typeof(Log), logEvent);
+            }
+#endif
         }
     }
 }

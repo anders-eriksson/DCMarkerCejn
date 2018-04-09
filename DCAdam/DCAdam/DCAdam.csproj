@@ -35,25 +35,31 @@
   <ItemGroup>
     <Reference Include="Advantech.Adam, Version=8.2.12.0, Culture=neutral, PublicKeyToken=c24039c75946be9c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\LIBRARY\AdamApax.NET Class Library\Class Library\Win32\Advantech.Adam.DLL</HintPath>
+      <HintPath>..\..\Assembly\Advantech.Adam.DLL</HintPath>
     </Reference>
     <Reference Include="Advantech.Common, Version=8.2.12.0, Culture=neutral, PublicKeyToken=c24039c75946be9c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\LIBRARY\AdamApax.NET Class Library\Class Library\Win32\Advantech.Common.DLL</HintPath>
+      <HintPath>..\..\Assembly\Advantech.Common.DLL</HintPath>
     </Reference>
     <Reference Include="Advantech.Graph, Version=8.2.12.0, Culture=neutral, PublicKeyToken=c24039c75946be9c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\LIBRARY\AdamApax.NET Class Library\Class Library\Win32\Advantech.Graph.dll</HintPath>
+      <HintPath>..\..\Assembly\Advantech.Graph.dll</HintPath>
     </Reference>
     <Reference Include="Advantech.Protocol, Version=8.2.12.0, Culture=neutral, PublicKeyToken=c24039c75946be9c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\LIBRARY\AdamApax.NET Class Library\Class Library\Win32\Advantech.Protocol.DLL</HintPath>
+      <HintPath>..\..\Assembly\Advantech.Protocol.DLL</HintPath>
     </Reference>
-    <Reference Include="DCLog">
-      <HintPath>..\..\..\..\LIBRARY\DCLog\bin\Release\DCLog.dll</HintPath>
+    <Reference Include="AMS.Profile, Version=2.0.5926.19810, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Configuration\bin\Debug\AMS.Profile.dll</HintPath>
     </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\..\..\..\LIBRARY\DCLog\bin\Release\NLog.dll</HintPath>
+    <Reference Include="Configuration, Version=1.0.6643.35548, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Configuration\bin\Debug\Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\LIBRARY\DCLog\bin\Release\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -63,18 +69,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdamMock.cs" />
     <Compile Include="Adam.cs" />
-    <Compile Include="AdamUdp.cs" />
+    <Compile Include="LogTelegrams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Configuration\Configuration.csproj">
-      <Project>{6d98c06d-7a94-4be5-932c-733df4bfa391}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
+    <None Include="Documentation\adam-rada-6000-manual.pdf" />
+    <None Include="Documentation\Advantech AdamApax .NET Class Library Documentation.chm" />
+    <None Include="Documentation\Beskrivning pc - plc kommunikation via ADAM.pdf" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Contracts\Contracts.csproj">
       <Project>{c32736b8-267f-4dca-aaaa-7d781855d141}</Project>
       <Name>Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DCLog\DCLog.csproj">
+      <Project>{f0ad10ca-c138-469e-8a99-cb12b3d364a2}</Project>
+      <Name>DCLog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommunicationService\CommunicationService.csproj">
+      <Project>{14ce5fee-af7b-4262-a99f-3b9c3e723fb7}</Project>
+      <Name>CommunicationService</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

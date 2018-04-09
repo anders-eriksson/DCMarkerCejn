@@ -5,6 +5,7 @@ namespace Contracts
         public string Fixture { get; set; }
         public bool HasFixture { get; set; }
         public string ArticleNumber { get; set; }
+        public bool Provbit { get; set; }
         public bool HasKant { get; set; }
         public string Kant { get; set; }
         public bool HasBatchSize { get; set; }

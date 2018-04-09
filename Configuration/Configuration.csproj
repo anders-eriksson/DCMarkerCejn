@@ -32,10 +32,10 @@
   <ItemGroup>
     <Reference Include="AMS.Profile, Version=2.0.5926.19810, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\_LIBRARY\AMS_Profile\bin\Release\AMS.Profile.dll</HintPath>
+      <HintPath>..\AMS_Profile\bin\Release\AMS.Profile.dll</HintPath>
     </Reference>
-    <Reference Include="DCLog">
-      <HintPath>..\..\..\..\_LIBRARY\DCLog\bin\Release\DCLog.dll</HintPath>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\..\LIBRARY\DCLog\bin\Release\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,6 +54,12 @@
     <None Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DCLog\DCLog.csproj">
+      <Project>{f0ad10ca-c138-469e-8a99-cb12b3d364a2}</Project>
+      <Name>DCLog</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

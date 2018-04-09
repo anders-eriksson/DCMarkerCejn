@@ -8,6 +8,7 @@ namespace Contracts
 {
     public abstract class Command
     {
+        public ICommunicationModule _comm;
         public CommandTypes Type { get; set; }
 
         public abstract void Run();

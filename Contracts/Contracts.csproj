@@ -44,7 +44,9 @@
     <Compile Include="Article.cs" />
     <Compile Include="ArticleArgs.cs" />
     <Compile Include="ArticleData.cs" />
+    <Compile Include="ArticleDataArgs.cs" />
     <Compile Include="Command.cs" />
+    <Compile Include="CommandData.cs" />
     <Compile Include="CommandTypes.cs" />
     <Compile Include="CommunicationStates.cs" />
     <Compile Include="Constants.cs" />
@@ -52,7 +54,7 @@
     <Compile Include="Errors.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="ICommandQueue.cs" />
-    <Compile Include="ICommunication.cs" />
+    <Compile Include="ICommunicationModule.cs" />
     <Compile Include="IoSignals.cs" />
     <Compile Include="IArticleInput.cs" />
     <Compile Include="IAxis.cs" />

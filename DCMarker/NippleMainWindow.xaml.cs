@@ -1,8 +1,10 @@
 using Configuration;
 using DCLog;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
+using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
 {
@@ -15,27 +17,39 @@ namespace DCMarker
 
         public NippleMainWindow()
         {
-            DCConfig cfg = DCConfig.Instance;
-            string language = cfg.GuiLanguage;
-            Log.Debug(string.Format("GUI Language: {0}", language));
-            if (!string.IsNullOrWhiteSpace(language))
+            try
             {
-                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
-                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
-            }
-            InitializeComponent();
+                DCConfig cfg = DCConfig.Instance;
+                string language = cfg.GuiLanguage;
+                Log.Debug(string.Format("GUI Language: {0}", language));
+                if (!string.IsNullOrWhiteSpace(language))
+                {
+                    CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
+                    Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
+                }
+                InitializeComponent();
 
-            if (!DCConfig.Instance.Debug)
+                if (!DCConfig.Instance.Debug)
+                {
+                    TestButton.Visibility = Visibility.Hidden;
+                    ExecuteButton.Visibility = Visibility.Hidden;
+                }
+                Services.Tracker.Configure(this)//the object to track
+                                               .IdentifyAs("MainWindow")                                                                           //a string by which to identify the target object
+                                               .AddProperties<Window>(w => w.Height, w => w.Width, w => w.Top, w => w.Left, w => w.WindowState)     //properties to track
+                                               .RegisterPersistTrigger(nameof(SizeChanged))                                                         //when to persist data to the store
+                                               .Apply();                                                                                            //apply any previously stored data
+            }
+            catch (System.Exception ex)
             {
-                TestButton.Visibility = Visibility.Hidden;
-                ExecuteButton.Visibility = Visibility.Hidden;
+                Log.Fatal(ex, "Error creating NippleMainWindow");
+                MessageBox.Show(GlblRes.Error_Creating_MainWindow_Aborting);
+                this.Close();
             }
-            Services.Tracker.Configure(this)//the object to track
-                                           .IdentifyAs("MainWindow")                                                                           //a string by which to identify the target object
-                                           .AddProperties<Window>(w => w.Height, w => w.Width, w => w.Top, w => w.Left, w => w.WindowState)     //properties to track
-                                           .RegisterPersistTrigger(nameof(SizeChanged))                                                         //when to persist data to the store
-                                           .Apply();                                                                                            //apply any previously stored data
+        }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
             mainViewModel = new NippleMainViewModel();
             DataContext = mainViewModel;
         }
@@ -59,6 +73,11 @@ namespace DCMarker
         private void OnTop_Click(object sender, RoutedEventArgs e)
         {
             Topmost = !Topmost;
+        }
+
+        private void LogFiles_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(@"c:\ProgramData\DCLasersystem\DCMarker\Logs");
         }
 
         private void About_Click(object sender, RoutedEventArgs e)

@@ -35,6 +35,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Configuration, Version=1.0.6641.41168, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Configuration\bin\Debug\Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,10 +51,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DCMarker\Configuration\Configuration.csproj">
-      <Project>{6d98c06d-7a94-4be5-932c-733df4bfa391}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CommunicationService\CommunicationService.csproj">
       <Project>{14ce5fee-af7b-4262-a99f-3b9c3e723fb7}</Project>
       <Name>CommunicationService</Name>

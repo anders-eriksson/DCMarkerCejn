@@ -610,6 +610,18 @@ namespace DCMarker.Model
             return result;
         }
 
+        /// <summary>
+        /// Starts polling of an IO service
+        /// Only used in connection of a hardware that don't use Events
+        /// </summary>
+        /// <param name="pollInterval">number of milliseconds between each poll</param>
+        /// <param name="errorTimeout">number of milliseconds untile an error timeout is triggered</param>
+        /// <returns>true if successful, otherwise false</returns>
+        public bool StartPoll(int pollInterval, int errorTimeout)
+        {
+            return true;
+        }
+
         #endregion Laser Busy Event
     }
 }

@@ -20,6 +20,9 @@ namespace Contracts
 
         #region ADAM Protocol
 
+        public const byte FALSE = 0;
+        public const byte TRUE = 1;
+
         // End of command
         public const byte ETX = 3;
 

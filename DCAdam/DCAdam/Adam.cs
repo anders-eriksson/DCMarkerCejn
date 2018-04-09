@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define TRYLOCK
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,12 +9,20 @@ using Configuration;
 using DCLog;
 using System.Net.Sockets;
 using Contracts;
+using Advantech.Common;
+using System.Threading;
 
 namespace DCAdam
 {
-    public class Adam : ICommunicationModule
+    public partial class Adam : ICommunicationModule
     {
         private string _ipAddress;
+        private byte[] _byConfig;
+        private System.Timers.Timer _timeoutTimer;
+        private LogTelegrams _log;
+        private object lockObj = new object();
+        private volatile bool IsAdamInProcess;
+
         private int _ipPort = 502;
         private AdamSocket adamModbus;
 
@@ -20,12 +30,22 @@ namespace DCAdam
         {
             _ipAddress = DCConfig.Instance.AdamIpAddress;
             _ipPort = DCConfig.Instance.AdamIpPort;
+            _log = new LogTelegrams();
         }
 
         public Adam(string ipAddress, ushort ipPort)
         {
             _ipAddress = ipAddress;
             _ipPort = ipPort;
+            _log = new LogTelegrams();
+        }
+
+        ~Adam()
+        {
+            if (_timeoutTimer != null)
+            {
+                _timeoutTimer.Dispose();
+            }
         }
 
         public bool Connect()
@@ -35,10 +55,13 @@ namespace DCAdam
             {
                 //result = adamModbus.Connect(_ipAddress, ProtocolType.Tcp, _ipPort);
                 result = adamModbus.Connect(AdamType.Adam6000, _ipAddress, ProtocolType.Tcp);
+
+                adamModbus.DigitalInput().GetIOConfig(out _byConfig);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                Log.Fatal(ex, "Can't connect to ADAM Module");
+                result = false; ;
             }
 
             return result;
@@ -51,7 +74,12 @@ namespace DCAdam
             try
             {
                 adamModbus = new AdamSocket();
-                adamModbus.SetTimeout(1000, 1000, 1000);
+                int t = DCConfig.Instance.AdamErrorTimeout;
+                adamModbus.SetTimeout(t, t, t);
+
+                _timeoutTimer = new System.Timers.Timer();
+                _timeoutTimer.Elapsed += _timeoutTimer_Elapsed;
+                _timeoutTimer.Interval = DCConfig.Instance.AdamPollInterval;
             }
             catch (Exception ex)
             {
@@ -60,6 +88,11 @@ namespace DCAdam
             }
 
             return result;
+        }
+
+        private void _timeoutTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         public byte Read(ushort startAddress, ushort totalPoints)
@@ -71,6 +104,8 @@ namespace DCAdam
             {
                 data = ReadCoils(startAddress, totalPoints);
                 result = ConvertBoolArrayToByte(data);
+                Log.Trace(string.Format("From PLC: {0}", result));
+                _log.WriteIn(result.ToString());
             }
             catch (Exception ex)
             {
@@ -90,32 +125,20 @@ namespace DCAdam
             return result;
         }
 
-        public bool Write(ushort startAddress, byte data)
+        public bool Write(ushort startAddress, byte? data)
         {
             bool result = true;
             try
             {
-                bool[] dataArr = ConvertByteToBoolArray(data);
-#if DEBUG
-                if (startAddress == Constants.DIstartAddress)
-                {
-                    bool brc;
-                    brc = adamModbus.DigitalInput().SetInvertMask(dataArr);
-                    //for (int i = 0; i < 8; i++)
-                    //{
-                    //    bool[] a = new bool[1] { dataArr[i] };
-                    //    brc = adamModbus.DigitalInput().SetInvertMask(i, a);
-                    //}
-                }
-                else
-#endif
-                {
-                    WriteCoils(startAddress, dataArr);
-                }
+                _log.WriteOut(data.Value.ToString());
+                bool[] dataArr = ConvertByteToBoolArray(data.Value);
+                Log.Trace(string.Format("Data: {0} - Array: {1}", data, string.Join(",", dataArr)));
+                result = WriteCoils(startAddress, dataArr);
             }
-            catch (Exception)
+            catch (SocketException ex)
             {
-                throw;
+                Log.Error(ex, string.Format("Error writing to ADAM module. Data: {0}", data));
+                result = false;
             }
 
             return result;
@@ -130,8 +153,8 @@ namespace DCAdam
             for (int i = 0; i < 8; i++)
                 result[i] = (b & (1 << i)) == 0 ? false : true;
 
-            // reverse the array
-            Array.Reverse(result);
+            // reverse the array ?
+            // Array.Reverse(result);
 
             return result;
         }
@@ -142,6 +165,7 @@ namespace DCAdam
             // This assumes the array never contains more than 8 elements!
             int index = 8 - source.Length;
 
+            Array.Reverse(source);
             // Loop through the array
             foreach (bool b in source)
             {
@@ -157,28 +181,153 @@ namespace DCAdam
 
         private bool[] ReadCoils(ushort startAddress, ushort numberOfPoints)
         {
-            bool[] result;
+            bool[] result = null;
 
-            bool brc = adamModbus.Modbus().ReadCoilStatus(startAddress, numberOfPoints, out result);
-            if (brc)
+            try
             {
-                return result;
+#if TRYLOCK
+                bool acquiredLock = false;
+                try
+                {
+                    Monitor.TryEnter(lockObj, DCConfig.Instance.AdamErrorTimeout, ref acquiredLock);
+                    if (acquiredLock)
+                    {
+                        CheckConnection();
+                        bool brc = adamModbus.Modbus().ReadCoilStatus(startAddress, numberOfPoints, out result);
+                        if (!brc)
+                        {
+                            result = null;
+                        }
+                    }
+                    else
+                    {
+                        result = null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Can't read from ADAM Module");
+                    result = null;
+                }
+                finally
+                {
+                    if (acquiredLock)
+                        Monitor.Exit(lockObj);
+                }
+#else
+                bool brc = false;
+                DateTime startTime = DateTime.Now;
+                while (IsAdamInProcess && !CheckTimeout(startTime))
+                {
+                    Thread.Sleep(DCConfig.Instance.AdamPollInterval);
+                }
+
+                if (!IsAdamInProcess)
+                {
+                    IsAdamInProcess = true;
+                    CheckConnection();
+                    brc = adamModbus.Modbus().ReadCoilStatus(startAddress, numberOfPoints, out result);
+                    IsAdamInProcess = false;
+                }
+                if (!brc)
+                {
+                    result = null;
+                }
+#endif
             }
-            else
+            catch (SocketException ex)
             {
-                return null;
+                Log.Error(ex, "Error Reading to ADAM Module");
+                if (adamModbus != null)
+                {
+                    ErrorCode ecode = adamModbus.LastError;
+
+                    Log.Error(string.Format("Error Message: {0})", GetErrorMessage(ecode)));
+                }
+
+                IsAdamInProcess = false;
+                result = null;
             }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Unknown Exception");
+                IsAdamInProcess = false;
+                throw;
+            }
+
+            return result;
         }
 
         private uint[] ReadHoldingRegisters(int startAddress, int numberOfPoints)
         {
-            uint[] result;
+            uint[] result = null;
             try
             {
-                bool brc = adamModbus.Modbus().ReadHoldingRegs(startAddress, numberOfPoints, out result);
+#if TRYLOCK
+                bool acquiredLock = false;
+                try
+                {
+                    Monitor.TryEnter(lockObj, DCConfig.Instance.AdamErrorTimeout, ref acquiredLock);
+                    if (acquiredLock)
+                    {
+                        CheckConnection();
+                        bool brc = adamModbus.Modbus().ReadHoldingRegs(startAddress, numberOfPoints, out result);
+                        if (!brc)
+                        {
+                            result = null;
+                        }
+                    }
+                    else
+                    {
+                        result = null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Can't read from ADAM Module");
+                }
+                finally
+                {
+                    if (acquiredLock)
+                        Monitor.Exit(lockObj);
+                }
+#else
+                bool brc = false;
+                DateTime startTime = DateTime.Now;
+                while (IsAdamInProcess && !CheckTimeout(startTime))
+                {
+                    Thread.Sleep(DCConfig.Instance.AdamPollInterval);
+                }
+
+                if (!IsAdamInProcess)
+                {
+                    IsAdamInProcess = true;
+                    CheckConnection();
+                    brc = adamModbus.Modbus().ReadHoldingRegs(startAddress, numberOfPoints, out result);
+                    IsAdamInProcess = false;
+                }
+                if (!brc)
+                {
+                    result = null;
+                }
+#endif
             }
-            catch (Exception)
+            catch (SocketException ex)
             {
+                Log.Error(ex, "Error Reading to ADAM Module");
+                if (adamModbus != null)
+                {
+                    ErrorCode ecode = adamModbus.LastError;
+
+                    Log.Error(string.Format("Error Message: {0})", GetErrorMessage(ecode)));
+                }
+                IsAdamInProcess = false;
+                result = null;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Unknown Exception");
+                IsAdamInProcess = false;
                 throw;
             }
 
@@ -190,10 +339,62 @@ namespace DCAdam
             bool result = false;
             try
             {
-                result = adamModbus.Modbus().ForceSingleCoil(startAddress, value);
+#if TRYLOCK
+                bool acquiredLock = false;
+                try
+                {
+                    Monitor.TryEnter(lockObj, DCConfig.Instance.AdamErrorTimeout, ref acquiredLock);
+                    if (acquiredLock)
+                    {
+                        CheckConnection();
+                        result = adamModbus.Modbus().ForceSingleCoil(startAddress, value);
+                    }
+                    else
+                    {
+                        result = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Can't write to ADAM Module");
+                }
+                finally
+                {
+                    if (acquiredLock)
+                        Monitor.Exit(lockObj);
+                }
+#else
+                DateTime startTime = DateTime.Now;
+                while (IsAdamInProcess && !CheckTimeout(startTime))
+                {
+                    Thread.Sleep(DCConfig.Instance.AdamPollInterval);
+                }
+
+                if (!IsAdamInProcess)
+                {
+                    IsAdamInProcess = true;
+                    CheckConnection();
+                    result = adamModbus.Modbus().ForceSingleCoil(startAddress, value);
+                    IsAdamInProcess = false;
+                }
+#endif
             }
-            catch (Exception)
+            catch (SocketException ex)
             {
+                Log.Error(ex, "Error Writing to ADAM Module");
+                if (adamModbus != null)
+                {
+                    ErrorCode ecode = adamModbus.LastError;
+
+                    Log.Error(string.Format("Error Message: {0})", GetErrorMessage(ecode)));
+                }
+                IsAdamInProcess = false;
+                result = false;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Unknown Exception");
+                IsAdamInProcess = false;
                 throw;
             }
             return result;
@@ -202,14 +403,115 @@ namespace DCAdam
         private bool WriteCoils(ushort startAddress, bool[] values)
         {
             bool result = false;
+            //try
+            //{
+#if TRYLOCK
+            bool acquiredLock = false;
             try
             {
-                result = adamModbus.Modbus().ForceMultiCoils(startAddress, values);
+                Monitor.TryEnter(lockObj, DCConfig.Instance.AdamErrorTimeout, ref acquiredLock);
+                if (acquiredLock)
+                {
+                    CheckConnection();
+                    result = adamModbus.Modbus().ForceMultiCoils(startAddress, values);
+                }
+                else
+                {
+                    result = false;
+                }
             }
-            catch (Exception)
+            catch (SocketException ex)
             {
+                Log.Error(ex, "Error Writing to ADAM Module");
+                if (adamModbus != null)
+                {
+                    ErrorCode ecode = adamModbus.LastError;
+
+                    Log.Error(string.Format("Error Message: {0})", GetErrorMessage(ecode)));
+                }
+
+                IsAdamInProcess = false;
+                result = false;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Unknown Exception");
+                IsAdamInProcess = false;
                 throw;
             }
+            finally
+            {
+                if (acquiredLock)
+                    Monitor.Exit(lockObj);
+            }
+#else
+                DateTime startTime = DateTime.Now;
+                while (IsAdamInProcess && !CheckTimeout(startTime))
+                {
+                    Thread.Sleep(DCConfig.Instance.AdamPollInterval);
+                }
+
+                if (!IsAdamInProcess)
+                {
+                    IsAdamInProcess = true;
+                    CheckConnection();
+                    result = adamModbus.Modbus().ForceMultiCoils(startAddress, values);
+                    IsAdamInProcess = false;
+                }
+#endif
+            //}
+            //catch (SocketException ex)
+            //{
+            //    Log.Error(ex, "Error Writing to ADAM Module");
+            //    if (adamModbus != null)
+            //    {
+            //        ErrorCode ecode = adamModbus.LastError;
+
+            //        Log.Error(string.Format("Error Message: {0})", GetErrorMessage(ecode)));
+            //    }
+
+            //    IsAdamInProcess = false;
+            //    result = false;
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Error(ex, "Unknown Exception");
+            //    IsAdamInProcess = false;
+            //    throw;
+            //}
+            return result;
+        }
+
+        private bool CheckConnection()
+        {
+            bool result = true;
+            if (!adamModbus.Connected)
+            {
+                result = Connect();
+            }
+
+            return result;
+        }
+
+        private bool CheckTimeout(DateTime startTime)
+        {
+            bool result = false;
+
+            TimeSpan ts = DateTime.Now - startTime;
+            if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
+            {
+                result = true;
+            }
+
+            return result;
+        }
+
+        private string GetErrorMessage(ErrorCode ecode)
+        {
+            string result = "Unknown error";
+
+            result = ecode.ToString();
+
             return result;
         }
     }

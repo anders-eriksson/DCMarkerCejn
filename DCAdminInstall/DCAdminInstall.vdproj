@@ -1151,7 +1151,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Contracts, Version=1.0.6381.16887, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Contracts, Version=1.0.6659.36564, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_05CD5C75AB97B711E95EB203F1344754"
@@ -1523,7 +1523,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:DCMarkerEF, Version=1.0.6381.16887, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:DCMarkerEF, Version=1.0.6659.36564, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_28DA2E4CF22A91D4D5A29541861044CF"
@@ -2081,7 +2081,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AMS.Profile, Version=2.0.5926.19810, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AMS.Profile, Version=2.0.6591.20148, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_7E3B9876442D2B9BD71E750D5467D3AB"
@@ -2267,7 +2267,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Configuration, Version=1.0.6381.16887, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Configuration, Version=1.0.6659.36564, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_8B65FDB3F79F7F3E10B983086167780F"
@@ -3362,15 +3362,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:DCAdmin"
-        "ProductCode" = "8:{FA31791F-5B35-4AD1-9902-547796FADD31}"
-        "PackageCode" = "8:{F36EE528-2DB3-4319-9C68-FD919147E90D}"
+        "ProductCode" = "8:{D9230FB0-BF84-4041-BA4B-05337DA07E36}"
+        "PackageCode" = "8:{ADBD78D3-72A7-4DE4-B7F3-11585B61F15E}"
         "UpgradeCode" = "8:{075FFA10-B34C-4AC5-ADB3-A3297DBC12F0}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.1.20"
+        "ProductVersion" = "8:1.4.0"
         "Manufacturer" = "8:DC Lasersystem"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

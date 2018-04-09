@@ -47,7 +47,9 @@ namespace Configuration
             ConfigName = "dcmarker.xml";
             _profile = new Xml(ConfigName);
             ReadConfig();
-            //WriteConfig();
+#if DEBUG
+            WriteConfig();
+#endif
         }
 
         /// <summary>
@@ -98,12 +100,17 @@ namespace Configuration
                 TcpPort = _profile.GetValue("TcpServer", nameof(TcpPort), 50000);
                 BufferLength = _profile.GetValue("TcpServer", nameof(BufferLength), 12 + 7 + 2);
                 ArticleNumberLength = _profile.GetValue("TcpServer", nameof(ArticleNumberLength), 12);
-                ToNumberLength = _profile.GetValue("TcpServer", nameof(ToNumberLength), 7);             // Also used in ManualMainViewModel - CanOkButtonCommandExecute
+                ToNumberLength = _profile.GetValue("TcpServer", nameof(ToNumberLength), 7);
 
                 // ADAM 6052
                 AdamIpAddress = _profile.GetValue("Adam", nameof(AdamIpAddress), "10.0.0.100");
                 AdamIpPort = _profile.GetValue("Adam", nameof(AdamIpPort), 502);
                 AdamInvertSignal = _profile.GetValue("Adam", nameof(AdamInvertSignal), false);
+                AdamErrorTimeout = _profile.GetValue("Adam", nameof(AdamErrorTimeout), 1000);
+                AdamAllowedTimeouts = _profile.GetValue("Adam", nameof(AdamAllowedTimeouts), 20);
+                AdamWaitAfterETX = _profile.GetValue("Adam", nameof(AdamWaitAfterETX), 400);
+                AdamPollInterval = _profile.GetValue("Adam", nameof(AdamPollInterval), 200);
+                AdamLogTelegrams = _profile.GetValue("Adam", nameof(AdamLogTelegrams), false);
                 // GUI
                 ResetInputValues = _profile.GetValue("GUI", nameof(ResetInputValues), true);
                 KeepQuantity = _profile.GetValue("GUI", nameof(KeepQuantity), false);
@@ -152,6 +159,11 @@ namespace Configuration
                 _profile.SetValue("Adam", nameof(AdamIpAddress), AdamIpAddress);
                 _profile.SetValue("Adam", nameof(AdamIpPort), AdamIpPort);
                 _profile.SetValue("Adam", nameof(AdamInvertSignal), AdamInvertSignal);
+                _profile.SetValue("Adam", nameof(AdamErrorTimeout), AdamErrorTimeout);
+                _profile.SetValue("Adam", nameof(AdamAllowedTimeouts), AdamAllowedTimeouts);
+                _profile.SetValue("Adam", nameof(AdamWaitAfterETX), AdamWaitAfterETX);
+                _profile.SetValue("Adam", nameof(AdamPollInterval), AdamPollInterval);
+                _profile.SetValue("Adam", nameof(AdamLogTelegrams), AdamLogTelegrams);
                 // GUI
                 _profile.SetValue("GUI", nameof(ResetInputValues), ResetInputValues);
                 _profile.SetValue("GUI", nameof(KeepQuantity), KeepQuantity);
@@ -204,10 +216,43 @@ namespace Configuration
 
         #region ADAM
 
+        /// <summary>
+        /// ADAM module IP address
+        /// </summary>
         public string AdamIpAddress { get; set; }
+
+        /// <summary>
+        /// ADAM module port
+        /// </summary>
         public int AdamIpPort { get; set; }
 
+        /// <summary>
+        /// Should we invert the signal from the ADAM module
+        /// </summary>
         public bool AdamInvertSignal { get; set; }
+
+        /// <summary>
+        /// Timeout in milliseconds before we treat the action as failed
+        /// </summary>
+        public int AdamErrorTimeout { get; set; }
+
+        /// <summary>
+        /// Number of timouts allowed before stopping communication!
+        /// </summary>
+        public int AdamAllowedTimeouts { get; set; }
+
+        /// <summary>
+        /// Number of milliseconds we wait before we send an STX.
+        /// This so that the PLC have time to read the last ACK
+        /// </summary>
+        public int AdamWaitAfterETX { get; set; }
+
+        /// <summary>
+        /// Interval in milliseconds between polling the ADAM module
+        /// </summary>
+        public int AdamPollInterval { get; set; }
+
+        public bool AdamLogTelegrams { get; set; }
 
         #endregion ADAM
 

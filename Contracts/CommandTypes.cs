@@ -8,6 +8,7 @@ namespace Contracts
 {
     public enum CommandTypes
     {
+        Undefined = -1,
         None = 0,
 
         /* IN */

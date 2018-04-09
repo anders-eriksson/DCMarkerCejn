@@ -196,6 +196,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error Creating MainWindow. Aborting!.
+        /// </summary>
+        public static string Error_Creating_MainWindow_Aborting {
+            get {
+                return ResourceManager.GetString("Error_Creating_MainWindow_Aborting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error initializing machine.
         /// </summary>
         public static string Error_initializing_machine {
@@ -304,6 +313,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open Logfile Directory.
+        /// </summary>
+        public static string LogfileMenuHeader {
+            get {
+                return ResourceManager.GetString("LogfileMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Marking is done!.
         /// </summary>
         public static string Marking_is_done {
@@ -363,6 +381,15 @@ namespace DCMarker.Properties {
         public static string OrderBatch_is_done {
             get {
                 return ResourceManager.GetString("OrderBatch_is_done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test item.
+        /// </summary>
+        public static string Provbit {
+            get {
+                return ResourceManager.GetString("Provbit", resourceCulture);
             }
         }
         
