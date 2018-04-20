@@ -417,6 +417,15 @@ namespace DCMarker.Model
 
         #endregion only used by ManualWorkFlow // AME - 2017-05-12
 
+        #region only used by NippleWorkFlow // AME - 2018-05-12
+
+        public void LoadArticleNumber(string _articleNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion only used by NippleWorkFlow // AME - 2018-05-12
+
         #region Laser Busy Event
 
         // only used by ManualWorkFlow // AME - 2017-05-12

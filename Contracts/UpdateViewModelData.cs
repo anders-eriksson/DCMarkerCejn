@@ -8,6 +8,7 @@ namespace Contracts
         public bool Provbit { get; set; }
         public bool HasKant { get; set; }
         public string Kant { get; set; }
+        public string TotalKant { get; set; }
         public bool HasBatchSize { get; set; }
         public bool HasTOnr { get; set; }
         public bool NeedUserInput { get; set; }

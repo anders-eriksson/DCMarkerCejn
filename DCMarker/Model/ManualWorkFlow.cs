@@ -514,6 +514,15 @@ namespace DCMarker.Model
             return data;
         }
 
+        #region only used by NippleWorkFlow // AME - 2018-05-12
+
+        public void LoadArticleNumber(string _articleNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion only used by NippleWorkFlow // AME - 2018-05-12
+
         #region Error Event
 
         public delegate void ErrorHandler(string msg);

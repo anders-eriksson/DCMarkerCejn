@@ -26,7 +26,7 @@
         </trans-unit>
         <trans-unit id="Kant" translate="yes" xml:space="preserve">
           <source>Edges</source>
-          <target state="translated">Kanter</target>
+          <target state="translated">Kant</target>
         </trans-unit>
         <trans-unit id="OK" translate="yes" xml:space="preserve">
           <source>OK</source>
@@ -228,6 +228,10 @@
         <trans-unit id="Error_Creating_MainWindow_Aborting" translate="yes" xml:space="preserve">
           <source>Error Creating MainWindow. Aborting!</source>
           <target state="translated">Kan inte starta DCMarker! Mera info i loggfilen. Avbryter!</target>
+        </trans-unit>
+        <trans-unit id="TotalKant" translate="yes" xml:space="preserve">
+          <source>of</source>
+          <target state="translated">av</target>
         </trans-unit>
       </group>
     </body>

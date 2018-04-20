@@ -282,4 +282,7 @@
   <data name="Error_Creating_MainWindow_Aborting" xml:space="preserve">
     <value>Error Creating MainWindow. Aborting!</value>
   </data>
+  <data name="TotalKant" xml:space="preserve">
+    <value>of</value>
+  </data>
 </root>

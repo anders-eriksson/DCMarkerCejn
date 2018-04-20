@@ -2,6 +2,7 @@ using Configuration;
 using DCLog;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Threading;
 using System.Windows;
 using GlblRes = global::DCMarker.Properties.Resources;
@@ -19,14 +20,7 @@ namespace DCMarker
         {
             try
             {
-                DCConfig cfg = DCConfig.Instance;
-                string language = cfg.GuiLanguage;
-                Log.Debug(string.Format("GUI Language: {0}", language));
-                if (!string.IsNullOrWhiteSpace(language))
-                {
-                    CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
-                    Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
-                }
+                InitLanguage();
                 InitializeComponent();
 
                 if (!DCConfig.Instance.Debug)
@@ -48,10 +42,21 @@ namespace DCMarker
             }
         }
 
+        private static void InitLanguage()
+        {
+            string language = DCConfig.Instance.GuiLanguage;
+            Log.Debug(string.Format("GUI Language: {0}", language));
+            if (!string.IsNullOrWhiteSpace(language))
+            {
+                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
+            }
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            mainViewModel = new NippleMainViewModel();
-            DataContext = mainViewModel;
+            //mainViewModel = new NippleMainViewModel();
+            //DataContext = mainViewModel;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -77,7 +82,9 @@ namespace DCMarker
 
         private void LogFiles_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(@"c:\ProgramData\DCLasersystem\DCMarker\Logs");
+            string logfile = Log.GetLogFileName("f");
+
+            Process.Start(Path.GetDirectoryName(logfile));
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -94,6 +101,12 @@ namespace DCMarker
         private void ExecuteButton_Click(object sender, RoutedEventArgs e)
         {
             mainViewModel.Execute();
+        }
+
+        private void Window_ContentRendered(object sender, System.EventArgs e)
+        {
+            mainViewModel = new NippleMainViewModel();
+            DataContext = mainViewModel;
         }
     }
 }

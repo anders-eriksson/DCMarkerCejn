@@ -1,0 +1,84 @@
+﻿# ArtNo command
+2
+255
+10
+255
+# article number param 101156474
+49 
+255
+48 
+255
+49 
+255
+49 
+255
+53 
+255
+54 
+255
+52 
+255
+55 
+255
+52 
+255
+3
+255
+# Start/OK command
+2
+255
+12
+255
+# Param
+49
+255
+3
+255
+# answer to SetKant
+2
+255
+20
+255
+49
+255
+3
+255
+# answer to BatchNotReady
+2
+255
+21
+255
+49
+255
+3
+255
+# answer to ReadyToMark
+2
+255
+22
+255
+49
+255
+3
+255
+# start signal
+2
+255
+14
+255
+# param
+49
+255
+3
+255
+# answer to ReadyToMark(False)
+2
+255
+22
+255
+48
+255
+3
+255
+# end of product!
+

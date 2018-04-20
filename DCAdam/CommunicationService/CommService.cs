@@ -25,6 +25,19 @@ namespace CommunicationService
         public bool IsWaitingForAnswer { get; private set; }
         public bool IsReadingCommand { get; private set; }
 
+        private bool isLaserMarking;
+
+        public bool IsLaserMarking
+        {
+            get { return isLaserMarking; }
+            set
+            {
+                isLaserMarking = value;
+                //if (isLaserMarking)
+                //    StartPoll(DCConfig.Instance.AdamPollInterval, DCConfig.Instance.AdamErrorTimeout);
+            }
+        }
+
         public int IsTimedout { get; set; }
 
         public CommService(ICommunicationModule comm)
@@ -82,6 +95,16 @@ namespace CommunicationService
             }
 
             return result;
+        }
+
+        public void StopPoll()
+        {
+            _pollTimer.Stop();
+        }
+
+        public void Simulate(string v)
+        {
+            _comm.LoadCommands(v);
         }
 
         public void Abort()
@@ -295,7 +318,7 @@ namespace CommunicationService
                 {
                     IsTimedout = 0;
                     Monitor.Exit(execLock);
-                    Log.Trace("Monitor.Exit(execLock);");
+                    //Log.Trace("Monitor.Exit(execLock);");
                 }
                 else
                 {
@@ -305,13 +328,17 @@ namespace CommunicationService
 
             if (IsTimedout > DCConfig.Instance.AdamAllowedTimeouts)
             {
-                string msg = string.Format("Communication with PLC has timedout more than {0} times! Check PLC, ADAM module and restart DCMarker!", DCConfig.Instance.AdamAllowedTimeouts);
+                string msg = string.Format("Communication with PLC has timed out more than {0} times! Check PLC, ADAM module and restart DCMarker!", DCConfig.Instance.AdamAllowedTimeouts);
                 Log.Fatal(msg);
                 RaiseErrorEvent(msg);
+                _comm.Write(Constants.DOstartAddress, 0);
                 return;
             }
-            Log.Trace("Start Poll");
-            _pollTimer.Start();
+
+            if (!IsLaserMarking)
+            {
+                _pollTimer.Start();
+            }
         }
 
         private void ExecuteCommand(CommandData _currentCommand)
@@ -347,6 +374,7 @@ namespace CommunicationService
                     if (_currentCommand.Params[0] == 49)
                     {
                         RaiseStartMarkingEvent();
+                        IsLaserMarking = true;
                     }
                     break;
 
@@ -382,14 +410,14 @@ namespace CommunicationService
         {
             bool result = true;
             byte data;
-            Debug.WriteLine("\tGetParam");
+            //Debug.WriteLine("\tGetParam");
             do
             {
                 result = ReadUntilNewData(_oldData, out data);      // _oldData is updated
                 if (data != Constants.ETX)
                 {
                     _currentCommand.Params.Add(data);
-                    Debug.WriteLine(string.Format("GetParam: {0}", data));
+                    //Debug.WriteLine(string.Format("GetParam: {0}", data));
                 }
                 result = AcknowledgeRead(data);       // _oldData is updated
             } while (result && data != Constants.ETX);
@@ -400,19 +428,19 @@ namespace CommunicationService
         private bool ReadUntilNewData(byte oldData, out byte data)
         {
             bool result = true;
-            Debug.WriteLine("\tReadUntilNewData");
+            //Debug.WriteLine("\tReadUntilNewData");
             data = 0;
             DateTime startTime = DateTime.Now;
             bool timeout = false;
-            Debug.WriteLine("\t\tReadUntilNewData oldData: {0}", oldData);
+            //Debug.WriteLine("\t\tReadUntilNewData oldData: {0}", oldData);
 
             do
             {
                 data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
-                Debug.WriteLine("\t\tReadUntilNewData: {0}", data);
+                //Debug.WriteLine("\t\tReadUntilNewData: {0}", data);
 
                 TimeSpan ts = DateTime.Now - startTime;
-                Debug.WriteLine("\t\tReadUntilNewData: TimeSpan: {0}", ts.TotalMilliseconds);
+                //Debug.WriteLine("\t\tReadUntilNewData: TimeSpan: {0}", ts.TotalMilliseconds);
                 if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
                 {
                     timeout = true;
@@ -426,7 +454,7 @@ namespace CommunicationService
             } while (data == oldData && !timeout);
 
             _oldData = data;
-            Debug.WriteLine(string.Format("\tReadUntilNewData Returns: {0}", data));
+            //Debug.WriteLine(string.Format("\tReadUntilNewData Returns: {0}", data));
 
             result = !timeout;
             return result;
@@ -435,7 +463,7 @@ namespace CommunicationService
         private bool GetCommand(out byte data)
         {
             bool result = true;
-            Debug.WriteLine("\tGetCommand");
+            //Debug.WriteLine("\tGetCommand");
             data = 0;
             result = ReadUntilNewData(_oldData, out data);
             if (result)
@@ -449,7 +477,7 @@ namespace CommunicationService
         private bool ParseData(byte data)
         {
             bool result = true;
-            Debug.WriteLine("\tParseData");
+            //Debug.WriteLine("\tParseData");
             Log.Trace(string.Format("ParseData: {0}", data));
             switch (data)
             {
@@ -498,22 +526,22 @@ namespace CommunicationService
             bool result = true;
             DateTime startTime = DateTime.Now;
             bool timeout = false;
-            Log.Trace("\tAcknowledgeRead");
+            //Log.Trace("\tAcknowledgeRead");
             try
             {
                 _comm.Write(Constants.DOstartAddress, data);
                 do
                 {
-                    Debug.WriteLine("\t\tAcknowledgeRead: Start time: {0}", startTime.ToLocalTime());
+                    //Debug.WriteLine("\t\tAcknowledgeRead: Start time: {0}", startTime.ToLocalTime());
                     data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
                     if (data == null)
                     {
                         return false;
                     }
                     DateTime endTime = DateTime.Now;
-                    Debug.WriteLine("\t\tAcknowledgeRead: End time: {0}", endTime.ToLocalTime());
+                    //Debug.WriteLine("\t\tAcknowledgeRead: End time: {0}", endTime.ToLocalTime());
                     TimeSpan ts = endTime - startTime;
-                    Debug.WriteLine("\t\tAcknowledgeRead: TimeSpan: {0}", ts.TotalMilliseconds);
+                    //Debug.WriteLine("\t\tAcknowledgeRead: TimeSpan: {0}", ts.TotalMilliseconds);
                     if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
                     {
                         timeout = true;
@@ -525,7 +553,7 @@ namespace CommunicationService
                         Thread.Sleep(_pollTimer_TimeSpan);
                     }
                 } while (data != Constants.ACK && !timeout);
-                Debug.WriteLine("\t\ttimeout: {0}", timeout);
+                //Debug.WriteLine("\t\ttimeout: {0}", timeout);
                 if (!timeout)
                 {
                     _oldData = data.Value;
@@ -560,7 +588,7 @@ namespace CommunicationService
             do
             {
                 data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
-                //Log.Trace(string.Format("Read Command from PLC: {0}", data));
+                Log.Trace(string.Format("Read Command from PLC: {0} - {1}", data, outData));
 
                 TimeSpan ts = DateTime.Now - startTime;
                 if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
@@ -578,12 +606,12 @@ namespace CommunicationService
             {
                 // Send ACK
                 _comm.Write(Constants.DOstartAddress, Constants.ACK);
-                //Log.Trace("Send ACK");
+                Log.Trace("Send ACK");
                 // Read it back
                 do
                 {
                     data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
-                    //Log.Trace(string.Format("Read ACK from PLC: {0}", data));
+                    Log.Trace(string.Format("Read ACK from PLC: {0}", data));
                     TimeSpan ts = DateTime.Now - startTime;
                     if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
                     {

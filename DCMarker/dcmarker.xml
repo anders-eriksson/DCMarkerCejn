@@ -38,8 +38,8 @@
     <entry name="AdamIpPort">502</entry>
     <entry name="AdamInvertSignal">False</entry>
     <entry name="AdamErrorTimeout">10000</entry>
-    <entry name="AdamWaitAfterETX">400</entry>
-    <entry name="AdamPollInterval">500</entry>
+    <entry name="AdamWaitAfterETX">40</entry>
+    <entry name="AdamPollInterval">50</entry>
     <entry name="AdamLogTelegrams">True</entry>
   </section>
 </profile>

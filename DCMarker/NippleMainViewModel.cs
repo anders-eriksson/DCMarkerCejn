@@ -51,6 +51,7 @@ namespace DCMarker
                 cfg = DCConfig.Instance;
                 InitializeMachine();
                 InitializeWorkflow();
+                //LoadLastArticleNumber();
             }
             catch (Exception ex)
             {
@@ -160,7 +161,26 @@ namespace DCMarker
         {
             if (_wf != null)
             {
+                SaveCurrentArticleNumber();
                 _wf.Close();
+            }
+        }
+
+        private void SaveCurrentArticleNumber()
+        {
+            Properties.Settings.Default.ArticleNumber = ArticleNumber;
+            Properties.Settings.Default.Save();
+        }
+
+        private void LoadLastArticleNumber()
+        {
+            if (_wf != null)
+            {
+                ArticleNumber = Properties.Settings.Default.ArticleNumber;
+                if (!string.IsNullOrWhiteSpace(_articleNumber))
+                {
+                    _wf.LoadArticleNumber(_articleNumber);
+                }
             }
         }
 
@@ -177,6 +197,7 @@ namespace DCMarker
             HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
             ArticleNumber = e.Data.ArticleNumber;
             Kant = e.Data.Kant;
+            TotalKant = e.Data.TotalKant;
             IsTestItemSelected = e.Data.Provbit;
             HasKant = string.IsNullOrWhiteSpace(Kant) ? false : true;
             HasTOnr = e.Data.HasTOnr;
@@ -356,6 +377,21 @@ namespace DCMarker
             set
             {
                 _kant = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _TotalKant;
+
+        public string TotalKant
+        {
+            get
+            {
+                return _TotalKant;
+            }
+            set
+            {
+                _TotalKant = value;
                 NotifyPropertyChanged();
             }
         }

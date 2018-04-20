@@ -12,6 +12,7 @@
     d:DataContext="{d:DesignInstance local:StaticMainViewModel,
                                      IsDesignTimeCreatable=True}"
     Closing="Window_Closing"
+    ContentRendered="Window_ContentRendered"
     Icon="dclasersystem.ico"
     ResizeMode="CanMinimize"
     mc:Ignorable="d">

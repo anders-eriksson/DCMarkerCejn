@@ -4,6 +4,7 @@ using DCLog;
 using laserengineLib;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -53,6 +54,17 @@ namespace LaserWrapper
             NextToLast = false;
 
             InitLaser();
+        }
+
+        private static void InitLanguage()
+        {
+            string language = DCConfig.Instance.GuiLanguage;
+            Log.Debug(string.Format("GUI Language: {0}", language));
+            if (!string.IsNullOrWhiteSpace(language))
+            {
+                CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo(language);
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(language);
+            }
         }
 
         private void UpdateIoMasks()
@@ -272,7 +284,9 @@ namespace LaserWrapper
 
                 _laserSystem = _laser.System;
                 _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
-                //_laserSystem.sigLaserStart += _laserSystem_sigLaserStart;
+#if DEBUG
+                _laserSystem.sigLaserStart += _laserSystem_sigLaserStart;
+#endif
                 _laserSystem.sigLaserEnd += _laserSystem_sigLaserEnd;
                 _laserSystem.sigLaserError += _laserSystem_sigLaserError;
 
@@ -341,6 +355,7 @@ namespace LaserWrapper
         private void _laserSystem_sigQueryStart()
         {
             Log.Trace("Query Start");
+            InitLanguage();
             RaiseQueryStartEvent(GlblRes.Marking);
             ResetPort(0, sig.MASK_READYTOMARK);
             RaiseLaserBusyEvent(true);
@@ -351,17 +366,22 @@ namespace LaserWrapper
             }
         }
 
+#if DEBUG
+
         /// <summary>
         /// Event for Start marking
         /// </summary>
         private void _laserSystem_sigLaserStart()
         {
             Log.Trace("Start of marking");
+            InitLanguage();
             RaiseQueryStartEvent(GlblRes.Marking);
             ResetPort(0, sig.MASK_READYTOMARK);
             RaiseLaserBusyEvent(true);
             _doc.execute(true, true);
         }
+
+#endif
 
         #region Digital IO
 

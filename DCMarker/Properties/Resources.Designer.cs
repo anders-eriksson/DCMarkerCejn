@@ -493,6 +493,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to of.
+        /// </summary>
+        public static string TotalKant {
+            get {
+                return ResourceManager.GetString("TotalKant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type of machine not available! Type={0}.
         /// </summary>
         public static string Type_of_machine_not_available_Type0 {

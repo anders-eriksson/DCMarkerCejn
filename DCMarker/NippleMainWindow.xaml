@@ -15,7 +15,7 @@
     Closing="Window_Closing"
     Icon="dclasersystem.ico"
     ResizeMode="CanMinimize"
-    mc:Ignorable="d">
+    mc:Ignorable="d" ContentRendered="Window_ContentRendered">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
@@ -73,7 +73,7 @@
                     IsEnabled="{Binding HasFixture}"
                     Text="{x:Static p:Resources.Fixture}"
                     TextWrapping="Wrap"
-                    Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
+                    Visibility="{Binding Path=HasFixture,FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
                 <TextBlock
                     x:Name="FixtureTextBlock"
                     Margin="139,10,0,0"
@@ -106,7 +106,7 @@
                     IsEnabled="{Binding HasKant}"
                     Text="{x:Static p:Resources.Kant}"
                     TextWrapping="Wrap"
-                    Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
+                    Visibility="{Binding Path=HasKant,FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
                 <TextBlock
                     x:Name="KantTextBlock"
                     Width="27"
@@ -115,6 +115,25 @@
                     VerticalAlignment="Top"
                     IsEnabled="{Binding HasKant}"
                     Text="{Binding Kant}"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
+                <TextBlock
+                    x:Name="TotalKantLabel"
+                    Margin="361,42,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    IsEnabled="{Binding HasKant}"
+                    Text="{x:Static p:Resources.TotalKant}"
+                    TextWrapping="Wrap"
+                    Visibility="{Binding Path=HasKant,FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
+                <TextBlock
+                    x:Name="TotalKantTextBlock"
+                    Width="27"
+                    Margin="398,42,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    IsEnabled="{Binding HasKant}"
+                    Text="{Binding TotalKant}"
                     TextWrapping="Wrap"
                     Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
                 <TextBlock

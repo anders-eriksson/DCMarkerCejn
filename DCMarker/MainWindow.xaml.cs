@@ -35,9 +35,6 @@ namespace DCMarker
                                            .AddProperties<Window>(w => w.Height, w => w.Width, w => w.Top, w => w.Left, w => w.WindowState)     //properties to track
                                            .RegisterPersistTrigger(nameof(SizeChanged))                                                         //when to persist data to the store
                                            .Apply();                                                                                            //apply any previously stored data
-
-            mainViewModel = new MainViewModel();
-            DataContext = mainViewModel;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -75,6 +72,12 @@ namespace DCMarker
         private void ExecuteButton_Click(object sender, RoutedEventArgs e)
         {
             mainViewModel.Execute();
+        }
+
+        private void Window_ContentRendered(object sender, System.EventArgs e)
+        {
+            mainViewModel = new MainViewModel();
+            DataContext = mainViewModel;
         }
     }
 }

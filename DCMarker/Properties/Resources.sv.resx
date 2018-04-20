@@ -25,7 +25,7 @@
     <value>Fixtur</value>
   </data>
   <data name="Kant" xml:space="preserve">
-    <value>Kanter</value>
+    <value>Kant</value>
   </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
@@ -164,5 +164,8 @@
   </data>
   <data name="Error_Creating_MainWindow_Aborting" xml:space="preserve">
     <value>Kan inte starta DCMarker! Mera info i loggfilen. Avbryter!</value>
+  </data>
+  <data name="TotalKant" xml:space="preserve">
+    <value>av</value>
   </data>
 </root>

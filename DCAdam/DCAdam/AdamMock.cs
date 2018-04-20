@@ -17,16 +17,16 @@ namespace DCAdam
     public partial class AdamMock : ICommunicationModule
     {
         private string _ipAddress;
-        private byte[] _byConfig;
 
         private int _ipPort = 502;
         private AdamSocket adamModbus;
 
-        private StreamReader _inputFile;
-
         private LogTelegrams _log;
 
         private List<byte> SendCommands;
+        private int _nextCommand;
+        private object lockObj = new object();
+        private byte _oldByte;
 
         private volatile bool IsAdamInProcess;
 
@@ -34,26 +34,26 @@ namespace DCAdam
         {
             _ipAddress = DCConfig.Instance.AdamIpAddress;
             _ipPort = DCConfig.Instance.AdamIpPort;
-            InitializeSendCommands();
-
+            InitializeSendCommands("COMMANDS.TXT");
+            _nextCommand = 0;
             _log = new LogTelegrams();
         }
 
-        private void InitializeSendCommands()
+        private void InitializeSendCommands(string commandFile)
         {
             SendCommands = new List<byte>();
-            using (StreamReader sr = new StreamReader("Commands.txt"))
+            using (StreamReader sr = new StreamReader(commandFile))
             {
                 string line = string.Empty;
                 do
                 {
                     line = sr.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(line))
+                    if (!string.IsNullOrWhiteSpace(line) && line.Substring(0, 1) != "#")
                     {
                         byte cmd = Convert.ToByte(line);
                         SendCommands.Add(cmd);
                     }
-                } while (string.IsNullOrWhiteSpace(line));
+                } while (!string.IsNullOrWhiteSpace(line));
             }
         }
 
@@ -61,12 +61,19 @@ namespace DCAdam
         {
             _ipAddress = ipAddress;
             _ipPort = ipPort;
-
+            InitializeSendCommands("COMMANDS.TXT");
+            _nextCommand = 0;
             _log = new LogTelegrams();
         }
 
         ~AdamMock()
         {
+        }
+
+        public void LoadCommands(string commandFile)
+        {
+            InitializeSendCommands(commandFile);
+            _nextCommand = 0;
         }
 
         public bool Connect()
@@ -118,7 +125,7 @@ namespace DCAdam
             try
             {
                 result = ReadCoilsMock(startAddress, totalPoints);
-                _log.WriteIn(result.ToString());
+                _log.WriteIn(_nextCommand.ToString() + "|" + result.ToString());
             }
             catch (Exception ex)
             {
@@ -132,25 +139,18 @@ namespace DCAdam
         private byte ReadCoilsMock(ushort startAddress, ushort totalPoints)
         {
             byte result = 0;
-
-            // trigger timeout
-            //int t = DCConfig.Instance.AdamErrorTimeout + 100;
-            //Debug.WriteLine(string.Format("Wait: {0}", t));
-            //Thread.Sleep(t);
-            //Debug.WriteLine("Wait done");
-
-            string line = _inputFile.ReadLine();
-            while (!string.IsNullOrWhiteSpace(line) && line.Substring(0, 1) == "#")
+            lock (lockObj)
             {
-                line = _inputFile.ReadLine();
+                if (_nextCommand < SendCommands.Count)
+                {
+                    result = SendCommands[_nextCommand++];
+                    _oldByte = result;
+                }
+                else
+                {
+                    result = _oldByte;
+                }
             }
-
-            if (!string.IsNullOrWhiteSpace(line))
-            {
-                Debug.WriteLine(string.Format("\t\tLine: {0}", line));
-                result = Convert.ToByte(line);
-            }
-
             return result;
         }
 
@@ -170,7 +170,7 @@ namespace DCAdam
             {
                 bool[] dataArr = ConvertByteToBoolArray(data.Value);
                 result = WriteCoils(startAddress, dataArr);
-                _log.WriteOut(data.Value.ToString());
+                _log.WriteOut(_nextCommand.ToString() + "|" + data.Value.ToString());
             }
             catch (Exception ex)
             {

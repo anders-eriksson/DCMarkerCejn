@@ -514,5 +514,10 @@ namespace DCAdam
 
             return result;
         }
+
+        public void LoadCommands(string commandFile)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

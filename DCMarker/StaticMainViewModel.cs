@@ -11,7 +11,8 @@ namespace DCMarker
             Fixture = "120, 130, 140";
             HasFixture = true;
             HasKant = true;
-            Kant = "3";
+            Kant = "1";
+            TotalKant = "3";
             HasTestItem = true;
             TestItem = string.Empty;
             HasBatchSize = true;
@@ -164,6 +165,21 @@ namespace DCMarker
             set
             {
                 _kant = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _TotalKant;
+
+        public string TotalKant
+        {
+            get
+            {
+                return _TotalKant;
+            }
+            set
+            {
+                _TotalKant = value;
                 NotifyPropertyChanged();
             }
         }

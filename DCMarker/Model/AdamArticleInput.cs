@@ -12,6 +12,8 @@ namespace DCMarker.Model
         private DCConfig cfg;
         private CommService _server;
         private object lockObject = new object();
+        private bool isLaserMarking;
+        public bool IsLaserMarking { get { return isLaserMarking; } set { isLaserMarking = value; _server.IsLaserMarking = isLaserMarking; } }
 
         public AdamArticleInput()
         {
@@ -69,6 +71,14 @@ namespace DCMarker.Model
         private void _server_StartMarkingEvent(object sender, EventArgs e)
         {
             RaiseStartMarkingEvent();
+        }
+
+        internal void Simulate(string v)
+        {
+            _server.StopPoll();
+            System.Threading.Thread.Sleep(500);
+            _server.Simulate(v);
+            _server.StartPoll(DCConfig.Instance.AdamPollInterval, DCConfig.Instance.AdamErrorTimeout);
         }
 
         private void _server_RestartEvent(object sender, EventArgs e)

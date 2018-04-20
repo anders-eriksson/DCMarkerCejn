@@ -22,7 +22,6 @@ namespace DCMarker.Model
         private Laser _laser;
         private DCConfig cfg;
         private volatile bool HasError = false;
-        private volatile bool IsNewArticle = false;
 
         public bool FirstMarkingResetZ { get; set; }
 
@@ -83,7 +82,8 @@ namespace DCMarker.Model
 
         public void SimulateItemInPlace()
         {
-            UpdateLayout();
+            _articleInput.Simulate("COMMANDS2.TXT");
+            //UpdateLayout();
         }
 
 #if DEBUG
@@ -99,10 +99,8 @@ namespace DCMarker.Model
 
         private void _laser_LaserEndEvent()
         {
-            //_laser.SetPort(0, sig.MASK_MARKINGDONE);
-            //_articleInput.BatchNotReady(false);
-
-            RaiseStatusEvent(GlblRes.Marking_is_done);
+            UpdateLayoutKant();
+            //_articleInput.IsLaserMarking = false;
         }
 
         private void _laser_LaserErrorEvent(string msg)
@@ -224,6 +222,11 @@ namespace DCMarker.Model
             RaiseErrorEvent(string.Empty);
             //_laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
+            GetArticleDbData(e);
+        }
+
+        private void GetArticleDbData(ArticleArgs e)
+        {
             RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
 
             _articles = _db.GetArticle(_articleNumber);
@@ -231,7 +234,6 @@ namespace DCMarker.Model
             if (_articles != null && _articles.Count > 0)
             {
                 UpdateViewModel(_articles, e);
-                IsNewArticle = true;
             }
             else
             {
@@ -246,6 +248,17 @@ namespace DCMarker.Model
                 HasError = true;
                 RaiseErrorEvent(string.Format(GlblRes.Article_not_defined_in_database_0, _articleNumber));
             }
+        }
+
+        public void LoadArticleNumber(string articleNumber)
+        {
+            HasError = false;
+            Log.Trace("ArticleEvent");
+            RaiseErrorEvent(string.Empty);
+            ArticleData data = new ArticleData();
+            data.ArticleNumber = articleNumber;
+            ArticleArgs e = new ArticleArgs(data);
+            GetArticleDbData(e);
         }
 
         private string NormalizeLayoutName(string layoutname)
@@ -269,7 +282,7 @@ namespace DCMarker.Model
         }
 
         /// <summary>
-        /// Loads and updates the Layout when we have gotten an ItemInPlace signal from PLC
+        /// Loads and updates the Layout when we have gotten an Start/OK signal from PLC
         /// </summary>
         private void UpdateLayout()
         {
@@ -283,25 +296,31 @@ namespace DCMarker.Model
 
             if (_articles != null && _articles.Count > 0)
             {
-                Log.Trace(string.Format("currentEdge: {0}", _currentEdge));
-                if (_currentEdge >= _articles.Count())
-                {
-                    if (_hasEdges)
-                    {
-                        //  all edges has been processed
-                        _hasEdges = false;
-                        _currentEdge = 1;
-                    }
-                    _articleInput.BatchNotReady(false);
-                    _articleInput.SetKant(1);
-                    _articleInput.ReadyToMark(true);
-                    return;
-                }
+                //Log.Trace(string.Format("currentEdge: {0}", _currentEdge));
+                //// TODO: check if the conditions is correct. should it really be >=
+                //if (_currentEdge >= _articles.Count())
+                //{
+                //    //if (_hasEdges)
+                //    {
+                //        //  all edges has been processed
+                //        _hasEdges = false;
+                //        _currentEdge = 0;
+                //    }
+                //    _articleInput.SetKant(1);
+                //    _articleInput.BatchNotReady(false);
+                //    _articleInput.ReadyToMark(true);
+                //    return;
+                //}
                 if (_hasEdges)
                 {
                     Log.Trace("HasEdges");
+                    article = _articles[_currentEdge];
+
+                    ArticleData data = new ArticleData();
+                    data.ArticleNumber = article.F1;
+                    ArticleArgs e = new ArticleArgs(data);
+                    UpdateViewModel(_articles, e);
                     _currentEdge++;
-                    article = _articles[_currentEdge - 1];
                 }
                 else
                 {
@@ -311,17 +330,6 @@ namespace DCMarker.Model
                     article = _articles[_currentEdge];
                     _currentEdge++;
                 }
-
-                if (_hasEdges)
-                {
-                    _articleInput.SetKant(Convert.ToByte(_currentEdge));
-                }
-                else
-                {
-                    _articleInput.SetKant(1);
-                }
-                _articleInput.ReadyToMark(true);
-                _articleInput.BatchNotReady(true);
 
                 string layoutname = article.Template;
                 if (!string.IsNullOrEmpty(layoutname))
@@ -350,31 +358,143 @@ namespace DCMarker.Model
                                 {
                                     // we are ready to mark...
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
-                                    //_laser.ResetPort(0, sig.MASK_MARKINGDONE);
-                                    //_laser.SetPort(0, sig.MASK_READYTOMARK);
-                                    //if (_hasEdges)
-                                    //{
-                                    //    _articleInput.SetKant(Convert.ToByte(_currentEdge));
-                                    //}
-                                    //else
-                                    //{
-                                    //    _articleInput.SetKant(1);
-                                    //}
-                                    //if (IsAllEdgesDone)
-                                    //{
-                                    //    _articleInput.BatchNotReady(false);
-                                    //}
-                                    //else
-                                    //{
-                                    //    _articleInput.BatchNotReady(true);
-                                    //}
+                                    if (_hasEdges)
+                                    {
+                                        _articleInput.SetKant(Convert.ToByte(_currentEdge));
+                                    }
+                                    else
+                                    {
+                                        _articleInput.SetKant(1);
+                                    }
+                                    _articleInput.BatchNotReady(true);
 
-                                    //_articleInput.ReadyToMark(true);
-                                    //if (DCConfig.Instance.Debug)
-                                    //{
-                                    //    _laser.SaveDoc();
-                                    //}
+                                    _articleInput.ReadyToMark(true);
+
                                     Log.Trace("UpdateLayout OK");
+                                }
+                                else
+                                {
+                                    RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                    Log.Trace(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                                    //_laser.SetPort(0, sig.MASK_ERROR);
+                                }
+                            }
+                            else
+                            {
+                                RaiseErrorEvent(string.Format(GlblRes.HistoryData_Not_Created, _articleNumber, layoutname));
+                                Log.Trace(string.Format(GlblRes.HistoryData_Not_Created, _articleNumber, layoutname));
+                                //_laser.SetPort(0, sig.MASK_ERROR);
+                            }
+                        }
+                        else
+                        {
+                            RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                            Log.Trace(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
+                            //_laser.SetPort(0, sig.MASK_ERROR);
+                        }
+                    }
+                    else
+                    {
+                        RaiseErrorEvent(string.Format(GlblRes.Error_loading_layout_0, layoutname));
+                        Log.Trace(string.Format(GlblRes.Error_loading_layout_0, layoutname));
+                        //_laser.SetPort(0, sig.MASK_ERROR);
+                        _articleInput.Error((byte)Errors.LayoutNotFound);
+                    }
+                }
+                else
+                {
+                    RaiseErrorEvent(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
+                    Log.Trace(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
+                    //_laser.SetPort(0, sig.MASK_ERROR);
+                    _articleInput.Error((byte)Errors.LayoutNotDefined);
+                }
+            }
+            else
+            {
+                RaiseErrorEvent(GlblRes.ItemInPlace_received_before_Article_Number_is_set);
+                Log.Trace(GlblRes.ItemInPlace_received_before_Article_Number_is_set);
+            }
+        }
+
+        private void UpdateLayoutKant()
+        {
+            Log.Trace("UpdateLayoutKant");
+            Article article = null;
+            if (HasError)
+            {
+                Log.Trace("HasError");
+                return;
+            }
+            if (_hasEdges)
+            {
+                Log.Trace("HasEdges");
+                article = _articles[_currentEdge];
+
+                ArticleData data = new ArticleData();
+                data.ArticleNumber = article.F1;
+                ArticleArgs e = new ArticleArgs(data);
+                UpdateViewModel(_articles, e);
+                _currentEdge++;
+            }
+            else
+            {
+                Log.Trace("No Edges");
+                _currentEdge = 0;
+
+                //article = _articles[_currentEdge];
+                _currentEdge++;
+            }
+
+            if (_articles != null && _articles.Count > 0)
+            {
+                if (_currentEdge > _articles.Count)
+                {
+                    RaiseStatusEvent(GlblRes.Marking_is_done);
+                    _articleInput.BatchNotReady(false);
+                    _currentEdge = 0;
+                    return;
+                }
+
+                string layoutname = article.Template;
+                if (!string.IsNullOrEmpty(layoutname))
+                {
+                    layoutname = NormalizeLayoutName(layoutname);
+                    bool brc = _laser.Load(layoutname);
+                    if (brc)
+                    {
+                        Log.Trace(string.Format("Layout loaded: {0}", layoutname));
+                        HistoryData historyData = GetHistoryData(_articleNumber, article.Kant, _hasEdges);
+                        if (_articles.Count > 1)
+                        {
+                            _hasEdges = true;
+                        }
+
+                        if (historyData != null)
+                        {
+                            List<LaserObjectData> historyObjectData = ConvertToLaserObjectData(historyData);
+                            brc = _laser.Update(historyObjectData);
+                            if (brc)
+                            {
+                                Log.Trace("Layout updated OK");
+                                // update HistoryData table
+                                var status = _db.AddHistoryDataToDB(historyData);
+                                if (status != null)
+                                {
+                                    // we are ready to mark...
+                                    RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
+                                    if (_hasEdges)
+                                    {
+                                        _articleInput.SetKant(Convert.ToByte(_currentEdge));
+                                    }
+                                    else
+                                    {
+                                        _articleInput.SetKant(1);
+                                    }
+
+                                    _articleInput.ReadyToMark(true);
+
+                                    _articleInput.IsLaserMarking = false;
+                                    Log.Trace("UpdateLayoutKant OK");
                                 }
                                 else
                                 {
@@ -427,10 +547,11 @@ namespace DCMarker.Model
             RaiseUpdateMainViewModelEvent(data);
         }
 
-        private static UpdateViewModelData CreateUpdateViewModelData(List<Article> articles, ArticleArgs e)
+        private UpdateViewModelData CreateUpdateViewModelData(List<Article> articles, ArticleArgs e)
         {
             var data = new UpdateViewModelData();
-            Article article = articles[0];
+            Article article = articles[_currentEdge];
+            data.TotalKant = articles.Count.ToString();
             data.Provbit = e.Data.TestItem;
             data.ArticleNumber = string.IsNullOrWhiteSpace(article.F1) ? e.Data.ArticleNumber : article.F1;
             if (string.IsNullOrWhiteSpace(article.Kant))
@@ -441,13 +562,22 @@ namespace DCMarker.Model
             else
             {
                 data.HasKant = true;
-                data.Kant = articles.Count.ToString();
+                //data.Kant = articles.Count.ToString();
+                data.Kant = article.Kant;
             }
             data.Fixture = article.FixtureId;
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
             data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
             data.Template = article.Template;
             return data;
+        }
+
+        public void ResetAllIoSignals()
+        {
+            if (_laser != null)
+            {
+                _laser.SetReady(false);
+            }
         }
 
         #region only used by ManualWorkFlow // AME - 2017-05-12
@@ -532,14 +662,6 @@ namespace DCMarker.Model
         public delegate void StatusHandler(string msg);
 
         public event EventHandler<StatusArgs> StatusEvent;
-
-        public void ResetAllIoSignals()
-        {
-            if (_laser != null)
-            {
-                _laser.SetReady(false);
-            }
-        }
 
         internal void RaiseStatusEvent(string msg)
         {
