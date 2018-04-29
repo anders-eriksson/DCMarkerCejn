@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using DCLog;
 using GlblRes = global::DCMarker.Properties.Resources;
+using System.Threading;
 
 namespace DCMarker.Model
 {
@@ -22,7 +23,9 @@ namespace DCMarker.Model
         private Laser _laser;
         private DCConfig cfg;
         private volatile bool HasError = false;
-
+        private volatile bool ArticleHasToNumber = false;
+        private volatile string TOnumber;
+        private volatile bool IsTOnumberUpdated = false;
         public bool FirstMarkingResetZ { get; set; }
 
         public NippleWorkFlow()
@@ -48,10 +51,10 @@ namespace DCMarker.Model
 
         public void Execute()
         {
-            if (_laser != null)
-            {
-                _laser.Execute();
-            }
+            //if (_laser != null)
+            //{
+            //    _laser.Execute();
+            //}
         }
 
         public List<Article> GetArticle(string articleNumber)
@@ -80,10 +83,24 @@ namespace DCMarker.Model
             return result;
         }
 
-        public void SimulateItemInPlace()
+        private bool x = true;
+
+        public void SimulateItemInPlace(int seq)
         {
-            _articleInput.Simulate("COMMANDS2.TXT");
-            //UpdateLayout();
+            ArticleData data = new ArticleData();
+            if (x)
+                data.ArticleNumber = "101156152";
+            else
+                //data.ArticleNumber = "101156202";
+                data.ArticleNumber = "101151515";
+            x = !x;
+            ArticleArgs article = new ArticleArgs(data);
+
+            _articleInput_ArticleEvent(this, article);
+            ////string commandfile = string.Format("COMMANDS{0}.TXT", seq);
+            //string commandfile = "COMMANDS1.TXT";
+            //_articleInput.Simulate(commandfile);
+            ////UpdateLayout();
         }
 
 #if DEBUG
@@ -100,6 +117,8 @@ namespace DCMarker.Model
         private void _laser_LaserEndEvent()
         {
             UpdateLayoutKant();
+
+            StartPoll();
             //_articleInput.IsLaserMarking = false;
         }
 
@@ -187,6 +206,11 @@ namespace DCMarker.Model
             return _articleInput.StartPoll(pollintervall, errorTimeout);
         }
 
+        public bool StartPoll()
+        {
+            return _articleInput.StartPoll();
+        }
+
         private void _articleInput_ErrorEvent(object sender, ErrorArgs e)
         {
             RaiseErrorEvent(e.Text);
@@ -215,13 +239,16 @@ namespace DCMarker.Model
             UpdateLayout();
         }
 
-        private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
+        // todo change this to private!
+        public void _articleInput_ArticleEvent(object sender, ArticleArgs e)
         {
             HasError = false;
             Log.Trace("ArticleEvent");
             RaiseErrorEvent(string.Empty);
             //_laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
+            e.Data.IsNewArticleNumber = true;
+            ArticleHasToNumber = false;
             GetArticleDbData(e);
         }
 
@@ -296,28 +323,29 @@ namespace DCMarker.Model
 
             if (_articles != null && _articles.Count > 0)
             {
-                //Log.Trace(string.Format("currentEdge: {0}", _currentEdge));
-                //// TODO: check if the conditions is correct. should it really be >=
-                //if (_currentEdge >= _articles.Count())
-                //{
-                //    //if (_hasEdges)
-                //    {
-                //        //  all edges has been processed
-                //        _hasEdges = false;
-                //        _currentEdge = 0;
-                //    }
-                //    _articleInput.SetKant(1);
-                //    _articleInput.BatchNotReady(false);
-                //    _articleInput.ReadyToMark(true);
-                //    return;
-                //}
                 if (_hasEdges)
                 {
                     Log.Trace("HasEdges");
                     article = _articles[_currentEdge];
+                    if (ArticleHasToNumber)
+                    {
+                        if (!IsTOnumberUpdated)
+                        {
+                            RaiseStatusEvent(GlblRes.Waiting_for_TOnumber);
+
+                            WaitForToNumber();
+                            article.TOnumber = TOnumber;
+                            IsTOnumberUpdated = true;
+                        }
+                    }
+                    else
+                    {
+                        article.TOnumber = string.Empty;
+                    }
 
                     ArticleData data = new ArticleData();
-                    data.ArticleNumber = article.F1;
+                    data.ArticleNumber = string.Empty; //article.F1;
+                    data.IsNewArticleNumber = false;
                     ArticleArgs e = new ArticleArgs(data);
                     UpdateViewModel(_articles, e);
                     _currentEdge++;
@@ -328,6 +356,25 @@ namespace DCMarker.Model
                     _currentEdge = 0;
 
                     article = _articles[_currentEdge];
+
+                    if (ArticleHasToNumber)
+                    {
+                        if (!IsTOnumberUpdated)
+                        {
+                            RaiseStatusEvent(GlblRes.Waiting_for_TOnumber);
+
+                            WaitForToNumber();
+                            article.TOnumber = TOnumber;
+                            IsTOnumberUpdated = true;
+                        }
+                    }
+                    else
+                    {
+                        article.TOnumber = string.Empty;
+                    }
+
+                    Log.Trace(string.Format("article.TOnummer: {0}", article.TOnumber));
+
                     _currentEdge++;
                 }
 
@@ -348,7 +395,17 @@ namespace DCMarker.Model
                         if (historyData != null)
                         {
                             List<LaserObjectData> historyObjectData = ConvertToLaserObjectData(historyData);
+                            //if (article.EnableTO.HasValue && article.EnableTO.Value)
+                            //{
+                            LaserObjectData dta = new LaserObjectData();
+                            dta.ID = "TO";
+                            dta.Value = article.TOnumber;
+                            historyObjectData.Add(dta);
+                            //}
                             brc = _laser.Update(historyObjectData);
+#if DEBUG
+                            _laser.SaveDoc();
+#endif
                             if (brc)
                             {
                                 Log.Trace("Layout updated OK");
@@ -416,9 +473,20 @@ namespace DCMarker.Model
             }
         }
 
+        private void WaitForToNumber()
+        {
+            while (string.IsNullOrWhiteSpace(TOnumber))
+            {
+                Thread.Sleep(1);
+            }
+        }
+
         private void UpdateLayoutKant()
         {
-            Log.Trace("UpdateLayoutKant");
+            // The first time we get here we have already marked one!!
+            //      which means that _currentEdge is 1
+
+            Log.Trace(string.Format("UpdateLayoutKant - currentEdge: {0}", _currentEdge));
             Article article = null;
             if (HasError)
             {
@@ -427,37 +495,98 @@ namespace DCMarker.Model
             }
             if (_hasEdges)
             {
-                Log.Trace("HasEdges");
-                article = _articles[_currentEdge];
+                Log.Trace(string.Format("HasEdges - _articles.Count: {0} - currentEdge: {1}", _articles.Count, _currentEdge));
 
-                ArticleData data = new ArticleData();
-                data.ArticleNumber = article.F1;
-                ArticleArgs e = new ArticleArgs(data);
-                UpdateViewModel(_articles, e);
-                _currentEdge++;
+                if (_currentEdge < _articles.Count)
+                {
+                    article = _articles[_currentEdge];
+                    if (ArticleHasToNumber)
+                    {
+                        article.TOnumber = TOnumber;
+                    }
+                    else
+                    {
+                        article.TOnumber = string.Empty;
+                    }
+                    Log.Trace(string.Format("article.TOnummer: {0}", article.TOnumber));
+                    Log.Trace(string.Format("article.kant: {0}", article.Kant));
+                    ArticleData data = new ArticleData();
+                    data.ArticleNumber = string.Empty;  //article.F1;
+                    data.IsNewArticleNumber = false;
+                    ArticleArgs e = new ArticleArgs(data);
+                    UpdateViewModel(_articles, e);
+                    _currentEdge++;
+                }
+                else
+                {
+                    _currentEdge++;
+                }
             }
             else
             {
                 Log.Trace("No Edges");
-                _currentEdge = 0;
+                //_currentEdge = 0;
+                if (_currentEdge < _articles.Count)
+                {
+                    article = _articles[_currentEdge];
+                    if (ArticleHasToNumber)
+                    {
+                        article.TOnumber = TOnumber;
+                    }
+                    else
+                    {
+                        article.TOnumber = string.Empty;
+                    }
 
-                //article = _articles[_currentEdge];
-                _currentEdge++;
+                    //if (ArticleHasToNumber && !IsTOnumberUpdated)
+                    if (ArticleHasToNumber)
+                    {
+                        Log.Trace("ArticleHasToNumber");
+                        article.TOnumber = TOnumber;
+                    }
+                    else
+                    {
+                        Log.Trace("ELSE ");
+                        try
+                        {
+                            article.TOnumber = string.Empty;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error(ex, "updating article.TOnumber");
+                            throw;
+                        }
+                    }
+                    //article = _articles[_currentEdge];
+                    _currentEdge++;
+                }
+                else
+                {
+                    _currentEdge++;
+                }
             }
-
+            Log.Trace("Handled Edges!");
             if (_articles != null && _articles.Count > 0)
             {
+                Log.Trace("_articles != null && _articles.Count > 0");
                 if (_currentEdge > _articles.Count)
                 {
+                    Log.Trace("_currentEdge > _articles.Count");
                     RaiseStatusEvent(GlblRes.Marking_is_done);
                     _articleInput.BatchNotReady(false);
+                    Log.Trace("Marking is done! BatchNotReady==false");
                     _currentEdge = 0;
                     return;
+                }
+                else
+                {
+                    Log.Trace(string.Format("Template: {0} - currentEdge: {1}", article.Template, _currentEdge));
                 }
 
                 string layoutname = article.Template;
                 if (!string.IsNullOrEmpty(layoutname))
                 {
+                    Log.Trace(string.Format("Layout: {0}", layoutname));
                     layoutname = NormalizeLayoutName(layoutname);
                     bool brc = _laser.Load(layoutname);
                     if (brc)
@@ -472,6 +601,12 @@ namespace DCMarker.Model
                         if (historyData != null)
                         {
                             List<LaserObjectData> historyObjectData = ConvertToLaserObjectData(historyData);
+                            // Add TO-number
+                            LaserObjectData dta = new LaserObjectData();
+                            dta.ID = "TO";
+                            dta.Value = article.TOnumber;
+                            historyObjectData.Add(dta);
+
                             brc = _laser.Update(historyObjectData);
                             if (brc)
                             {
@@ -484,7 +619,7 @@ namespace DCMarker.Model
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
                                     if (_hasEdges)
                                     {
-                                        _articleInput.SetKant(Convert.ToByte(_currentEdge));
+                                        _articleInput.SetKant(Convert.ToByte(article.Kant));
                                     }
                                     else
                                     {
@@ -540,6 +675,12 @@ namespace DCMarker.Model
             }
         }
 
+        public void UpdateTOnumber(string tonr)
+        {
+            TOnumber = tonr;
+            IsTOnumberUpdated = false;
+        }
+
         private void UpdateViewModel(List<Article> articles, ArticleArgs e)
         {
             UpdateViewModelData data = CreateUpdateViewModelData(articles, e);
@@ -554,6 +695,7 @@ namespace DCMarker.Model
             data.TotalKant = articles.Count.ToString();
             data.Provbit = e.Data.TestItem;
             data.ArticleNumber = string.IsNullOrWhiteSpace(article.F1) ? e.Data.ArticleNumber : article.F1;
+            data.IsNewArticleNumber = e.Data.IsNewArticleNumber;
             if (string.IsNullOrWhiteSpace(article.Kant))
             {
                 data.HasKant = false;
@@ -567,8 +709,33 @@ namespace DCMarker.Model
             }
             data.Fixture = article.FixtureId;
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
-            data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
+
+            // TO-number should only be entered once when the article is loaded!
+            if (!ArticleHasToNumber)
+            {
+                data.HasTOnr = false;
+
+                foreach (Article a in articles)
+                {
+                    if (a.EnableTO.HasValue)
+                    {
+                        data.HasTOnr = a.EnableTO.Value;
+                    }
+                }
+                if (data.HasTOnr)
+                {
+                    ArticleHasToNumber = true;
+                    RaiseArticleHasToNumberEvent(true);
+                }
+                else
+                {
+                    ArticleHasToNumber = false;
+                    RaiseArticleHasToNumberEvent(false);
+                }
+            }
+
             data.Template = article.Template;
+            data.HasTOnr = ArticleHasToNumber;
             return data;
         }
 
@@ -702,5 +869,23 @@ namespace DCMarker.Model
         }
 
         #endregion Update Error Message Event
+
+        #region Article has TO-number Event
+
+        public delegate void ArticleHasToNumberHandler(bool state);
+
+        public event EventHandler<ArticleHasToNumberArgs> ArticleHasToNumberEvent;
+
+        internal void RaiseArticleHasToNumberEvent(bool state)
+        {
+            var handler = ArticleHasToNumberEvent;
+            if (handler != null)
+            {
+                var arg = new ArticleHasToNumberArgs(state);
+                handler(null, arg);
+            }
+        }
+
+        #endregion Article has TO-number Event
     }
 }

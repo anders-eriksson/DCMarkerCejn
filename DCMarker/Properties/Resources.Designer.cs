@@ -169,6 +169,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t start timer for polling ADAM Module.
+        /// </summary>
+        public static string Cant_start_timer_for_polling_ADAM_Module {
+            get {
+                return ResourceManager.GetString("Cant_start_timer_for_polling_ADAM_Module", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CreateSerialNumber Exception.
         /// </summary>
         public static string CreateSerialNumber_Exception {
@@ -385,6 +394,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Production needs a value.
+        /// </summary>
+        public static string Production_needs_a_value {
+            get {
+                return ResourceManager.GetString("Production_needs_a_value", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Test item.
         /// </summary>
         public static string Provbit {
@@ -475,7 +493,7 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TO.
+        ///   Looks up a localized string similar to Production.
         /// </summary>
         public static string ToNumber {
             get {
@@ -543,6 +561,15 @@ namespace DCMarker.Properties {
         public static string Waiting_for_start_signal_0xlp {
             get {
                 return ResourceManager.GetString("Waiting_for_start_signal_0xlp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting for Production number.
+        /// </summary>
+        public static string Waiting_for_TOnumber {
+            get {
+                return ResourceManager.GetString("Waiting_for_TOnumber", resourceCulture);
             }
         }
         

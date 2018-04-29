@@ -63,6 +63,12 @@ namespace DCMarker.Model
             return brc;
         }
 
+        // TODO: maybe should return bool
+        public bool StartPoll()
+        {
+            return _server.StartPoll();
+        }
+
         private void _server_ErrorEvent(object sender, ErrorArgs e)
         {
             RaiseErrorEvent(e.Text);

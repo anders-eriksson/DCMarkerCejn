@@ -3,6 +3,7 @@ using Contracts;
 using DCMarker.Model;
 using System;
 using System.ComponentModel;
+using System.Windows.Input;
 using System.Runtime.CompilerServices;
 using GlblRes = global::DCMarker.Properties.Resources;
 using System.Timers;
@@ -17,6 +18,7 @@ namespace DCMarker
         private DCConfig cfg;
 
         private System.Timers.Timer _pollTimer;
+        //private bool KeepTOnr;
 
         // Destructor
         ~NippleMainViewModel()
@@ -45,6 +47,7 @@ namespace DCMarker
             ErrorMessage = string.Empty;
             NeedUserInput = false;
             IsTestItemSelected = false;
+            //KeepTOnr = false;
 
             try
             {
@@ -59,20 +62,23 @@ namespace DCMarker
             }
         }
 
+        private int seq = 1;
+
         internal void Test()
         {
             if (_wf != null)
             {
-                _wf.SimulateItemInPlace();
+                _wf.SimulateItemInPlace(seq++);
             }
         }
 
         internal void Execute()
         {
-            if (_wf != null)
-            {
-                _wf.Execute();
-            }
+            seq = 1;
+            //if (_wf != null)
+            //{
+            //    _wf.Execute();
+            //}
         }
 
         private void InitializeMachine()
@@ -125,7 +131,7 @@ namespace DCMarker
                 _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;
                 _wf.StatusEvent += _wf_StatusEvent;
                 _wf.ErrorMsgEvent += _wf_ErrorMsgEvent;
-
+                _wf.ArticleHasToNumberEvent += _wf_ArticleHasToNumberEvent;
                 try
                 {
                     _pollTimer = new System.Timers.Timer();
@@ -135,10 +141,15 @@ namespace DCMarker
                 }
                 catch (Exception)
                 {
-                    ErrorMessage = "Can't start timer for polling ADAM Module";
+                    ErrorMessage = GlblRes.Cant_start_timer_for_polling_ADAM_Module;
                     throw;
                 }
             }
+        }
+
+        private void _wf_ArticleHasToNumberEvent(object sender, ArticleHasToNumberArgs e)
+        {
+            ArticleHasTOnumber = e.State;
         }
 
         private void StartPoll(object sender, ElapsedEventArgs e)
@@ -195,6 +206,7 @@ namespace DCMarker
         {
             Fixture = e.Data.Fixture;
             HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
+            IsNewArticle = e.Data.IsNewArticleNumber;
             ArticleNumber = e.Data.ArticleNumber;
             Kant = e.Data.Kant;
             TotalKant = e.Data.TotalKant;
@@ -216,8 +228,98 @@ namespace DCMarker
             }
             set
             {
-                _articleNumber = value;
+                if (IsNewArticle)
+                {
+                    //if (_articleNumber == value)
+                    //{
+                    //    KeepTOnr = true;
+                    //}
+                    //else
+                    //{
+                    //    KeepTOnr = false;
+                    //    TOnr = string.Empty;
+                    //}
+                    TOnr = string.Empty;
+                    _articleNumber = value;
+                    NotifyPropertyChanged();
+                    ActivateTO();
+                    // TODO: maybe i need to wait a bit before doing this. So that WPF has updated the textbox
+                    System.Threading.Thread.Sleep(100);
+                    RaiseSetFocusToNumberEvent(true);
+                }
+            }
+        }
+
+        private bool _IsTOButtonActive;
+
+        public bool IsTOButtonActive
+        {
+            get
+            {
+                return _IsTOButtonActive;
+            }
+            set
+            {
+                _IsTOButtonActive = value;
                 NotifyPropertyChanged();
+            }
+        }
+
+        private bool _IsTOnumber;
+
+        public bool IsTOnumber
+        {
+            get
+            {
+                return _IsTOnumber;
+            }
+            set
+            {
+                _IsTOnumber = value;
+                if (_IsTOnumber)
+                {
+                    TOnr = string.Empty;
+                }
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool _IsNewArticle;
+
+        public bool IsNewArticle
+        {
+            get
+            {
+                return _IsNewArticle;
+            }
+            set
+            {
+                _IsNewArticle = value;
+
+                NotifyPropertyChanged();
+                //ActivateTO();
+            }
+        }
+
+        private void ActivateTO()
+        {
+            if (IsNewArticle)
+            {
+                if (string.IsNullOrWhiteSpace(TOnr))
+                {
+                    IsTOButtonActive = true;
+                    IsTOnumber = true;
+                }
+                else
+                {
+                    IsTOButtonActive = false;
+                    IsTOnumber = false;
+                }
+            }
+            else
+            {
+                IsTOButtonActive = false;
+                IsTOnumber = false;
             }
         }
 
@@ -323,6 +425,21 @@ namespace DCMarker
             set
             {
                 _hasTestItem = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool _HasTOnumber;
+
+        public bool ArticleHasTOnumber
+        {
+            get
+            {
+                return _HasTOnumber;
+            }
+            set
+            {
+                _HasTOnumber = value;
                 NotifyPropertyChanged();
             }
         }
@@ -460,5 +577,74 @@ namespace DCMarker
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        #region Commands
+
+        private ICommand _UpdateToNumberCommand;
+
+        public ICommand UpdateToNumberCommand
+        {
+            get
+            {
+                if (_UpdateToNumberCommand == null)
+                {
+                    _UpdateToNumberCommand = new RelayCommand(
+                        p => this.CanUpdateToNumberCommandExecute(),
+                        p => this.DoUpdateToNumberCommand());
+                }
+                return _UpdateToNumberCommand;
+            }
+        }
+
+        private void DoUpdateToNumberCommand()
+        {
+            if (string.IsNullOrWhiteSpace(TOnr))
+            {
+                ErrorMessage = GlblRes.Production_needs_a_value;
+                RaiseSetFocusToNumberEvent(true);
+                return;
+            }
+            try
+            {
+                if (_wf != null)
+                {
+                    _wf.UpdateTOnumber(TOnr);
+                }
+                IsNewArticle = false;
+                IsTOnumber = false;
+                IsTOButtonActive = false;
+                ErrorMessage = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                DCLog.Log.Error(ex, ex.Message);
+                ErrorMessage = ex.Message;
+            }
+        }
+
+        private bool CanUpdateToNumberCommandExecute()
+        {
+            return HasTOnr;
+        }
+
+        #endregion Commands
+
+        #region Set Focus to TO-Number Event
+
+        public delegate void SetFocusToNumberHandler(bool mode);
+
+        public event EventHandler<SetFocusToNumberArgs> SetFocusToNumberEvent;
+
+        internal void RaiseSetFocusToNumberEvent(bool mode)
+        {
+            var handler = SetFocusToNumberEvent;
+            if (handler != null)
+            {
+                var arg = new SetFocusToNumberArgs(mode);
+                handler(null, arg);
+            }
+        }
+
+        #endregion Set Focus to TO-Number Event
     }
 }

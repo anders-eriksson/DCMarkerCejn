@@ -101,6 +101,7 @@
       <DependentUpon>ErrorMainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="FocusAdvancement.cs" />
+    <Compile Include="FocusExtension.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ManualMainViewModel.cs" />
     <Compile Include="ManualMainWindow.xaml.cs">
@@ -192,7 +193,7 @@
       <DependentUpon>App.config</DependentUpon>
     </None>
     <None Include="DCMarker.ruleset" />
-    <Content Include="Commands.TXT">
+    <Content Include="Commands1.TXT">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Commands2.TXT">

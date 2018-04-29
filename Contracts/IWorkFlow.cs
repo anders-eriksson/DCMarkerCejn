@@ -18,11 +18,13 @@ namespace DCMarker.Model
 
         event EventHandler<LaserBusyEventArgs> LaserBusyEvent;
 
+        event EventHandler<ArticleHasToNumberArgs> ArticleHasToNumberEvent;
+
         void Close();
 
         bool Initialize();
 
-        void SimulateItemInPlace();
+        void SimulateItemInPlace(int seq);
 
         void Execute();
 
@@ -45,6 +47,8 @@ namespace DCMarker.Model
         bool StartPoll(int pollInterval, int errorTimeout);
 
         void LoadArticleNumber(string _articleNumber);
+
+        void UpdateTOnumber(string onr);
 
 #if DEBUG
 

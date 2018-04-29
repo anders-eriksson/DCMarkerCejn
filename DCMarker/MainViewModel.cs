@@ -48,7 +48,7 @@ namespace DCMarker
         {
             if (_wf != null)
             {
-                _wf.SimulateItemInPlace();
+                _wf.SimulateItemInPlace(1);
             }
         }
 

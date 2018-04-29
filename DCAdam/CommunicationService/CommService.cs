@@ -97,9 +97,25 @@ namespace CommunicationService
             return result;
         }
 
+        public bool StartPoll()
+        {
+            bool result = false;
+
+            if (_pollTimer != null)
+            {
+                IsLaserMarking = false;
+                _pollTimer.Start();
+                result = true;
+            }
+            return result;
+        }
+
         public void StopPoll()
         {
-            _pollTimer.Stop();
+            if (_pollTimer != null)
+            {
+                _pollTimer.Stop();
+            }
         }
 
         public void Simulate(string v)
@@ -214,6 +230,7 @@ namespace CommunicationService
 
             if (IsTimedout > DCConfig.Instance.AdamAllowedTimeouts)
             {
+                Log.Error(string.Format("Communication with PLC has timed out more than {0} times! Check PLC, ADAM module and restart DCMarker!", DCConfig.Instance.AdamAllowedTimeouts));
                 RaiseErrorEvent(string.Format("Communication with PLC has timed out more than {0} times! Check PLC, ADAM module and restart DCMarker!", DCConfig.Instance.AdamAllowedTimeouts));
             }
 
@@ -306,7 +323,7 @@ namespace CommunicationService
                                 Log.Trace("AcknowledgeRead Timedout");
                                 IsTimedout++;
                             }
-                            Thread.Sleep(DCConfig.Instance.AdamWaitAfterETX);
+                            //Thread.Sleep(DCConfig.Instance.AdamWaitBeforeWrite);
                         }
                     }
                 }
@@ -588,7 +605,7 @@ namespace CommunicationService
             do
             {
                 data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
-                Log.Trace(string.Format("Read Command from PLC: {0} - {1}", data, outData));
+                Log.Trace(string.Format("Read Command from PLC: Read: {0} - Waiting for: {1}", data, outData));
 
                 TimeSpan ts = DateTime.Now - startTime;
                 if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)

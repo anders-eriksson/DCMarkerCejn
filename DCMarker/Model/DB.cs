@@ -123,6 +123,7 @@ namespace DCMarker.Model
             {
                 using (var context = new DCLasermarkContext())
                 {
+                    context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
                     var tmp = context.LaserData.First();
                 }
             }

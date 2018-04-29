@@ -47,7 +47,7 @@ namespace Configuration
             ConfigName = "dcmarker.xml";
             _profile = new Xml(ConfigName);
             ReadConfig();
-#if DEBUG
+#if false
             WriteConfig();
 #endif
         }
@@ -108,7 +108,7 @@ namespace Configuration
                 AdamInvertSignal = _profile.GetValue("Adam", nameof(AdamInvertSignal), false);
                 AdamErrorTimeout = _profile.GetValue("Adam", nameof(AdamErrorTimeout), 1000);
                 AdamAllowedTimeouts = _profile.GetValue("Adam", nameof(AdamAllowedTimeouts), 20);
-                AdamWaitAfterETX = _profile.GetValue("Adam", nameof(AdamWaitAfterETX), 400);
+                AdamWaitBeforeWrite = _profile.GetValue("Adam", nameof(AdamWaitBeforeWrite), 400);
                 AdamPollInterval = _profile.GetValue("Adam", nameof(AdamPollInterval), 200);
                 AdamLogTelegrams = _profile.GetValue("Adam", nameof(AdamLogTelegrams), false);
                 // GUI
@@ -161,7 +161,7 @@ namespace Configuration
                 _profile.SetValue("Adam", nameof(AdamInvertSignal), AdamInvertSignal);
                 _profile.SetValue("Adam", nameof(AdamErrorTimeout), AdamErrorTimeout);
                 _profile.SetValue("Adam", nameof(AdamAllowedTimeouts), AdamAllowedTimeouts);
-                _profile.SetValue("Adam", nameof(AdamWaitAfterETX), AdamWaitAfterETX);
+                _profile.SetValue("Adam", nameof(AdamWaitBeforeWrite), AdamWaitBeforeWrite);
                 _profile.SetValue("Adam", nameof(AdamPollInterval), AdamPollInterval);
                 _profile.SetValue("Adam", nameof(AdamLogTelegrams), AdamLogTelegrams);
                 // GUI
@@ -245,7 +245,7 @@ namespace Configuration
         /// Number of milliseconds we wait before we send an STX.
         /// This so that the PLC have time to read the last ACK
         /// </summary>
-        public int AdamWaitAfterETX { get; set; }
+        public int AdamWaitBeforeWrite { get; set; }
 
         /// <summary>
         /// Interval in milliseconds between polling the ADAM module

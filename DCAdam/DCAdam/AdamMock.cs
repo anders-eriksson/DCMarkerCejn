@@ -34,7 +34,7 @@ namespace DCAdam
         {
             _ipAddress = DCConfig.Instance.AdamIpAddress;
             _ipPort = DCConfig.Instance.AdamIpPort;
-            InitializeSendCommands("COMMANDS.TXT");
+            //InitializeSendCommands("COMMANDS.TXT");
             _nextCommand = 0;
             _log = new LogTelegrams();
         }
@@ -61,7 +61,7 @@ namespace DCAdam
         {
             _ipAddress = ipAddress;
             _ipPort = ipPort;
-            InitializeSendCommands("COMMANDS.TXT");
+            //InitializeSendCommands("COMMANDS.TXT");
             _nextCommand = 0;
             _log = new LogTelegrams();
         }
@@ -342,6 +342,9 @@ namespace DCAdam
                 {
                     IsAdamInProcess = true;
                     bool brc = CheckConnection();
+                    //bool[] zero = new bool[] { false, false, false, false, false, false, false, false };
+                    //result = adamModbus.Modbus().ForceMultiCoils(startAddress, zero);
+                    //Thread.Sleep(DCConfig.Instance.AdamWaitBeforeWrite);
                     result = adamModbus.Modbus().ForceMultiCoils(startAddress, values);
                     IsAdamInProcess = false;
                 }

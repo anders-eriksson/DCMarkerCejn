@@ -104,7 +104,7 @@ namespace DCAdam
             {
                 data = ReadCoils(startAddress, totalPoints);
                 result = ConvertBoolArrayToByte(data);
-                Log.Trace(string.Format("From PLC: {0}", result));
+                //Log.Trace(string.Format("From PLC: {0}", result));
                 _log.WriteIn(result.ToString());
             }
             catch (Exception ex)
@@ -413,7 +413,11 @@ namespace DCAdam
                 if (acquiredLock)
                 {
                     CheckConnection();
+                    //bool[] zero = new bool[] { false, false, false, false, false, false, false, false };
+                    //result = adamModbus.Modbus().ForceMultiCoils(startAddress, zero);
+                    //Thread.Sleep(DCConfig.Instance.AdamWaitBeforeWrite);
                     result = adamModbus.Modbus().ForceMultiCoils(startAddress, values);
+                    //result = DCForceMultiCoils(startAddress, values);
                 }
                 else
                 {
@@ -479,6 +483,19 @@ namespace DCAdam
             //    IsAdamInProcess = false;
             //    throw;
             //}
+            return result;
+        }
+
+        private bool DCForceMultiCoils(ushort startAddress, bool[] values)
+        {
+            bool result = true;
+            Array.Reverse(values); ;
+
+            foreach (bool b in values)
+            {
+                WriteCoil(startAddress, b);
+            }
+
             return result;
         }
 

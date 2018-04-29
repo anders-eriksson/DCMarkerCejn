@@ -33,8 +33,7 @@ namespace DCMarker.Model
                 cfg = DCConfig.Instance;
                 if (!File.Exists(cfg.ConfigName))
                 {
-                    // if the config file doesn't exist then we are using default values. Write them to disk.
-                    //cfg.WriteConfig();
+                    RaiseErrorMsgEvent("Config file is not found! dcmarker.xml in program directory");
                 }
                 sig = new IoSignals();
                 UpdateIoMasks();
@@ -87,7 +86,7 @@ namespace DCMarker.Model
             return result;
         }
 
-        public void SimulateItemInPlace()
+        public void SimulateItemInPlace(int seq)
         {
             UpdateLayout();
         }
@@ -423,6 +422,29 @@ namespace DCMarker.Model
         {
             throw new NotImplementedException();
         }
+
+        public void UpdateTOnumber(string onr)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Article has TO-number Event
+
+        public delegate void ArticleHasToNumberHandler(bool state);
+
+        public event EventHandler<ArticleHasToNumberArgs> ArticleHasToNumberEvent;
+
+        internal void RaiseArticleHasToNumberEvent(bool state)
+        {
+            var handler = ArticleHasToNumberEvent;
+            if (handler != null)
+            {
+                var arg = new ArticleHasToNumberArgs(state);
+                handler(null, arg);
+            }
+        }
+
+        #endregion Article has TO-number Event
 
         #endregion only used by NippleWorkFlow // AME - 2018-05-12
 

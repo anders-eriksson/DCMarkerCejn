@@ -92,5 +92,11 @@ namespace DCMarker
                 MessageBox.Show(GlblRes.No_Connection_with_Z_axis, GlblRes.ERROR, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void Window_ContentRendered(object sender, System.EventArgs e)
+        {
+            ArticleTextBox.Focus();
+            ArticleTextBox.SelectAll();
+        }
     }
 }

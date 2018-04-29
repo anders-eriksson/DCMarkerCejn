@@ -168,4 +168,13 @@
   <data name="TotalKant" xml:space="preserve">
     <value>av</value>
   </data>
+  <data name="Waiting_for_TOnumber" xml:space="preserve">
+    <value>Väntar på Production nummer</value>
+  </data>
+  <data name="Production_needs_a_value" xml:space="preserve">
+    <value>Det behövs ett värde för Production</value>
+  </data>
+  <data name="Cant_start_timer_for_polling_ADAM_Module" xml:space="preserve">
+    <value>Kan inte start time för polling av ADAM-Modul</value>
+  </data>
 </root>

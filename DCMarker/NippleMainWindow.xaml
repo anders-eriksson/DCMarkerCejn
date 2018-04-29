@@ -31,12 +31,6 @@
                         Click="Exit_Click"
                         Header="{x:Static p:Resources.ExitMenuHeader}" />
                 </MenuItem>
-                <MenuItem Header="{x:Static p:Resources.ToolsMenuHeader}">
-                    <MenuItem
-                        x:Name="ResetSignals"
-                        Click="ResetSignals_Click"
-                        Header="{x:Static p:Resources.ResetIOMenuHeader}" />
-                </MenuItem>
                 <MenuItem Header="{x:Static p:Resources.WindowMenuHeader}">
                     <MenuItem
                         x:Name="OnTop"
@@ -175,9 +169,8 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Content="{x:Static p:Resources.ToNumber}"
-                    IsEnabled="{Binding HasTOnr}"
-                    Visibility="Hidden" />
-                <!-- {Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}"-->
+                    IsEnabled="{Binding IsTOnumber}"
+                    Visibility="{Binding Path=ArticleHasTOnumber, FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
                 <TextBox
                     x:Name="TOnrTextbox"
                     Width="120"
@@ -185,11 +178,24 @@
                     Margin="139,63,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    IsEnabled="{Binding HasTOnr}"
-                    Text="{Binding TOnr}"
+                    IsEnabled="{Binding IsTOnumber}"
+                    Text="{Binding TOnr,UpdateSourceTrigger=PropertyChanged}"
                     TextWrapping="Wrap"
-                    Visibility="Hidden" />
-                <!-- {Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}"-->
+                    Visibility="{Binding Path=ArticleHasTOnumber, FallbackValue=Hidden, Converter={StaticResource BoolToVis}}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Command="{Binding UpdateToNumberCommand}" Key="Enter" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button
+                    x:Name="OkTOButton"
+                    Width="75"
+                    Margin="181,96,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Command="{Binding UpdateToNumberCommand}"
+                    IsEnabled="{Binding IsTOButtonActive}"
+                    Content="{x:Static p:Resources.OK}"
+                    Visibility="{Binding Path=ArticleHasTOnumber, FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
             </Grid>
         </GroupBox>
         <StackPanel VerticalAlignment="Bottom">

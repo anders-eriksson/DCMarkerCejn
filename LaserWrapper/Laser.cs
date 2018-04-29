@@ -178,17 +178,32 @@ namespace LaserWrapper
             }
         }
 
+        public bool UpdateToNumber(string tonumber)
+        {
+            bool result = false;
+
+            LaserObjectData dta = new LaserObjectData();
+            dta.ID = "T1";
+            dta.Value = tonumber;
+            result = Update(new List<LaserObjectData>() { dta });
+
+            return result;
+        }
+
         public bool Update(List<LaserObjectData> objectList)
         {
             bool result = true;
-            string objIDs = _doc.getObjectIDs();
+            LogObjectList(objectList);
+            string objIDs = GetObjectIDs();
             Log.Trace(string.Format("objIDs: {0}", objIDs));
             string[] objArr = objIDs.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var id in objArr)
             {
+                Log.Trace(string.Format("ID: {0}", id));
                 var updateObject = objectList.Find(o => o.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
                 if (updateObject == null)
                 {
+                    Log.Trace("updateObject is null");
                     // if the id is not found in the database objects list, remove 1 character and try again
                     // Stupid idea of Ola ;-)
                     var tmp = id.Substring(0, id.Length - 1);
@@ -196,6 +211,8 @@ namespace LaserWrapper
                 }
                 if (updateObject != null)
                 {
+                    Log.Trace(string.Format("Object: {0} - Value: {1}", updateObject.ID, updateObject.Value));
+
                     int objType = _doc.getObjectType(id);
                     if (objType == (int)_GraphObjectTypes.CODE_OBJ)
                     {
@@ -223,6 +240,33 @@ namespace LaserWrapper
             }
 
             Log.Trace(string.Format("Laser: Update {0} returns {1}", _layoutName, result));
+            return result;
+        }
+
+        private void LogObjectList(List<LaserObjectData> objectList)
+        {
+            string msg = string.Empty;
+
+            Log.Trace("objectList:");
+            foreach (LaserObjectData o in objectList)
+            {
+                Log.Trace(string.Format("\tID: {0} - Value: {1}", o.ID, o.Value));
+            }
+        }
+
+        private string GetObjectIDs()
+        {
+            string result = string.Empty;
+
+            try
+            {
+                result = _doc.getObjectIDs();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Can't get ObjectIDs");
+                throw;
+            }
             return result;
         }
 

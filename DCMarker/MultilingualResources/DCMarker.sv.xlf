@@ -37,8 +37,8 @@
           <target state="translated">Status</target>
         </trans-unit>
         <trans-unit id="ToNumber" translate="no" xml:space="preserve">
-          <source>TO</source>
-          <target state="final">TO</target>
+          <source>Production</source>
+          <target state="final">Production</target>
           <note from="MultilingualEditor" annotates="source" priority="4">Technical. It's an abbrivation TillverkningOrder </note>
         </trans-unit>
         <trans-unit id="Title" translate="no" xml:space="preserve">
@@ -232,6 +232,18 @@
         <trans-unit id="TotalKant" translate="yes" xml:space="preserve">
           <source>of</source>
           <target state="translated">av</target>
+        </trans-unit>
+        <trans-unit id="Waiting_for_TOnumber" translate="yes" xml:space="preserve">
+          <source>Waiting for Production number</source>
+          <target state="translated">Väntar på Production nummer</target>
+        </trans-unit>
+        <trans-unit id="Production_needs_a_value" translate="yes" xml:space="preserve">
+          <source>Production needs a value</source>
+          <target state="translated">Det behövs ett värde för Production</target>
+        </trans-unit>
+        <trans-unit id="Cant_start_timer_for_polling_ADAM_Module" translate="yes" xml:space="preserve">
+          <source>Can't start timer for polling ADAM Module</source>
+          <target state="translated">Kan inte start time för polling av ADAM-Modul</target>
         </trans-unit>
       </group>
     </body>

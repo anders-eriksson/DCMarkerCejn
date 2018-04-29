@@ -2,6 +2,7 @@ using Configuration;
 using System;
 using System.Windows;
 using DCLog;
+using System.Windows.Threading;
 
 namespace DCMarker
 {
@@ -16,6 +17,7 @@ namespace DCMarker
 
             var currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
 
             DCConfig cfg = DCConfig.Instance;
             switch (cfg.TypeOfMachine)
@@ -47,6 +49,17 @@ namespace DCMarker
             Log.Error(ex, "UnhandledException caught : " + ex.Message);
             Log.Fatal(string.Format("Runtime terminating: {0}", e.IsTerminating));
             MessageBox.Show("Unhandled Exception, see log file for more information! Aborting!", "FATAL ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            // Process unhandled exception
+            var ex = (Exception)e.Exception;
+            Log.Error(ex, "UnhandledException caught : " + ex.Message);
+            MessageBox.Show("Unhandled Exception, see log file for more information! Aborting!", "FATAL ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            // Prevent default unhandled exception processing
+            e.Handled = true;
         }
 
         //protected override void OnStartup(StartupEventArgs e)

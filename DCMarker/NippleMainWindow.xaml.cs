@@ -1,5 +1,6 @@
 using Configuration;
 using DCLog;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -20,6 +21,7 @@ namespace DCMarker
         {
             try
             {
+                Log.Info(string.Format("DCMarker Cejn - Version: {0}", GetApplicationVersion()));
                 InitLanguage();
                 InitializeComponent();
 
@@ -40,6 +42,17 @@ namespace DCMarker
                 MessageBox.Show(GlblRes.Error_Creating_MainWindow_Aborting);
                 this.Close();
             }
+        }
+
+        private string GetApplicationVersion()
+        {
+            string result = string.Empty;
+
+            System.Reflection.Assembly executingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var fieVersionInfo = FileVersionInfo.GetVersionInfo(executingAssembly.Location);
+            result = fieVersionInfo.FileVersion;
+
+            return result;
         }
 
         private static void InitLanguage()
@@ -106,7 +119,20 @@ namespace DCMarker
         private void Window_ContentRendered(object sender, System.EventArgs e)
         {
             mainViewModel = new NippleMainViewModel();
+            mainViewModel.SetFocusToNumberEvent += MainViewModel_SetFocusToNumberEvent;
             DataContext = mainViewModel;
+        }
+
+        private void MainViewModel_SetFocusToNumberEvent(object sender, Contracts.SetFocusToNumberArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(delegate
+            {
+                TOnrTextbox.Focusable = true;
+                //TOnrTextbox.IsEnabled = true;
+                //TOnrTextbox.Visibility = Visibility.Visible;
+
+                System.Windows.Input.Keyboard.Focus(TOnrTextbox);
+            }));
         }
     }
 }
