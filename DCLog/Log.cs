@@ -127,15 +127,15 @@ namespace DCLog
         /// <param name="ex">Exception</param>
         private static void dclog(LogLevel level, string message, Exception ex = null)
         {
-#if TESTx
+#if DEBUGx
             string stackmsg = "|";
 
-            StackTrace st = new StackTrace(true);
+            System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(true);
             for (int i = 0; i < st.FrameCount; i++)
             {
                 // Note that high up the call stack, there is only
                 // one stack frame.
-                StackFrame sf = st.GetFrame(i);
+                System.Diagnostics.StackFrame sf = st.GetFrame(i);
                 string tmp = string.Format("{0} - {1} | ", sf.GetMethod(), sf.GetFileLineNumber());
                 stackmsg += tmp;
             }

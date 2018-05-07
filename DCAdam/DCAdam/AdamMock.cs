@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define TEST
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,6 +36,7 @@ namespace DCAdam
         {
             _ipAddress = DCConfig.Instance.AdamIpAddress;
             _ipPort = DCConfig.Instance.AdamIpPort;
+            SendCommands = new List<byte>();
             //InitializeSendCommands("COMMANDS.TXT");
             _nextCommand = 0;
             _log = new LogTelegrams();
@@ -78,6 +81,9 @@ namespace DCAdam
 
         public bool Connect()
         {
+#if TEST
+            return true;
+#else
             bool result = false;
             try
             {
@@ -86,10 +92,12 @@ namespace DCAdam
             }
             catch (Exception)
             {
+                result = false;
                 throw;
             }
 
             return result;
+#endif
         }
 
         public bool Initialize()
@@ -110,6 +118,169 @@ namespace DCAdam
             }
 
             return result;
+        }
+
+        public void ReadCommand(byte command, string artno)
+        {
+            if (command == (byte)CommandTypes.ArtNo)
+            {
+                SendCommands = new List<byte>();
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(command);
+                SendCommands.Add(Constants.ACK);
+
+                // params == Artno
+                Encoding cp850 = Encoding.GetEncoding(850);
+                byte[] arr = cp850.GetBytes(artno);
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    SendCommands.Add(arr[i]);
+                    SendCommands.Add(Constants.ACK);
+                }
+
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                _nextCommand = 0;
+            }
+        }
+
+        public void ReadCommand(byte command, byte edge, int totalEdges)
+        {
+            if (command == (byte)CommandTypes.OK)
+            {
+                SendCommands = new List<byte>();
+                _nextCommand = 0;
+
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(command);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // reply on PC SetKant
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.SetKantCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // reply on PC BatchNotReady
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.BatchNotReadyCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // reply on PC ReadyToMark
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ReadyToMarkCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+            }
+            else if (command == (byte)CommandTypes.StartMarking)
+            {
+                SendCommands = new List<byte>();
+                _nextCommand = 0;
+
+                // Start marking command
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(command);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // reply on PC ReadyToMark 0
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ReadyToMarkCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(48);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // Marking is executed
+
+                // reply on PC SetKant
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.SetKantCode);
+                SendCommands.Add(Constants.ACK);
+                edge = (byte)(edge + (byte)48 + 1);
+                SendCommands.Add(edge);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // reply on PC ReadyToMark
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ReadyToMarkCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+            }
+            else if (command == (byte)CommandTypes.StartMarking2)
+            {
+                SendCommands = new List<byte>();
+                _nextCommand = 0;
+
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add((byte)CommandTypes.StartMarking);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // reply on PC ReadyToMark 0
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ReadyToMarkCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(48);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // reply on PC BatchNotReady
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.BatchNotReadyCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(48);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+            }
+            else
+            {
+                Log.Error(string.Format("An Unvalid command! {0}", command));
+                SendCommands = new List<byte>();
+                _nextCommand = 0;
+            }
+            Log.Trace(string.Format("{0} - SendCommands: {1}", command, string.Join("|", SendCommands)));
         }
 
         /// <summary>
@@ -143,11 +314,31 @@ namespace DCAdam
             {
                 if (_nextCommand < SendCommands.Count)
                 {
+#if DEBUG
+                    string stackmsg = "|";
+                    string message = string.Empty;
+                    System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(true);
+                    for (int i = 0; i < st.FrameCount; i++)
+                    {
+                        // Note that high up the call stack, there is only
+                        // one stack frame.
+                        System.Diagnostics.StackFrame sf = st.GetFrame(i);
+                        string tmp = string.Format("{0} - {1} | ", sf.GetMethod(), sf.GetFileLineNumber());
+                        stackmsg += tmp;
+                    }
+                    message += stackmsg;
+                    Log.Trace(string.Format("Stack Trace {0}", message));
+                    if (_nextCommand == 16)
+                        message = "hello";
+#endif
+                    Log.Trace(string.Format("NextCommand: {0}", _nextCommand));
                     result = SendCommands[_nextCommand++];
+                    Log.Trace(string.Format("From PLC: {0}", result));
                     _oldByte = result;
                 }
                 else
                 {
+                    SendCommands.Clear();
                     result = _oldByte;
                 }
             }
@@ -166,6 +357,7 @@ namespace DCAdam
         public bool Write(ushort startAddress, byte? data)
         {
             bool result = true;
+#if !TEST
             try
             {
                 bool[] dataArr = ConvertByteToBoolArray(data.Value);
@@ -177,7 +369,7 @@ namespace DCAdam
                 Log.Error(ex, "Unknown Exception");
                 throw;
             }
-
+#endif
             return result;
         }
 
@@ -218,7 +410,6 @@ namespace DCAdam
         private bool[] ReadCoils(ushort startAddress, ushort numberOfPoints)
         {
             bool[] result = null;
-
             try
             {
                 bool brc = false;
@@ -341,11 +532,11 @@ namespace DCAdam
                 if (!IsAdamInProcess)
                 {
                     IsAdamInProcess = true;
+
                     bool brc = CheckConnection();
-                    //bool[] zero = new bool[] { false, false, false, false, false, false, false, false };
-                    //result = adamModbus.Modbus().ForceMultiCoils(startAddress, zero);
-                    //Thread.Sleep(DCConfig.Instance.AdamWaitBeforeWrite);
+
                     result = adamModbus.Modbus().ForceMultiCoils(startAddress, values);
+
                     IsAdamInProcess = false;
                 }
             }

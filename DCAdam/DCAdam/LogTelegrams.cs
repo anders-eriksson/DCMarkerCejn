@@ -84,15 +84,11 @@ namespace DCAdam
                 {
                     lock (LockLog)
                     {
-                        if (!string.IsNullOrWhiteSpace(message) && (message != "0"))
+                        if (!string.IsNullOrWhiteSpace(message) && (message.IndexOf("|0") == -1))
                         {
                             lastDirection = direction;
                             lastMessage = message;
-                            //using (StreamWriter w = new StreamWriter(_filename, true))
-                            //{
-                            //    _sw.WriteLine(string.Format("{0};{1};{2}", DateTime.Now.ToString("HH:mm:ss.fff"), direction ? "IN " : "OUT ", message));
-                            //}
-                            Debug.WriteLine(string.Format("{0}|{1}", direction ? "IN " : "OUT ", message));
+
                             _adamlogger.Info(string.Format("{0}|{1}", direction ? "IN " : "OUT ", message));
                         }
                     }

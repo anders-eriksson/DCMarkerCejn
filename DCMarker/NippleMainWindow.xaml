@@ -11,11 +11,12 @@
     Height="308"
     d:DataContext="{d:DesignInstance local:StaticMainViewModel,
                                      IsDesignTimeCreatable=True}"
-    Loaded="Window_Loaded"
     Closing="Window_Closing"
+    ContentRendered="Window_ContentRendered"
     Icon="dclasersystem.ico"
+    Loaded="Window_Loaded"
     ResizeMode="CanMinimize"
-    mc:Ignorable="d" ContentRendered="Window_ContentRendered">
+    mc:Ignorable="d">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
@@ -67,7 +68,7 @@
                     IsEnabled="{Binding HasFixture}"
                     Text="{x:Static p:Resources.Fixture}"
                     TextWrapping="Wrap"
-                    Visibility="{Binding Path=HasFixture,FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
+                    Visibility="{Binding Path=HasFixture, FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
                 <TextBlock
                     x:Name="FixtureTextBlock"
                     Margin="139,10,0,0"
@@ -100,7 +101,7 @@
                     IsEnabled="{Binding HasKant}"
                     Text="{x:Static p:Resources.Kant}"
                     TextWrapping="Wrap"
-                    Visibility="{Binding Path=HasKant,FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
+                    Visibility="{Binding Path=HasKant, FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
                 <TextBlock
                     x:Name="KantTextBlock"
                     Width="27"
@@ -119,7 +120,7 @@
                     IsEnabled="{Binding HasKant}"
                     Text="{x:Static p:Resources.TotalKant}"
                     TextWrapping="Wrap"
-                    Visibility="{Binding Path=HasKant,FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
+                    Visibility="{Binding Path=HasKant, FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
                 <TextBlock
                     x:Name="TotalKantTextBlock"
                     Width="27"
@@ -136,33 +137,58 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Text="{x:Static p:Resources.Provbit}"
-                    Visibility="Hidden"
-                    TextWrapping="Wrap" />
+                    TextWrapping="Wrap"
+                    Visibility="Hidden" />
                 <CheckBox
                     x:Name="ProvbitCheckbox"
                     Margin="139,63,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    IsChecked="{Binding IsTestItemSelected,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"
+                    IsChecked="{Binding IsTestItemSelected, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                     IsEnabled="False"
                     Visibility="Hidden" />
 
-                <Button
-                    x:Name="TestButton"
-                    Width="75"
-                    Margin="469,96,0,0"
+                <TextBox
+                    x:Name="ArtNoTextbox"
+                    Width="120"
+                    Height="23"
+                    Margin="432,0,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    Click="TestButton_Click"
-                    Content="Load" />
+                    Text="{Binding ArticleNumber, Mode=TwoWay}"
+                    TextWrapping="Wrap" />
+                <Button
+                    x:Name="ArtNoButton"
+                    Width="75"
+                    Margin="471,28,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Click="ArtNoButton_Click"
+                    Content="ArtNo" />
+                <Button
+                    x:Name="StartOkButton"
+                    Width="75"
+                    Margin="471,55,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Click="StartOkButton_Click"
+                    Content="StartOk" />
                 <Button
                     x:Name="ExecuteButton"
                     Width="75"
-                    Margin="469,121,0,0"
+                    Margin="471,80,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Click="ExecuteButton_Click"
                     Content="Execute" />
+                <Button
+                    x:Name="Execute2Button"
+                    Width="75"
+                    Margin="471,102,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Click="Execute2Button_Click"
+                    Content="EndExecute" />
                 <Label
                     x:Name="TOnrLabel"
                     Margin="37,63,0,0"
@@ -179,11 +205,11 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     IsEnabled="{Binding IsTOnumber}"
-                    Text="{Binding TOnr,UpdateSourceTrigger=PropertyChanged}"
+                    Text="{Binding TOnr, UpdateSourceTrigger=PropertyChanged}"
                     TextWrapping="Wrap"
                     Visibility="{Binding Path=ArticleHasTOnumber, FallbackValue=Hidden, Converter={StaticResource BoolToVis}}">
                     <TextBox.InputBindings>
-                        <KeyBinding Command="{Binding UpdateToNumberCommand}" Key="Enter" />
+                        <KeyBinding Key="Enter" Command="{Binding UpdateToNumberCommand}" />
                     </TextBox.InputBindings>
                 </TextBox>
                 <Button
@@ -193,8 +219,8 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Command="{Binding UpdateToNumberCommand}"
-                    IsEnabled="{Binding IsTOButtonActive}"
                     Content="{x:Static p:Resources.OK}"
+                    IsEnabled="{Binding IsTOButtonActive}"
                     Visibility="{Binding Path=ArticleHasTOnumber, FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
             </Grid>
         </GroupBox>
@@ -209,7 +235,7 @@
             <StatusBar Margin="0,0,0,0" VerticalAlignment="Bottom">
                 <StatusBarItem />
                 <StatusBarItem>
-                    <TextBlock Text="{Binding Status}" Width="577" />
+                    <TextBlock Width="577" Text="{Binding Status}" />
                 </StatusBarItem>
             </StatusBar>
         </StackPanel>

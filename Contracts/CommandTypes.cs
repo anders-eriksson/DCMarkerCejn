@@ -25,5 +25,6 @@ namespace Contracts
         BatchNotReady = 31,
         ReadyToMark = 22,
         Error = 29,
+        StartMarking2 = 32,
     }
 }

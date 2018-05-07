@@ -78,11 +78,19 @@ namespace DCMarker
             mainViewModel.Test();
         }
 
+#if DEBUG
         private void ExecuteButton_Click(object sender, RoutedEventArgs e)
         {
             Log.Trace("ExecuteButton_Click");
             mainViewModel.Execute();
         }
+#else
+
+        private void ExecuteButton_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+#endif
 
         private void ResetZaxis_Click(object sender, RoutedEventArgs e)
         {

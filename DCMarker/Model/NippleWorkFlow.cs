@@ -18,6 +18,7 @@ namespace DCMarker.Model
         private string _articleNumber;
         private List<Article> _articles;
         private int _currentEdge;
+        private int _totalEdges;
         private DB _db;
         private bool _hasEdges;
         private Laser _laser;
@@ -26,6 +27,8 @@ namespace DCMarker.Model
         private volatile bool ArticleHasToNumber = false;
         private volatile string TOnumber;
         private volatile bool IsTOnumberUpdated = false;
+        private volatile bool IsLoadOnStartup = false;
+        private volatile bool IsTOnumberApproved = false;
         public bool FirstMarkingResetZ { get; set; }
 
         public NippleWorkFlow()
@@ -49,13 +52,37 @@ namespace DCMarker.Model
             _articleInput.Close();
         }
 
+#if DEBUG
+
+        public void ArtNo(string artno)
+        {
+            //ArticleData data = new ArticleData();
+            //data.ArticleNumber = artno;
+            //ArticleArgs e = new ArticleArgs(data);
+            //_articleInput_ArticleEvent(this, e);
+
+            _articleInput.ReadCommand((byte)CommandTypes.ArtNo, artno);
+        }
+
+        public void StartOk()
+        {
+            _articleInput.ReadCommand((byte)CommandTypes.OK, _currentEdge, _totalEdges);
+        }
+
+        private int edge = 1;
+
         public void Execute()
         {
-            //if (_laser != null)
-            //{
-            //    _laser.Execute();
-            //}
+            _articleInput.ReadCommand((byte)CommandTypes.StartMarking, edge++, _totalEdges);
         }
+
+        public void Execute2()
+        {
+            _articleInput.ReadCommand((byte)CommandTypes.StartMarking2, _totalEdges, _totalEdges);
+            edge = 1;
+        }
+
+#endif
 
         public List<Article> GetArticle(string articleNumber)
         {
@@ -239,10 +266,11 @@ namespace DCMarker.Model
             UpdateLayout();
         }
 
-        // todo change this to private!
         public void _articleInput_ArticleEvent(object sender, ArticleArgs e)
         {
             HasError = false;
+            IsLoadOnStartup = false;
+            IsTOnumberApproved = false;
             Log.Trace("ArticleEvent");
             RaiseErrorEvent(string.Empty);
             //_laser.ResetPort(0, sig.MASK_READYTOMARK);
@@ -254,12 +282,13 @@ namespace DCMarker.Model
 
         private void GetArticleDbData(ArticleArgs e)
         {
-            RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
+            RaiseStatusEvent(string.Format(GlblRes.Article_0_received, e.Data.ArticleNumber));
 
-            _articles = _db.GetArticle(_articleNumber);
+            _articles = _db.GetArticle(e.Data.ArticleNumber);
 
             if (_articles != null && _articles.Count > 0)
             {
+                _totalEdges = _articles.Count;
                 UpdateViewModel(_articles, e);
             }
             else
@@ -268,24 +297,34 @@ namespace DCMarker.Model
                 List<Article> emptyList = new List<Article>();
                 emptyList.Add(empty);
                 UpdateViewModel(emptyList, e);
-                //_laser.SetPort(0, sig.MASK_ERROR);
                 _articleInput.Error((byte)Errors.ArticleNotFound);
-                // Can't find article in database.
 
                 HasError = true;
-                RaiseErrorEvent(string.Format(GlblRes.Article_not_defined_in_database_0, _articleNumber));
+                RaiseErrorEvent(string.Format(GlblRes.Article_not_defined_in_database_0, e.Data.ArticleNumber));
             }
         }
 
         public void LoadArticleNumber(string articleNumber)
         {
             HasError = false;
+            IsLoadOnStartup = true;
+            IsTOnumberApproved = false;
             Log.Trace("ArticleEvent");
             RaiseErrorEvent(string.Empty);
+            _articleNumber = articleNumber;
             ArticleData data = new ArticleData();
+            data.IsNewArticleNumber = true;
             data.ArticleNumber = articleNumber;
             ArticleArgs e = new ArticleArgs(data);
             GetArticleDbData(e);
+        }
+
+        public void LoadUpdateLayout()
+        {
+            if (!HasError)
+            {
+                UpdateLayout();
+            }
         }
 
         private string NormalizeLayoutName(string layoutname)
@@ -311,7 +350,7 @@ namespace DCMarker.Model
         /// <summary>
         /// Loads and updates the Layout when we have gotten an Start/OK signal from PLC
         /// </summary>
-        private void UpdateLayout()
+        public void UpdateLayout()
         {
             Log.Trace("UpdateLayout");
             Article article = null;
@@ -327,6 +366,7 @@ namespace DCMarker.Model
                 {
                     Log.Trace("HasEdges");
                     article = _articles[_currentEdge];
+
                     if (ArticleHasToNumber)
                     {
                         if (!IsTOnumberUpdated)
@@ -342,9 +382,8 @@ namespace DCMarker.Model
                     {
                         article.TOnumber = string.Empty;
                     }
-
                     ArticleData data = new ArticleData();
-                    data.ArticleNumber = string.Empty; //article.F1;
+                    data.ArticleNumber = article.F1;
                     data.IsNewArticleNumber = false;
                     ArticleArgs e = new ArticleArgs(data);
                     UpdateViewModel(_articles, e);
@@ -356,7 +395,6 @@ namespace DCMarker.Model
                     _currentEdge = 0;
 
                     article = _articles[_currentEdge];
-
                     if (ArticleHasToNumber)
                     {
                         if (!IsTOnumberUpdated)
@@ -372,7 +410,6 @@ namespace DCMarker.Model
                     {
                         article.TOnumber = string.Empty;
                     }
-
                     Log.Trace(string.Format("article.TOnummer: {0}", article.TOnumber));
 
                     _currentEdge++;
@@ -415,18 +452,20 @@ namespace DCMarker.Model
                                 {
                                     // we are ready to mark...
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
-                                    if (_hasEdges)
+                                    if (!IsLoadOnStartup)
                                     {
-                                        _articleInput.SetKant(Convert.ToByte(_currentEdge));
-                                    }
-                                    else
-                                    {
-                                        _articleInput.SetKant(1);
-                                    }
-                                    _articleInput.BatchNotReady(true);
+                                        if (_hasEdges)
+                                        {
+                                            _articleInput.SetKant(Convert.ToByte(_currentEdge));
+                                        }
+                                        else
+                                        {
+                                            _articleInput.SetKant(1);
+                                        }
+                                        _articleInput.BatchNotReady(true);
 
-                                    _articleInput.ReadyToMark(true);
-
+                                        _articleInput.ReadyToMark(true);
+                                    }
                                     Log.Trace("UpdateLayout OK");
                                 }
                                 else
@@ -475,10 +514,17 @@ namespace DCMarker.Model
 
         private void WaitForToNumber()
         {
-            while (string.IsNullOrWhiteSpace(TOnumber))
+            Log.Trace("WaitForTOnumber");
+            while (!IsTOnumberApproved || string.IsNullOrWhiteSpace(TOnumber))
             {
                 Thread.Sleep(1);
             }
+            Log.Trace("WaitForTOnumber Done");
+        }
+
+        public void UserHasApprovedTOnumber(bool state)
+        {
+            IsTOnumberApproved = true;
         }
 
         private void UpdateLayoutKant()

@@ -51,8 +51,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandQueue.cs" />
-    <Compile Include="Commands.cs" />
     <Compile Include="CommService.cs" />
     <Compile Include="CommServiceEvents.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -294,4 +294,7 @@
   <data name="Cant_start_timer_for_polling_ADAM_Module" xml:space="preserve">
     <value>Can't start timer for polling ADAM Module</value>
   </data>
+  <data name="Initializing_" xml:space="preserve">
+    <value>Initializing ...</value>
+  </data>
 </root>

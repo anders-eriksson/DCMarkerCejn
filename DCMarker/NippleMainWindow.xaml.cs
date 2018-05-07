@@ -25,11 +25,27 @@ namespace DCMarker
                 InitLanguage();
                 InitializeComponent();
 
+                mainViewModel = new NippleMainViewModel();
+                mainViewModel.SetFocusToNumberEvent += MainViewModel_SetFocusToNumberEvent;
+                DataContext = mainViewModel;
+
+#if DEBUG
                 if (!DCConfig.Instance.Debug)
                 {
-                    TestButton.Visibility = Visibility.Hidden;
+                    ArtNoTextbox.Visibility = Visibility.Hidden;
+                    ArtNoButton.Visibility = Visibility.Hidden;
+                    StartOkButton.Visibility = Visibility.Hidden;
                     ExecuteButton.Visibility = Visibility.Hidden;
+                    Execute2Button.Visibility = Visibility.Hidden;
                 }
+#else
+                ArtNoTextbox.Visibility = Visibility.Hidden;
+                ArtNoButton.Visibility = Visibility.Hidden;
+                StartOkButton.Visibility = Visibility.Hidden;
+                ExecuteButton.Visibility = Visibility.Hidden;
+                Execute2Button.Visibility = Visibility.Hidden;
+
+#endif
                 Services.Tracker.Configure(this)//the object to track
                                                .IdentifyAs("MainWindow")                                                                           //a string by which to identify the target object
                                                .AddProperties<Window>(w => w.Height, w => w.Width, w => w.Top, w => w.Left, w => w.WindowState)     //properties to track
@@ -95,7 +111,7 @@ namespace DCMarker
 
         private void LogFiles_Click(object sender, RoutedEventArgs e)
         {
-            string logfile = Log.GetLogFileName("f");
+            string logfile = Log.GetLogFileName("dclogfile");
 
             Process.Start(Path.GetDirectoryName(logfile));
         }
@@ -106,9 +122,41 @@ namespace DCMarker
             dlg.ShowDialog();
         }
 
+#if DEBUG
         private void TestButton_Click(object sender, RoutedEventArgs e)
         {
             mainViewModel.Test();
+        }
+#endif
+
+        private void Window_ContentRendered(object sender, System.EventArgs e)
+        {
+            mainViewModel.InitializeViewModel();
+        }
+
+        private void MainViewModel_SetFocusToNumberEvent(object sender, Contracts.SetFocusToNumberArgs e)
+        {
+            Log.Trace("SetFocueToNumberEvent");
+            Dispatcher.BeginInvoke(new Action(delegate
+            {
+                TOnrTextbox.Focusable = true;
+                //TOnrTextbox.IsEnabled = true;
+                //TOnrTextbox.Visibility = Visibility.Visible;
+                bool brc = TOnrTextbox.Focus();
+                Debug.WriteLine("Setfocus: {0}", brc);
+                System.Windows.Input.Keyboard.Focus(TOnrTextbox);
+            }));
+        }
+
+#if DEBUG
+        private void ArtNoButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainViewModel.ArtNo();
+        }
+
+        private void StartOkButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainViewModel.StartOk();
         }
 
         private void ExecuteButton_Click(object sender, RoutedEventArgs e)
@@ -116,23 +164,28 @@ namespace DCMarker
             mainViewModel.Execute();
         }
 
-        private void Window_ContentRendered(object sender, System.EventArgs e)
+        private void Execute2Button_Click(object sender, RoutedEventArgs e)
         {
-            mainViewModel = new NippleMainViewModel();
-            mainViewModel.SetFocusToNumberEvent += MainViewModel_SetFocusToNumberEvent;
-            DataContext = mainViewModel;
+            mainViewModel.Execute2();
+        }
+#else
+
+        private void ArtNoButton_Click(object sender, RoutedEventArgs e)
+        {
         }
 
-        private void MainViewModel_SetFocusToNumberEvent(object sender, Contracts.SetFocusToNumberArgs e)
+        private void StartOkButton_Click(object sender, RoutedEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(delegate
-            {
-                TOnrTextbox.Focusable = true;
-                //TOnrTextbox.IsEnabled = true;
-                //TOnrTextbox.Visibility = Visibility.Visible;
-
-                System.Windows.Input.Keyboard.Focus(TOnrTextbox);
-            }));
         }
+
+        private void ExecuteButton_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void Execute2Button_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+#endif
     }
 }

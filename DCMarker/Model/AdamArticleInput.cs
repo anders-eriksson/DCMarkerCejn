@@ -56,6 +56,18 @@ namespace DCMarker.Model
             }
         }
 
+        internal void ReadCommand(byte command, string artno)
+        {
+            _server.ReadCommand(command, artno);
+            //StartPoll(DCConfig.Instance.AdamPollInterval, DCConfig.Instance.AdamErrorTimeout);
+        }
+
+        internal void ReadCommand(byte command, int _currentEdge, int _totalEdges)
+        {
+            _server.ReadCommand(command, (byte)_currentEdge, _totalEdges);
+            //StartPoll(DCConfig.Instance.AdamPollInterval, DCConfig.Instance.AdamErrorTimeout);
+        }
+
         public bool StartPoll(int pollinterval, int errortimeout)
         {
             bool brc = _server.StartPoll(pollinterval, errortimeout);
@@ -63,10 +75,14 @@ namespace DCMarker.Model
             return brc;
         }
 
-        // TODO: maybe should return bool
         public bool StartPoll()
         {
             return _server.StartPoll();
+        }
+
+        internal void StopPoll()
+        {
+            _server.StopPoll();
         }
 
         private void _server_ErrorEvent(object sender, ErrorArgs e)
@@ -81,10 +97,10 @@ namespace DCMarker.Model
 
         internal void Simulate(string v)
         {
-            _server.StopPoll();
+            StopPoll();
             System.Threading.Thread.Sleep(500);
             _server.Simulate(v);
-            _server.StartPoll(DCConfig.Instance.AdamPollInterval, DCConfig.Instance.AdamErrorTimeout);
+            StartPoll(DCConfig.Instance.AdamPollInterval, DCConfig.Instance.AdamErrorTimeout);
         }
 
         private void _server_RestartEvent(object sender, EventArgs e)

@@ -106,6 +106,7 @@ namespace Configuration
                 AdamIpAddress = _profile.GetValue("Adam", nameof(AdamIpAddress), "10.0.0.100");
                 AdamIpPort = _profile.GetValue("Adam", nameof(AdamIpPort), 502);
                 AdamInvertSignal = _profile.GetValue("Adam", nameof(AdamInvertSignal), false);
+                IsAdamErrorTimeoutActive = _profile.GetValue("Adam", nameof(IsAdamErrorTimeoutActive), true);
                 AdamErrorTimeout = _profile.GetValue("Adam", nameof(AdamErrorTimeout), 1000);
                 AdamAllowedTimeouts = _profile.GetValue("Adam", nameof(AdamAllowedTimeouts), 20);
                 AdamWaitBeforeWrite = _profile.GetValue("Adam", nameof(AdamWaitBeforeWrite), 400);
@@ -159,6 +160,7 @@ namespace Configuration
                 _profile.SetValue("Adam", nameof(AdamIpAddress), AdamIpAddress);
                 _profile.SetValue("Adam", nameof(AdamIpPort), AdamIpPort);
                 _profile.SetValue("Adam", nameof(AdamInvertSignal), AdamInvertSignal);
+                _profile.SetValue("Adam", nameof(IsAdamErrorTimeoutActive), IsAdamErrorTimeoutActive);
                 _profile.SetValue("Adam", nameof(AdamErrorTimeout), AdamErrorTimeout);
                 _profile.SetValue("Adam", nameof(AdamAllowedTimeouts), AdamAllowedTimeouts);
                 _profile.SetValue("Adam", nameof(AdamWaitBeforeWrite), AdamWaitBeforeWrite);
@@ -230,6 +232,8 @@ namespace Configuration
         /// Should we invert the signal from the ADAM module
         /// </summary>
         public bool AdamInvertSignal { get; set; }
+
+        public bool IsAdamErrorTimeoutActive { get; set; }
 
         /// <summary>
         /// Timeout in milliseconds before we treat the action as failed

@@ -24,7 +24,7 @@ namespace DCAdmin
             Log.Trace(GlblRes.Created_Context);
             Context = _context;
 #if DEBUG
-            _context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
+            //_context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
 #endif
         }
 
@@ -178,7 +178,7 @@ namespace DCAdmin
                 throw;
             }
 
-            Debug.WriteLine(GlblRes.LoadLaserData_0, result.Count);
+            //Debug.WriteLine(GlblRes.LoadLaserData_0, result.Count);
             return result;
         }
 
@@ -233,7 +233,7 @@ namespace DCAdmin
                 Log.Fatal(ex, GlblRes.LoadLaserDataFiltered_exception);
                 throw;
             }
-            Debug.WriteLine(GlblRes.LoadLaserDataFiltered_0, result.Count);
+            //Debug.WriteLine(GlblRes.LoadLaserDataFiltered_0, result.Count);
             return result;
         }
 

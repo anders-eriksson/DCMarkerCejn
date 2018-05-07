@@ -286,6 +286,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Initializing ....
+        /// </summary>
+        public static string Initializing_ {
+            get {
+                return ResourceManager.GetString("Initializing_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ItemInPlace signal received before Article Number is set.
         /// </summary>
         public static string ItemInPlace_received_before_Article_Number_is_set {

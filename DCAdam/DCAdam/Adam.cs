@@ -104,7 +104,6 @@ namespace DCAdam
             {
                 data = ReadCoils(startAddress, totalPoints);
                 result = ConvertBoolArrayToByte(data);
-                //Log.Trace(string.Format("From PLC: {0}", result));
                 _log.WriteIn(result.ToString());
             }
             catch (Exception ex)
@@ -114,6 +113,16 @@ namespace DCAdam
             }
 
             return result;
+        }
+
+        public void ReadCommand(byte command, string artno)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ReadCommand(byte command, byte _currentEdge, int _totalEdges)
+        {
+            throw new NotImplementedException();
         }
 
         public bool[] SetValue(byte v)

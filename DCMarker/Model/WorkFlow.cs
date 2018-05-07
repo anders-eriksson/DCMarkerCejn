@@ -52,6 +52,25 @@ namespace DCMarker.Model
             _articleInput.Close();
         }
 
+#if DEBUG
+
+        public void ArtNo(string artno)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StartOk()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Execute2()
+        {
+            throw new NotImplementedException();
+        }
+
+#endif
+
         public void Execute()
         {
             if (_laser != null)
@@ -244,7 +263,7 @@ namespace DCMarker.Model
         /// <summary>
         /// Loads and updates the Layout when we have gotten an ItemInPlace signal from PLC
         /// </summary>
-        private void UpdateLayout()
+        public void UpdateLayout()
         {
             Article article = null;
             if (_articles != null && _articles.Count > 0)
@@ -423,7 +442,17 @@ namespace DCMarker.Model
             throw new NotImplementedException();
         }
 
+        public void LoadUpdateLayout()
+        {
+            throw new NotImplementedException();
+        }
+
         public void UpdateTOnumber(string onr)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UserHasApprovedTOnumber(bool state)
         {
             throw new NotImplementedException();
         }

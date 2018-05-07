@@ -58,5 +58,17 @@ namespace DCMarker.Properties {
                 this["ArticleNumber"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TONumber {
+            get {
+                return ((string)(this["TONumber"]));
+            }
+            set {
+                this["TONumber"] = value;
+            }
+        }
     }
 }

@@ -64,6 +64,7 @@ namespace DCMarker
             dlg.ShowDialog();
         }
 
+#if DEBUG
         private void TestButton_Click(object sender, RoutedEventArgs e)
         {
             mainViewModel.Test();
@@ -73,6 +74,17 @@ namespace DCMarker
         {
             mainViewModel.Execute();
         }
+#else
+
+        private void TestButton_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void ExecuteButton_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+#endif
 
         private void Window_ContentRendered(object sender, System.EventArgs e)
         {

@@ -177,4 +177,7 @@
   <data name="Cant_start_timer_for_polling_ADAM_Module" xml:space="preserve">
     <value>Kan inte start time för polling av ADAM-Modul</value>
   </data>
+  <data name="Initializing_" xml:space="preserve">
+    <value>Initierar ...</value>
+  </data>
 </root>

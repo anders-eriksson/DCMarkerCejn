@@ -7,6 +7,8 @@ using System.Windows.Input;
 using System.Runtime.CompilerServices;
 using GlblRes = global::DCMarker.Properties.Resources;
 using System.Timers;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace DCMarker
 {
@@ -14,11 +16,11 @@ namespace DCMarker
     public class NippleMainViewModel : INotifyPropertyChanged
     {
         private IWorkFlow _wf = null;
-
+        private IWorkFlowDebug _wfDebug = null;
         private DCConfig cfg;
 
         private System.Timers.Timer _pollTimer;
-        //private bool KeepTOnr;
+        private bool KeepTOnr;
 
         // Destructor
         ~NippleMainViewModel()
@@ -48,13 +50,19 @@ namespace DCMarker
             NeedUserInput = false;
             IsTestItemSelected = false;
             //KeepTOnr = false;
+        }
 
+        public void InitializeViewModel()
+        {
             try
             {
+                Status = GlblRes.Initializing_;
                 cfg = DCConfig.Instance;
                 InitializeMachine();
                 InitializeWorkflow();
-                //LoadLastArticleNumber();
+                Status = string.Empty;
+
+                LoadLastArticleNumber();
             }
             catch (Exception ex)
             {
@@ -62,6 +70,7 @@ namespace DCMarker
             }
         }
 
+#if DEBUG
         private int seq = 1;
 
         internal void Test()
@@ -72,14 +81,38 @@ namespace DCMarker
             }
         }
 
+        internal void ArtNo()
+        {
+            if (_wf != null)
+            {
+                _wf.ArtNo(ArticleNumber);
+            }
+        }
+
+        internal void StartOk()
+        {
+            if (_wf != null)
+            {
+                _wf.StartOk();
+            }
+        }
+
         internal void Execute()
         {
-            seq = 1;
-            //if (_wf != null)
-            //{
-            //    _wf.Execute();
-            //}
+            if (_wf != null)
+            {
+                _wf.Execute();
+            }
         }
+
+        internal void Execute2()
+        {
+            if (_wf != null)
+            {
+                _wf.Execute2();
+            }
+        }
+#endif
 
         private void InitializeMachine()
         {
@@ -132,10 +165,12 @@ namespace DCMarker
                 _wf.StatusEvent += _wf_StatusEvent;
                 _wf.ErrorMsgEvent += _wf_ErrorMsgEvent;
                 _wf.ArticleHasToNumberEvent += _wf_ArticleHasToNumberEvent;
+
                 try
                 {
                     _pollTimer = new System.Timers.Timer();
                     _pollTimer.Interval = 1000;
+                    _pollTimer.AutoReset = false;
                     _pollTimer.Elapsed += StartPoll;
                     _pollTimer.Start();
                 }
@@ -183,15 +218,37 @@ namespace DCMarker
             Properties.Settings.Default.Save();
         }
 
+        private void SaveCurrentTONumber()
+        {
+            Properties.Settings.Default.TONumber = TOnr;
+            Properties.Settings.Default.Save();
+        }
+
         private void LoadLastArticleNumber()
         {
             if (_wf != null)
             {
-                ArticleNumber = Properties.Settings.Default.ArticleNumber;
-                if (!string.IsNullOrWhiteSpace(_articleNumber))
+                var t = Task.Run(() =>
                 {
-                    _wf.LoadArticleNumber(_articleNumber);
-                }
+                    IsNewArticle = true;
+                    _articleNumber = Properties.Settings.Default.ArticleNumber;
+                    _TOnr = Properties.Settings.Default.TONumber;
+                    if (!string.IsNullOrWhiteSpace(_articleNumber))
+                    {
+                        Debug.WriteLine(string.Format("LoadLastArticleNumber: {0}", ArticleNumber));
+                        _wf.LoadArticleNumber(_articleNumber);
+                    }
+                });
+                t.Wait();
+
+                var t2 = Task.Run(() =>
+                {
+                    if (!string.IsNullOrWhiteSpace(_articleNumber))
+                    {
+                        _wf.LoadUpdateLayout();
+                    }
+                });
+                //t2.Wait();
             }
         }
 
@@ -216,6 +273,8 @@ namespace DCMarker
             HasBatchSize = e.Data.HasBatchSize;
             NeedUserInput = e.Data.NeedUserInput;
             Status = e.Data.Status;
+
+            //System.Threading.Thread.Sleep(100);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -230,19 +289,21 @@ namespace DCMarker
             {
                 if (IsNewArticle)
                 {
-                    //if (_articleNumber == value)
-                    //{
-                    //    KeepTOnr = true;
-                    //}
-                    //else
-                    //{
-                    //    KeepTOnr = false;
-                    //    TOnr = string.Empty;
-                    //}
-                    TOnr = string.Empty;
+                    if (_articleNumber == value)
+                    {
+                        KeepTOnr = true;
+                    }
+                    else
+                    {
+                        KeepTOnr = false;
+                        TOnr = string.Empty;
+                    }
+                    //TOnr = string.Empty;
                     _articleNumber = value;
+                    Debug.WriteLine(string.Format("ArticleNumber: {0}", _articleNumber));
                     NotifyPropertyChanged();
                     ActivateTO();
+                    SaveCurrentArticleNumber();
                     // TODO: maybe i need to wait a bit before doing this. So that WPF has updated the textbox
                     System.Threading.Thread.Sleep(100);
                     RaiseSetFocusToNumberEvent(true);
@@ -276,7 +337,7 @@ namespace DCMarker
             set
             {
                 _IsTOnumber = value;
-                if (_IsTOnumber)
+                if (_IsTOnumber && !KeepTOnr)
                 {
                     TOnr = string.Empty;
                 }
@@ -305,7 +366,7 @@ namespace DCMarker
         {
             if (IsNewArticle)
             {
-                if (string.IsNullOrWhiteSpace(TOnr))
+                if (ArticleHasTOnumber)
                 {
                     IsTOButtonActive = true;
                     IsTOnumber = true;
@@ -441,6 +502,7 @@ namespace DCMarker
             {
                 _HasTOnumber = value;
                 NotifyPropertyChanged();
+                ActivateTO();
             }
         }
 
@@ -606,9 +668,12 @@ namespace DCMarker
             }
             try
             {
+                //KeepTOnr = true;
+                //SaveCurrentTONumber();
                 if (_wf != null)
                 {
                     _wf.UpdateTOnumber(TOnr);
+                    _wf.UserHasApprovedTOnumber(true);
                 }
                 IsNewArticle = false;
                 IsTOnumber = false;
@@ -642,6 +707,11 @@ namespace DCMarker
             {
                 var arg = new SetFocusToNumberArgs(mode);
                 handler(null, arg);
+            }
+            else
+            {
+                DCLog.Log.Debug("SetFocusToNumberEvent has no subscribers!");
+                Debug.WriteLine("SetFocusToNumberEvent has no subscribers!");
             }
         }
 

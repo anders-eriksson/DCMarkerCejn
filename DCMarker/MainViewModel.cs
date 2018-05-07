@@ -44,6 +44,7 @@ namespace DCMarker
             }
         }
 
+#if DEBUG
         internal void Test()
         {
             if (_wf != null)
@@ -59,6 +60,7 @@ namespace DCMarker
                 _wf.Execute();
             }
         }
+#endif
 
         private void InitializeMachine()
         {

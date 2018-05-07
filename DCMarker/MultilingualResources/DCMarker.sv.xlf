@@ -39,7 +39,7 @@
         <trans-unit id="ToNumber" translate="no" xml:space="preserve">
           <source>Production</source>
           <target state="final">Production</target>
-          <note from="MultilingualEditor" annotates="source" priority="4">Technical. It's an abbrivation TillverkningOrder </note>
+          <note from="MultilingualEditor" annotates="source" priority="4">Customer changed from TO-number to Production, since that is what is says on the Work sheet</note>
         </trans-unit>
         <trans-unit id="Title" translate="no" xml:space="preserve">
           <source>DCMarker</source>
@@ -244,6 +244,10 @@
         <trans-unit id="Cant_start_timer_for_polling_ADAM_Module" translate="yes" xml:space="preserve">
           <source>Can't start timer for polling ADAM Module</source>
           <target state="translated">Kan inte start time för polling av ADAM-Modul</target>
+        </trans-unit>
+        <trans-unit id="Initializing_" translate="yes" xml:space="preserve">
+          <source>Initializing ...</source>
+          <target state="translated">Initierar ...</target>
         </trans-unit>
       </group>
     </body>

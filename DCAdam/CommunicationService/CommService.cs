@@ -25,18 +25,18 @@ namespace CommunicationService
         public bool IsWaitingForAnswer { get; private set; }
         public bool IsReadingCommand { get; private set; }
 
-        private bool isLaserMarking;
+        public volatile bool IsLaserMarking;
 
-        public bool IsLaserMarking
-        {
-            get { return isLaserMarking; }
-            set
-            {
-                isLaserMarking = value;
-                //if (isLaserMarking)
-                //    StartPoll(DCConfig.Instance.AdamPollInterval, DCConfig.Instance.AdamErrorTimeout);
-            }
-        }
+        //public bool IsLaserMarking
+        //{
+        //    get { return isLaserMarking; }
+        //    set
+        //    {
+        //        isLaserMarking = value;
+        //        //if (isLaserMarking)
+        //        //    StartPoll(DCConfig.Instance.AdamPollInterval, DCConfig.Instance.AdamErrorTimeout);
+        //    }
+        //}
 
         public int IsTimedout { get; set; }
 
@@ -80,10 +80,30 @@ namespace CommunicationService
         public bool StartPoll(int pollinterval, int errortimout)
         {
             bool result = true;
+
+#if DEBUGx
+            string stackmsg = "|";
+            System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(true);
+            for (int i = 0; i < st.FrameCount; i++)
+            {
+                // Note that high up the call stack, there is only
+                // one stack frame.
+                System.Diagnostics.StackFrame sf = st.GetFrame(i);
+                string tmp = string.Format("{0} - {1} | ", sf.GetMethod(), sf.GetFileLineNumber());
+                stackmsg += tmp;
+            }
+
+            Log.Trace(string.Format("StartPoll({0},{1}) {2}", pollinterval, errortimout, stackmsg));
+#else
+            //Log.Trace(string.Format("StartPoll({0},{1})", pollinterval, errortimout));
+
+#endif
+
             _pollTimer_TimeSpan = pollinterval;
             try
             {
                 _pollTimer = new System.Timers.Timer();
+                _pollTimer.Stop();
                 _pollTimer.Interval = pollinterval;
                 _pollTimer.AutoReset = false;
                 _pollTimer.Elapsed += _pollTimer_Elapsed;
@@ -100,9 +120,27 @@ namespace CommunicationService
         public bool StartPoll()
         {
             bool result = false;
+#if DEBUGx
+            string stackmsg = "|";
+            System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(true);
+            for (int i = 0; i < st.FrameCount; i++)
+            {
+                // Note that high up the call stack, there is only
+                // one stack frame.
+                System.Diagnostics.StackFrame sf = st.GetFrame(i);
+                string tmp = string.Format("{0} - {1} | ", sf.GetMethod(), sf.GetFileLineNumber());
+                stackmsg += tmp;
+            }
+
+            Log.Trace(string.Format("StartPoll() {0})", stackmsg));
+#else
+            //Log.Trace("StartPoll()");
+
+#endif
 
             if (_pollTimer != null)
             {
+                _pollTimer.Stop();
                 IsLaserMarking = false;
                 _pollTimer.Start();
                 result = true;
@@ -269,11 +307,27 @@ namespace CommunicationService
             return result;
         }
 
+        public void ReadCommand(byte command, string artno)
+        {
+            StopPoll();
+            _comm.ReadCommand(command, artno);
+            StartPoll();
+        }
+
+        public void ReadCommand(byte command, int _currentEdge, int _totalEdges)
+        {
+            StopPoll();
+            _comm.ReadCommand(command, (byte)_currentEdge, _totalEdges);
+            StartPoll();
+        }
+
         private void _pollTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             bool lockCreated = false;
+
             try
             {
+                StopPoll();
                 Monitor.TryEnter(execLock, DCConfig.Instance.AdamErrorTimeout, ref lockCreated);
                 if (lockCreated)
                 {
@@ -352,9 +406,10 @@ namespace CommunicationService
                 return;
             }
 
+            //Log.Trace(string.Format("IsLaserMarking: {0} - TimerEnabled: {1}", IsLaserMarking, _pollTimer.Enabled));
             if (!IsLaserMarking)
             {
-                _pollTimer.Start();
+                StartPoll();
             }
         }
 
@@ -390,8 +445,8 @@ namespace CommunicationService
                 case CommandTypes.StartMarking:
                     if (_currentCommand.Params[0] == 49)
                     {
-                        RaiseStartMarkingEvent();
                         IsLaserMarking = true;
+                        RaiseStartMarkingEvent();
                     }
                     break;
 
@@ -449,21 +504,21 @@ namespace CommunicationService
             data = 0;
             DateTime startTime = DateTime.Now;
             bool timeout = false;
-            //Debug.WriteLine("\t\tReadUntilNewData oldData: {0}", oldData);
+            Log.Trace(string.Format("ReadUntilNewData oldData: {0}", oldData));
 
             do
             {
                 data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
-                //Debug.WriteLine("\t\tReadUntilNewData: {0}", data);
+                Log.Trace(string.Format("data: {0}", data));
 
-                TimeSpan ts = DateTime.Now - startTime;
-                //Debug.WriteLine("\t\tReadUntilNewData: TimeSpan: {0}", ts.TotalMilliseconds);
-                if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
+                if (DCConfig.Instance.IsAdamErrorTimeoutActive)
                 {
-                    timeout = true;
-                    //RaiseErrorEvent("Timout occurred waiting for signal from PLC");
+                    TimeSpan ts = DateTime.Now - startTime;
+                    if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
+                    {
+                        timeout = true;
+                    }
                 }
-
                 if (!timeout && data == oldData)
                 {
                     Thread.Sleep(_pollTimer_TimeSpan);
@@ -471,7 +526,7 @@ namespace CommunicationService
             } while (data == oldData && !timeout);
 
             _oldData = data;
-            //Debug.WriteLine(string.Format("\tReadUntilNewData Returns: {0}", data));
+            Log.Trace(string.Format("ReadUntilNewData Returns: {0}", data));
 
             result = !timeout;
             return result;
@@ -480,7 +535,7 @@ namespace CommunicationService
         private bool GetCommand(out byte data)
         {
             bool result = true;
-            //Debug.WriteLine("\tGetCommand");
+            Log.Trace("GetCommand");
             data = 0;
             result = ReadUntilNewData(_oldData, out data);
             if (result)
@@ -543,28 +598,29 @@ namespace CommunicationService
             bool result = true;
             DateTime startTime = DateTime.Now;
             bool timeout = false;
-            //Log.Trace("\tAcknowledgeRead");
+            Log.Trace("\tAcknowledgeRead");
             try
             {
                 _comm.Write(Constants.DOstartAddress, data);
                 do
                 {
-                    //Debug.WriteLine("\t\tAcknowledgeRead: Start time: {0}", startTime.ToLocalTime());
                     data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
+                    Log.Trace(string.Format("data: {0}", data));
                     if (data == null)
                     {
                         return false;
                     }
-                    DateTime endTime = DateTime.Now;
-                    //Debug.WriteLine("\t\tAcknowledgeRead: End time: {0}", endTime.ToLocalTime());
-                    TimeSpan ts = endTime - startTime;
-                    //Debug.WriteLine("\t\tAcknowledgeRead: TimeSpan: {0}", ts.TotalMilliseconds);
-                    if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
+                    if (DCConfig.Instance.IsAdamErrorTimeoutActive)
                     {
-                        timeout = true;
-                        //RaiseErrorEvent("Timout occurred waiting for signal from PLC");
-                    }
+                        DateTime endTime = DateTime.Now;
+                        TimeSpan ts = endTime - startTime;
 
+                        if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
+                        {
+                            timeout = true;
+                            //RaiseErrorEvent("Timout occurred waiting for signal from PLC");
+                        }
+                    }
                     if (!timeout && data != Constants.ACK)
                     {
                         Thread.Sleep(_pollTimer_TimeSpan);

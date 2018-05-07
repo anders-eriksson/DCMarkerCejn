@@ -26,8 +26,6 @@ namespace DCMarker.Model
 
         void SimulateItemInPlace(int seq);
 
-        void Execute();
-
         void ResetAllIoSignals();
 
         void ResetArticleData();
@@ -48,11 +46,24 @@ namespace DCMarker.Model
 
         void LoadArticleNumber(string _articleNumber);
 
+        void LoadUpdateLayout();
+
         void UpdateTOnumber(string onr);
 
-#if DEBUG
+        void UpdateLayout();
 
+        void UserHasApprovedTOnumber(bool state);
+
+#if DEBUG
         void _laser_ItemInPositionEvent();
+
+        void ArtNo(string artno);
+
+        void StartOk();
+
+        void Execute();
+
+        void Execute2();
 
 #endif
     }

@@ -12,6 +12,9 @@ namespace Contracts
 
         byte Read(ushort startAddress, ushort totalPoints);
 
+        void ReadCommand(byte command, byte _currentEdge, int _totalEdges);
+
         bool Write(ushort startAddress, byte? data);
+        void ReadCommand(byte command, string artno);
     }
 }

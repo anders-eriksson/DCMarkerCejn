@@ -73,6 +73,23 @@ namespace DCMarker.Model
             }
         }
 
+#if DEBUG
+
+        public void ArtNo(string artno)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StartOk()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Execute2()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Execute()
         {
             if (_laser != null)
@@ -85,6 +102,8 @@ namespace DCMarker.Model
                 Log.Debug("_laser == null");
             }
         }
+
+#endif
 
         public List<Article> GetArticle(string articleNumber)
         {
@@ -363,7 +382,7 @@ namespace DCMarker.Model
         /// <summary>
         /// Loads and updates the Layout when we have gotten an ItemInPlace signal from PLC
         /// </summary>
-        private void UpdateLayout()
+        public void UpdateLayout()
         {
             RaiseErrorEvent(string.Empty);
 
@@ -518,6 +537,16 @@ namespace DCMarker.Model
         #region only used by NippleWorkFlow // AME - 2018-05-12
 
         public void LoadArticleNumber(string _articleNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LoadUpdateLayout()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UserHasApprovedTOnumber(bool state)
         {
             throw new NotImplementedException();
         }

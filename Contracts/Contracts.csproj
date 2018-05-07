@@ -62,6 +62,7 @@
     <Compile Include="IDigitalIo.cs" />
     <Compile Include="ILaser.cs" />
     <Compile Include="IWorkFlow.cs" />
+    <Compile Include="IWorkFlowDebug.cs" />
     <Compile Include="LaserBusyEventArgs.cs" />
     <Compile Include="LaserObjectData.cs" />
     <Compile Include="MachineTypes.cs" />
