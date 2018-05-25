@@ -95,7 +95,7 @@ namespace CommunicationService
 
             Log.Trace(string.Format("StartPoll({0},{1}) {2}", pollinterval, errortimout, stackmsg));
 #else
-            //Log.Trace(string.Format("StartPoll({0},{1})", pollinterval, errortimout));
+            Log.Trace(string.Format("StartPoll({0},{1})", pollinterval, errortimout));
 
 #endif
 
@@ -294,6 +294,7 @@ namespace CommunicationService
         private bool SendStartCommand()
         {
             bool result = true;
+
             bool brc = Write(Constants.DOstartAddress, Constants.STX);
             if (brc)
             {
@@ -303,7 +304,6 @@ namespace CommunicationService
                     result = false;
                 }
             }
-
             return result;
         }
 
@@ -403,6 +403,7 @@ namespace CommunicationService
                 Log.Fatal(msg);
                 RaiseErrorEvent(msg);
                 _comm.Write(Constants.DOstartAddress, 0);
+                //Abort();
                 return;
             }
 
@@ -411,6 +412,14 @@ namespace CommunicationService
             {
                 StartPoll();
             }
+        }
+
+        public void SetArticleData(string artno)
+        {
+            Log.Trace("CommandTypes.ArtNo");
+            _articleData = new ArticleData();
+            _articleData.ArticleNumber = artno;
+            RaiseArticleEvent(_articleData);
         }
 
         private void ExecuteCommand(CommandData _currentCommand)
@@ -424,6 +433,7 @@ namespace CommunicationService
                     break;
 
                 case CommandTypes.ArtNo:
+                    Log.Trace("CommandTypes.ArtNo");
                     _articleData = new ArticleData();
                     Encoding encoding = Encoding.GetEncoding(850);
                     _articleData.ArticleNumber = encoding.GetString(_currentCommand.Params.ToArray());
@@ -510,7 +520,6 @@ namespace CommunicationService
             {
                 data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
                 Log.Trace(string.Format("data: {0}", data));
-
                 if (DCConfig.Instance.IsAdamErrorTimeoutActive)
                 {
                     TimeSpan ts = DateTime.Now - startTime;
@@ -610,6 +619,7 @@ namespace CommunicationService
                     {
                         return false;
                     }
+
                     if (DCConfig.Instance.IsAdamErrorTimeoutActive)
                     {
                         DateTime endTime = DateTime.Now;
@@ -662,12 +672,14 @@ namespace CommunicationService
             {
                 data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
                 Log.Trace(string.Format("Read Command from PLC: Read: {0} - Waiting for: {1}", data, outData));
-
-                TimeSpan ts = DateTime.Now - startTime;
-                if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
+                if (DCConfig.Instance.IsAdamErrorTimeoutActive)
                 {
-                    timeout = true;
-                    //RaiseErrorEvent("Timout occurred waiting for signal from PLC");
+                    TimeSpan ts = DateTime.Now - startTime;
+                    if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
+                    {
+                        timeout = true;
+                        //RaiseErrorEvent("Timout occurred waiting for signal from PLC");
+                    }
                 }
 
                 if (!timeout && data != outData)
@@ -675,6 +687,7 @@ namespace CommunicationService
                     Thread.Sleep(_pollTimer_TimeSpan);
                 }
             } while (data != outData && !timeout);
+
             if (!timeout)
             {
                 // Send ACK
@@ -684,12 +697,18 @@ namespace CommunicationService
                 do
                 {
                     data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
+
                     Log.Trace(string.Format("Read ACK from PLC: {0}", data));
-                    TimeSpan ts = DateTime.Now - startTime;
-                    if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
+
+                    if (DCConfig.Instance.IsAdamErrorTimeoutActive)
                     {
-                        timeout = true;
-                        //RaiseErrorEvent("Timout occurred waiting for signal from PLC");
+                        TimeSpan ts = DateTime.Now - startTime;
+
+                        if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
+                        {
+                            timeout = true;
+                            //RaiseErrorEvent("Timout occurred waiting for signal from PLC");
+                        }
                     }
 
                     if (!timeout && data != Constants.ACK)

@@ -177,6 +177,7 @@ namespace DCMarker.Model
         {
             List<Article> result = null;
 
+            Log.Trace(string.Format("GetArticle({0})", articleNumber));
             using (var context = new DCLasermarkContext())
             {
                 result = context.LaserData
@@ -191,6 +192,8 @@ namespace DCMarker.Model
                       Template = x.Template,
                   }).ToList();
             }
+            Log.Trace("GetArticle Done");
+
             return result;
         }
 

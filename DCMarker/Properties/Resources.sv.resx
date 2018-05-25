@@ -180,4 +180,7 @@
   <data name="Initializing_" xml:space="preserve">
     <value>Initierar ...</value>
   </data>
+  <data name="You_must_enter_Production_number_BEFORE_giving_start_signal_to_the_machine" xml:space="preserve">
+    <value>Skanna production nummer innan du startar robotcellen!</value>
+  </data>
 </root>

@@ -155,7 +155,7 @@
                     Margin="432,0,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    Text="{Binding ArticleNumber, Mode=TwoWay}"
+                    Text=""
                     TextWrapping="Wrap" />
                 <Button
                     x:Name="ArtNoButton"

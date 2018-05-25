@@ -357,6 +357,7 @@ namespace DCAdam
                     {
                         CheckConnection();
                         result = adamModbus.Modbus().ForceSingleCoil(startAddress, value);
+                        Log.Debug(string.Format("ForceSingleCoil result = {0}", result));
                     }
                     else
                     {
@@ -422,11 +423,9 @@ namespace DCAdam
                 if (acquiredLock)
                 {
                     CheckConnection();
-                    //bool[] zero = new bool[] { false, false, false, false, false, false, false, false };
-                    //result = adamModbus.Modbus().ForceMultiCoils(startAddress, zero);
-                    //Thread.Sleep(DCConfig.Instance.AdamWaitBeforeWrite);
+                    Thread.Sleep(DCConfig.Instance.AdamWaitBeforeWrite);
                     result = adamModbus.Modbus().ForceMultiCoils(startAddress, values);
-                    //result = DCForceMultiCoils(startAddress, values);
+                    Log.Debug(string.Format("ForceMultiCoil result = {0}", result));
                 }
                 else
                 {

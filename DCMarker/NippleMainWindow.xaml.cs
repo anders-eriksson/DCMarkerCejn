@@ -6,6 +6,8 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
 using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
@@ -123,10 +125,12 @@ namespace DCMarker
         }
 
 #if DEBUG
+
         private void TestButton_Click(object sender, RoutedEventArgs e)
         {
             mainViewModel.Test();
         }
+
 #endif
 
         private void Window_ContentRendered(object sender, System.EventArgs e)
@@ -136,22 +140,26 @@ namespace DCMarker
 
         private void MainViewModel_SetFocusToNumberEvent(object sender, Contracts.SetFocusToNumberArgs e)
         {
-            Log.Trace("SetFocueToNumberEvent");
-            Dispatcher.BeginInvoke(new Action(delegate
+            Log.Trace("SetFocusTONumberEvent");
+
+            Dispatcher.BeginInvoke(DispatcherPriority.Input,
+            new Action(delegate ()
             {
-                TOnrTextbox.Focusable = true;
-                //TOnrTextbox.IsEnabled = true;
-                //TOnrTextbox.Visibility = Visibility.Visible;
-                bool brc = TOnrTextbox.Focus();
-                Debug.WriteLine("Setfocus: {0}", brc);
-                System.Windows.Input.Keyboard.Focus(TOnrTextbox);
+                this.Activate();               // Set mainWindow focus
+                TOnrTextbox.Focus();         // Set Logical Focus
+                Keyboard.Focus(TOnrTextbox); // Set Keyboard Focus
             }));
         }
 
 #if DEBUG
+
         private void ArtNoButton_Click(object sender, RoutedEventArgs e)
         {
-            mainViewModel.ArtNo();
+            // Update ArticleNumber explicit
+            //BindingExpression be = ArtNoTextbox.GetBindingExpression(TextBox.TextProperty);
+            //be.UpdateSource();
+
+            mainViewModel.ArtNo(ArtNoTextbox.Text.Trim());
         }
 
         private void StartOkButton_Click(object sender, RoutedEventArgs e)
@@ -168,6 +176,7 @@ namespace DCMarker
         {
             mainViewModel.Execute2();
         }
+
 #else
 
         private void ArtNoButton_Click(object sender, RoutedEventArgs e)

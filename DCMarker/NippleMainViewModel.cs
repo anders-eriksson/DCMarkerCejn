@@ -9,6 +9,7 @@ using GlblRes = global::DCMarker.Properties.Resources;
 using System.Timers;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace DCMarker
 {
@@ -61,8 +62,8 @@ namespace DCMarker
                 InitializeMachine();
                 InitializeWorkflow();
                 Status = string.Empty;
-
-                LoadLastArticleNumber();
+                CreatePoll();
+                // LoadLastArticleNumber();
             }
             catch (Exception ex)
             {
@@ -81,10 +82,12 @@ namespace DCMarker
             }
         }
 
-        internal void ArtNo()
+        internal void ArtNo(string artno)
         {
             if (_wf != null)
             {
+                IsNewArticle = true;
+                ArticleNumber = artno;
                 _wf.ArtNo(ArticleNumber);
             }
         }
@@ -112,6 +115,7 @@ namespace DCMarker
                 _wf.Execute2();
             }
         }
+
 #endif
 
         private void InitializeMachine()
@@ -165,20 +169,24 @@ namespace DCMarker
                 _wf.StatusEvent += _wf_StatusEvent;
                 _wf.ErrorMsgEvent += _wf_ErrorMsgEvent;
                 _wf.ArticleHasToNumberEvent += _wf_ArticleHasToNumberEvent;
+            }
+        }
 
-                try
-                {
-                    _pollTimer = new System.Timers.Timer();
-                    _pollTimer.Interval = 1000;
-                    _pollTimer.AutoReset = false;
-                    _pollTimer.Elapsed += StartPoll;
-                    _pollTimer.Start();
-                }
-                catch (Exception)
-                {
-                    ErrorMessage = GlblRes.Cant_start_timer_for_polling_ADAM_Module;
-                    throw;
-                }
+        private void CreatePoll()
+        {
+            try
+            {
+                _pollTimer = new System.Timers.Timer();
+                _pollTimer.Interval = 1000;
+                _pollTimer.AutoReset = false;
+                _pollTimer.Elapsed += StartPoll;
+
+                _pollTimer.Start();
+            }
+            catch (Exception)
+            {
+                ErrorMessage = GlblRes.Cant_start_timer_for_polling_ADAM_Module;
+                throw;
             }
         }
 
@@ -223,9 +231,16 @@ namespace DCMarker
             Properties.Settings.Default.TONumber = TOnr;
             Properties.Settings.Default.Save();
         }
-
-        private void LoadLastArticleNumber()
+#if false
+        private bool LoadLastArticleNumber()
         {
+            bool result = false;
+            if (string.IsNullOrWhiteSpace(Properties.Settings.Default.ArticleNumber))
+            {
+                result = true;
+                return result;
+            }
+
             if (_wf != null)
             {
                 var t = Task.Run(() =>
@@ -248,9 +263,13 @@ namespace DCMarker
                         _wf.LoadUpdateLayout();
                     }
                 });
+
+                // Can't wait here since we lock the screen!!!
                 //t2.Wait();
             }
+            return result;
         }
+#endif
 
         private void _wf_ErrorEvent(object sender, ErrorArgs e)
         {
@@ -261,6 +280,7 @@ namespace DCMarker
 
         private void _wf_UpdateMainViewModelEvent(object sender, UpdateMainViewModelArgs e)
         {
+            DCLog.Log.Debug("_wf_UpdateMainViewModelEvent");
             Fixture = e.Data.Fixture;
             HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
             IsNewArticle = e.Data.IsNewArticleNumber;
@@ -274,6 +294,7 @@ namespace DCMarker
             NeedUserInput = e.Data.NeedUserInput;
             Status = e.Data.Status;
 
+            DCLog.Log.Debug("_wf_UpdateMainViewModelEvent Done");
             //System.Threading.Thread.Sleep(100);
         }
 
@@ -305,7 +326,7 @@ namespace DCMarker
                     ActivateTO();
                     SaveCurrentArticleNumber();
                     // TODO: maybe i need to wait a bit before doing this. So that WPF has updated the textbox
-                    System.Threading.Thread.Sleep(100);
+                    System.Threading.Thread.Sleep(200);
                     RaiseSetFocusToNumberEvent(true);
                 }
             }
@@ -370,6 +391,11 @@ namespace DCMarker
                 {
                     IsTOButtonActive = true;
                     IsTOnumber = true;
+                    if(string.IsNullOrWhiteSpace(TOnr))
+                    {
+                        ErrorMessage = GlblRes.You_must_enter_Production_number_BEFORE_giving_start_signal_to_the_machine;
+                    }
+
                 }
                 else
                 {
@@ -640,7 +666,7 @@ namespace DCMarker
             }
         }
 
-        #region Commands
+#region Commands
 
         private ICommand _UpdateToNumberCommand;
 
@@ -663,11 +689,14 @@ namespace DCMarker
             if (string.IsNullOrWhiteSpace(TOnr))
             {
                 ErrorMessage = GlblRes.Production_needs_a_value;
+                Thread.Sleep(100);
                 RaiseSetFocusToNumberEvent(true);
                 return;
             }
             try
             {
+                ErrorMessage = string.Empty;
+
                 //KeepTOnr = true;
                 //SaveCurrentTONumber();
                 if (_wf != null)
@@ -692,9 +721,9 @@ namespace DCMarker
             return HasTOnr;
         }
 
-        #endregion Commands
+#endregion Commands
 
-        #region Set Focus to TO-Number Event
+#region Set Focus to TO-Number Event
 
         public delegate void SetFocusToNumberHandler(bool mode);
 
@@ -715,6 +744,6 @@ namespace DCMarker
             }
         }
 
-        #endregion Set Focus to TO-Number Event
+#endregion Set Focus to TO-Number Event
     }
 }

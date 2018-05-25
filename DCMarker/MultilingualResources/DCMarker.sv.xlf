@@ -249,6 +249,10 @@
           <source>Initializing ...</source>
           <target state="translated">Initierar ...</target>
         </trans-unit>
+        <trans-unit id="You_must_enter_Production_number_BEFORE_giving_start_signal_to_the_machine" translate="yes" xml:space="preserve">
+          <source>You must enter Production number BEFORE giving start signal to the machine!</source>
+          <target state="translated">Skanna production nummer innan du startar robotcellen!</target>
+        </trans-unit>
       </group>
     </body>
   </file>

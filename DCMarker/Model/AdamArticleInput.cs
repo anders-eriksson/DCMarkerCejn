@@ -136,29 +136,35 @@ namespace DCMarker.Model
             }
         }
 
+        internal void SetArticleData(string articleNumber)
+        {
+            _server.SetArticleData(articleNumber);
+        }
+
         public bool SetKant(byte kantNumber)
         {
             bool result = true;
-
+            //StopPoll();
             result = _server.SendSetKant(kantNumber);
-
+            //StartPoll();
             return result;
         }
 
         public bool ReadyToMark(bool ready)
         {
             bool result = true;
-
+            //StopPoll();
             result = _server.SendReadyToMark(ready);
-
+            //StartPoll();
             return result;
         }
 
         public bool BatchNotReady(bool done)
         {
             bool result = true;
-
+            //StopPoll();
             result = _server.SendBatchNotReady(done);
+            //StartPoll();
 
             return result;
         }
@@ -166,8 +172,10 @@ namespace DCMarker.Model
         public bool Error(byte errorCode)
         {
             bool result = true;
-            result = _server.SendError(errorCode);
 
+            //StopPoll();
+            result = _server.SendError(errorCode);
+            //StartPoll();
             return result;
         }
 

@@ -90,8 +90,9 @@ namespace DCAdam
                 //result = adamModbus.Connect(_ipAddress, ProtocolType.Tcp, _ipPort);
                 result = adamModbus.Connect(AdamType.Adam6000, _ipAddress, ProtocolType.Tcp);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Error(ex, "Can't connect to ADAM module");
                 result = false;
                 throw;
             }
@@ -125,6 +126,8 @@ namespace DCAdam
             if (command == (byte)CommandTypes.ArtNo)
             {
                 SendCommands = new List<byte>();
+                _nextCommand = 0;
+
                 SendCommands.Add(Constants.STX);
                 SendCommands.Add(Constants.ACK);
                 SendCommands.Add(command);
@@ -142,7 +145,45 @@ namespace DCAdam
                 SendCommands.Add(Constants.ETX);
                 SendCommands.Add(Constants.ACK);
 
-                _nextCommand = 0;
+                // Start/OK
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.OkCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // reply on PC SetKant
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.SetKantCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // reply on PC BatchNotReady
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.BatchNotReadyCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
+
+                // reply on PC ReadyToMark
+                SendCommands.Add(Constants.STX);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ReadyToMarkCode);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(49);
+                SendCommands.Add(Constants.ACK);
+                SendCommands.Add(Constants.ETX);
+                SendCommands.Add(Constants.ACK);
             }
         }
 
@@ -155,7 +196,7 @@ namespace DCAdam
 
                 SendCommands.Add(Constants.STX);
                 SendCommands.Add(Constants.ACK);
-                SendCommands.Add(command);
+                SendCommands.Add(Constants.OkCode);
                 SendCommands.Add(Constants.ACK);
                 SendCommands.Add(49);
                 SendCommands.Add(Constants.ACK);
@@ -200,7 +241,7 @@ namespace DCAdam
                 // Start marking command
                 SendCommands.Add(Constants.STX);
                 SendCommands.Add(Constants.ACK);
-                SendCommands.Add(command);
+                SendCommands.Add(Constants.StartMarkingCode);
                 SendCommands.Add(Constants.ACK);
                 SendCommands.Add(49);
                 SendCommands.Add(Constants.ACK);

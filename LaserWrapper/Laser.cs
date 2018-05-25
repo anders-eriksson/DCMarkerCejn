@@ -296,7 +296,7 @@ namespace LaserWrapper
 
         private void _laserSystem_sigDeviceError(string p_message)
         {
-            string msg = string.Format("Laser error: {0}", p_message);
+            string msg = string.Format("Laser Device Error: {0}", p_message);
             Log.Error(msg);
             RaiseDeviceErrorEvent(msg);
         }
@@ -312,7 +312,7 @@ namespace LaserWrapper
         private void _laserSystem_sigLaserError(int p_errCode)
         {
             ErrorCode = p_errCode;
-            Log.Error(string.Format("Laser error: {0}", p_errCode));
+            Log.Error(string.Format("Laser Error: {0}", p_errCode));
         }
 
         private void InitLaser()
@@ -352,6 +352,7 @@ namespace LaserWrapper
                 }
                 else
                 {
+                    Log.Trace(string.Format("Remote Connection: {0}", _deviceAddress));
                     // Remote connection
                     _laserSystem.sigDeviceConnected += _laserSystem_sigDeviceConnected;
                     _laserSystem.sigDeviceError += _laserSystem_sigDeviceError;

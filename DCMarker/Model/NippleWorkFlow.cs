@@ -271,7 +271,9 @@ namespace DCMarker.Model
             HasError = false;
             IsLoadOnStartup = false;
             IsTOnumberApproved = false;
+            IsTOnumberUpdated = false;
             Log.Trace("ArticleEvent");
+            _currentEdge = 0;
             RaiseErrorEvent(string.Empty);
             //_laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
@@ -282,17 +284,20 @@ namespace DCMarker.Model
 
         private void GetArticleDbData(ArticleArgs e)
         {
+            Log.Trace("GetArticleDbData");
             RaiseStatusEvent(string.Format(GlblRes.Article_0_received, e.Data.ArticleNumber));
 
             _articles = _db.GetArticle(e.Data.ArticleNumber);
-
+            LogArticles(_articles);
             if (_articles != null && _articles.Count > 0)
             {
+                Log.Trace("_articles != null && _articles.Count > 0");
                 _totalEdges = _articles.Count;
                 UpdateViewModel(_articles, e);
             }
             else
             {
+                Log.Error(string.Format("Article not found: {0}", e.Data.ArticleNumber));
                 Article empty = new Article();
                 List<Article> emptyList = new List<Article>();
                 emptyList.Add(empty);
@@ -304,19 +309,31 @@ namespace DCMarker.Model
             }
         }
 
+        private static void LogArticles(List<Article> articles)
+        {
+            foreach (Article a in articles)
+            {
+                Log.Trace(string.Format("Article: {0} - Kant: {1}", a.F1, a.Kant));
+            }
+        }
+
         public void LoadArticleNumber(string articleNumber)
         {
-            HasError = false;
-            IsLoadOnStartup = true;
-            IsTOnumberApproved = false;
-            Log.Trace("ArticleEvent");
-            RaiseErrorEvent(string.Empty);
-            _articleNumber = articleNumber;
-            ArticleData data = new ArticleData();
-            data.IsNewArticleNumber = true;
-            data.ArticleNumber = articleNumber;
-            ArticleArgs e = new ArticleArgs(data);
-            GetArticleDbData(e);
+            _articleInput.SetArticleData(articleNumber);
+            //HasError = false;
+            //IsLoadOnStartup = true;
+            //IsTOnumberApproved = false;
+            //IsTOnumberUpdated = false;
+            //Log.Trace("ArticleEvent");
+            //_currentEdge = 0;
+            //RaiseErrorEvent(string.Empty);
+            //_articleNumber = articleNumber;
+            //ArticleData data = new ArticleData();
+            //data.ArticleNumber = articleNumber;
+            //data.IsNewArticleNumber = true;
+            //var e = new ArticleArgs(data);
+            //ArticleHasToNumber = false;
+            //GetArticleDbData(e);
         }
 
         public void LoadUpdateLayout()
@@ -324,6 +341,7 @@ namespace DCMarker.Model
             if (!HasError)
             {
                 UpdateLayout();
+                StartPoll(DCConfig.Instance.AdamPollInterval, DCConfig.Instance.AdamErrorTimeout);
             }
         }
 
@@ -452,7 +470,7 @@ namespace DCMarker.Model
                                 {
                                     // we are ready to mark...
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
-                                    if (!IsLoadOnStartup)
+                                    //if (!IsLoadOnStartup)
                                     {
                                         if (_hasEdges)
                                         {
@@ -514,12 +532,20 @@ namespace DCMarker.Model
 
         private void WaitForToNumber()
         {
-            Log.Trace("WaitForTOnumber");
-            while (!IsTOnumberApproved || string.IsNullOrWhiteSpace(TOnumber))
+            try
             {
-                Thread.Sleep(1);
+                Log.Trace("WaitForTOnumber");
+                while (!IsTOnumberApproved || string.IsNullOrWhiteSpace(TOnumber))
+                {
+                    Thread.Sleep(1);
+                }
+                Log.Trace("WaitForTOnumber Done");
             }
-            Log.Trace("WaitForTOnumber Done");
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Unknown Error");
+                throw;
+            }
         }
 
         public void UserHasApprovedTOnumber(bool state)
@@ -729,6 +755,7 @@ namespace DCMarker.Model
 
         private void UpdateViewModel(List<Article> articles, ArticleArgs e)
         {
+            Log.Trace("UpdateViewModel");
             UpdateViewModelData data = CreateUpdateViewModelData(articles, e);
 
             RaiseUpdateMainViewModelEvent(data);
@@ -736,6 +763,7 @@ namespace DCMarker.Model
 
         private UpdateViewModelData CreateUpdateViewModelData(List<Article> articles, ArticleArgs e)
         {
+            Log.Trace("CreateUpdateViewModelData");
             var data = new UpdateViewModelData();
             Article article = articles[_currentEdge];
             data.TotalKant = articles.Count.ToString();
@@ -782,6 +810,8 @@ namespace DCMarker.Model
 
             data.Template = article.Template;
             data.HasTOnr = ArticleHasToNumber;
+
+            Log.Trace("CreateUpdateViewModelData Done");
             return data;
         }
 

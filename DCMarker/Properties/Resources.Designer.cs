@@ -599,5 +599,14 @@ namespace DCMarker.Properties {
                 return ResourceManager.GetString("xlp", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must enter Production number BEFORE giving start signal to the machine!.
+        /// </summary>
+        public static string You_must_enter_Production_number_BEFORE_giving_start_signal_to_the_machine {
+            get {
+                return ResourceManager.GetString("You_must_enter_Production_number_BEFORE_giving_start_signal_to_the_machine", resourceCulture);
+            }
+        }
     }
 }
