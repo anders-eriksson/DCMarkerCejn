@@ -231,6 +231,7 @@ namespace DCMarker
             Properties.Settings.Default.TONumber = TOnr;
             Properties.Settings.Default.Save();
         }
+
 #if false
         private bool LoadLastArticleNumber()
         {
@@ -295,7 +296,6 @@ namespace DCMarker
             Status = e.Data.Status;
 
             DCLog.Log.Debug("_wf_UpdateMainViewModelEvent Done");
-            //System.Threading.Thread.Sleep(100);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -391,11 +391,10 @@ namespace DCMarker
                 {
                     IsTOButtonActive = true;
                     IsTOnumber = true;
-                    if(string.IsNullOrWhiteSpace(TOnr))
+                    if (string.IsNullOrWhiteSpace(TOnr))
                     {
                         ErrorMessage = GlblRes.You_must_enter_Production_number_BEFORE_giving_start_signal_to_the_machine;
                     }
-
                 }
                 else
                 {
@@ -666,7 +665,7 @@ namespace DCMarker
             }
         }
 
-#region Commands
+        #region Commands
 
         private ICommand _UpdateToNumberCommand;
 
@@ -721,9 +720,9 @@ namespace DCMarker
             return HasTOnr;
         }
 
-#endregion Commands
+        #endregion Commands
 
-#region Set Focus to TO-Number Event
+        #region Set Focus to TO-Number Event
 
         public delegate void SetFocusToNumberHandler(bool mode);
 
@@ -744,6 +743,6 @@ namespace DCMarker
             }
         }
 
-#endregion Set Focus to TO-Number Event
+        #endregion Set Focus to TO-Number Event
     }
 }

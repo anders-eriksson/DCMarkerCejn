@@ -423,7 +423,6 @@ namespace DCAdam
                 if (acquiredLock)
                 {
                     CheckConnection();
-                    Thread.Sleep(DCConfig.Instance.AdamWaitBeforeWrite);
                     result = adamModbus.Modbus().ForceMultiCoils(startAddress, values);
                     Log.Debug(string.Format("ForceMultiCoil result = {0}", result));
                 }

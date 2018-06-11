@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCLog", "DCLog\DCLog.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlcSimulator", "PlcSimulator\PlcSimulator.csproj", "{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAdamComm", "TestAdamComm\TestAdamComm.csproj", "{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -378,6 +380,22 @@ Global
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.ReleaseTEST|Any CPU.Build.0 = Release|Any CPU
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.ReleaseTEST|x86.ActiveCfg = Release|Any CPU
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.ReleaseTEST|x86.Build.0 = Release|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Debug|x86.Build.0 = Debug|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.DebugLocal|x86.ActiveCfg = Debug|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.DebugLocal|x86.Build.0 = Debug|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Release|x86.ActiveCfg = Release|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Release|x86.Build.0 = Release|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.ReleaseTEST|Any CPU.ActiveCfg = Release|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.ReleaseTEST|Any CPU.Build.0 = Release|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.ReleaseTEST|x86.ActiveCfg = Release|Any CPU
+		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.ReleaseTEST|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

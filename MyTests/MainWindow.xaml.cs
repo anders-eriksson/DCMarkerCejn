@@ -22,6 +22,7 @@ namespace MyTests
     public partial class MainWindow : Window
     {
         private ManualMainViewModel mainVM;
+        private byte[] _allowedArray;
 
         public MainWindow()
         {
@@ -30,12 +31,26 @@ namespace MyTests
             currentMask = IoFix.Add(4);
             currentMask = IoFix.Add(2);
             currentMask = IoFix.Delete(1);
+            _allowedArray = new byte[] { 10, 12, 14, 16 };
+
+            bool brc = IsDataAllowed(10);
+            brc = IsDataAllowed(12);
+            brc = IsDataAllowed(14);
+            brc = IsDataAllowed(15);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             mainVM = new ManualMainViewModel();
             DataContext = mainVM;
+        }
+
+        private bool IsDataAllowed(byte data)
+        {
+            bool result = false;
+            result = _allowedArray.Contains(data);
+
+            return result;
         }
     }
 }

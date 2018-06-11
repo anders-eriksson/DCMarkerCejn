@@ -19,7 +19,29 @@ namespace CommunicationService
         private int _pollTimer_TimeSpan;
         private ArticleData _articleData;
         private volatile byte _oldData;
+
+        /// <summary>
+        /// All allowed commands
+        /// </summary>
+        private byte[] _allowedArray;
+
+        /// <summary>
+        /// All allowed params
+        /// </summary>
+        private byte[] _allowedParamArray;
+
+#if FULLFILENAME
+        /// <summary>
+        /// Invalid chars for filename
+        /// </summary>
+        private byte[] _invalidCharsArray;
+#endif
+
+        /// <summary>
+        /// Current command data
+        /// </summary>
         private CommandData _currentCommand;
+
         private object execLock = new object();
 
         public bool IsWaitingForAnswer { get; private set; }
@@ -44,6 +66,31 @@ namespace CommunicationService
         {
             Guard.Against.Null(comm, nameof(comm));
             _comm = comm;
+            LoadAllowedValues();
+        }
+
+        private void LoadAllowedValues()
+        {
+            _allowedArray = new byte[] {
+                  Constants.ArtNrCode,
+                  Constants.OkCode,
+                  Constants.StartMarkingCode,
+                  Constants.RestartCode
+            };
+
+            // Only allow ETX and digits 0 - 6
+            _allowedParamArray = new byte[] { 3, 48, 49, 50, 51, 52, 53, 54 };
+
+#if FULLFILENAME
+            _invalidCharsArray = new byte[] { chr("<"), chr(">"), chr(":"), chr("="), chr("\""), chr("/"), chr("\\"), chr("|"), chr("?"), chr("*") };
+#endif
+        }
+
+        private byte chr(string s)
+        {
+            byte result = (byte)Convert.ToChar(s);
+
+            return result;
         }
 
         ~CommService()
@@ -377,7 +424,6 @@ namespace CommunicationService
                                 Log.Trace("AcknowledgeRead Timedout");
                                 IsTimedout++;
                             }
-                            //Thread.Sleep(DCConfig.Instance.AdamWaitBeforeWrite);
                         }
                     }
                 }
@@ -461,10 +507,11 @@ namespace CommunicationService
                     break;
 
                 case CommandTypes.EndMarking:
-                    if (_currentCommand.Params[0] == 49)
-                    {
-                        RaiseLaserEndEvent();
-                    }
+                    Log.Error("Command EndMarking (15) should not be called! Check again with PLC programmer!!!!");
+                    //if (_currentCommand.Params[0] == 49)
+                    //{
+                    //    RaiseLaserEndEvent();
+                    //}
                     break;
 
                 case CommandTypes.Restart:
@@ -495,7 +542,7 @@ namespace CommunicationService
             //Debug.WriteLine("\tGetParam");
             do
             {
-                result = ReadUntilNewData(_oldData, out data);      // _oldData is updated
+                result = ReadParamUntilNewData(_oldData, out data);      // _oldData is updated
                 if (data != Constants.ETX)
                 {
                     _currentCommand.Params.Add(data);
@@ -507,17 +554,19 @@ namespace CommunicationService
             return result;
         }
 
-        private bool ReadUntilNewData(byte oldData, out byte data)
+        private bool ReadCommandUntilNewData(byte oldData, out byte data)
         {
             bool result = true;
+            bool allowedValue = false;
             //Debug.WriteLine("\tReadUntilNewData");
             data = 0;
             DateTime startTime = DateTime.Now;
             bool timeout = false;
-            Log.Trace(string.Format("ReadUntilNewData oldData: {0}", oldData));
+            Log.Trace(string.Format("ReadCommandUntilNewData oldData: {0}", oldData));
 
             do
             {
+                Sleep(DCConfig.Instance.AdamWaitBeforeRead);
                 data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
                 Log.Trace(string.Format("data: {0}", data));
                 if (DCConfig.Instance.IsAdamErrorTimeoutActive)
@@ -528,25 +577,101 @@ namespace CommunicationService
                         timeout = true;
                     }
                 }
-                if (!timeout && data == oldData)
-                {
-                    Thread.Sleep(_pollTimer_TimeSpan);
-                }
-            } while (data == oldData && !timeout);
+
+                allowedValue = IsCommandAllowed(data);
+            } while (!allowedValue && !timeout);
 
             _oldData = data;
-            Log.Trace(string.Format("ReadUntilNewData Returns: {0}", data));
+            Log.Trace(string.Format("ReadCommandUntilNewData Returns: {0}", data));
 
             result = !timeout;
             return result;
         }
+
+        private bool ReadParamUntilNewData(byte oldData, out byte data)
+        {
+            bool result = true;
+            bool allowedValue = false;
+            //Debug.WriteLine("\tReadUntilNewData");
+            data = 0;
+            DateTime startTime = DateTime.Now;
+            bool timeout = false;
+            Log.Trace(string.Format("ReadParamUntilNewData oldData: {0}", oldData));
+            do
+            {
+                Sleep(DCConfig.Instance.AdamWaitBeforeRead);
+                data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
+                Log.Trace(string.Format("data: {0}", data));
+                if (DCConfig.Instance.IsAdamErrorTimeoutActive)
+                {
+                    TimeSpan ts = DateTime.Now - startTime;
+                    if (ts.TotalMilliseconds > DCConfig.Instance.AdamErrorTimeout)
+                    {
+                        timeout = true;
+                    }
+                }
+                allowedValue = IsParamAllowed(data);
+            } while (!allowedValue && !timeout);
+
+            _oldData = data;
+            Log.Trace(string.Format("ReadParamUntilNewData Returns: {0}", data));
+
+            result = !timeout;
+            return result;
+        }
+
+        private bool IsCommandAllowed(byte data)
+        {
+            bool result = false;
+            result = _allowedArray.Contains(data);
+
+            return result;
+        }
+
+        private bool IsParamAllowed(byte data)
+        {
+            bool result = false;
+            if (_currentCommand.Type == CommandTypes.ArtNo)
+            {
+                // the params are the layout name in ASCII which means that all characters are allowed that can be used as a filename...
+                //
+#if FULLFILENAME
+                // result = IsValidFileChar(data);
+#else
+                // The PLC will only send digits! So I limit the data to 0 - 9
+                if (data > 47 && data < 58)
+                    result = true;
+                else
+                    result = false;
+#endif
+            }
+            else
+            {
+                result = _allowedParamArray.Contains(data);
+            }
+
+            return result;
+        }
+
+#if FULLFILENAME
+        private bool IsValidFileChar(byte data)
+        {
+            if (data < 32 || data == 127)
+                return false;
+
+            if (_invalidCharsArray.Contains(data))
+                return false;
+
+            return true;
+        }
+#endif
 
         private bool GetCommand(out byte data)
         {
             bool result = true;
             Log.Trace("GetCommand");
             data = 0;
-            result = ReadUntilNewData(_oldData, out data);
+            result = ReadCommandUntilNewData(_oldData, out data);
             if (result)
             {
                 result = ParseData(data);
@@ -613,6 +738,7 @@ namespace CommunicationService
                 _comm.Write(Constants.DOstartAddress, data);
                 do
                 {
+                    Sleep(DCConfig.Instance.AdamWaitBeforeRead);
                     data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
                     Log.Trace(string.Format("data: {0}", data));
                     if (data == null)
@@ -630,10 +756,6 @@ namespace CommunicationService
                             timeout = true;
                             //RaiseErrorEvent("Timout occurred waiting for signal from PLC");
                         }
-                    }
-                    if (!timeout && data != Constants.ACK)
-                    {
-                        Thread.Sleep(_pollTimer_TimeSpan);
                     }
                 } while (data != Constants.ACK && !timeout);
                 //Debug.WriteLine("\t\ttimeout: {0}", timeout);
@@ -670,6 +792,7 @@ namespace CommunicationService
 
             do
             {
+                Sleep(DCConfig.Instance.AdamWaitBeforeRead);
                 data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
                 Log.Trace(string.Format("Read Command from PLC: Read: {0} - Waiting for: {1}", data, outData));
                 if (DCConfig.Instance.IsAdamErrorTimeoutActive)
@@ -681,11 +804,6 @@ namespace CommunicationService
                         //RaiseErrorEvent("Timout occurred waiting for signal from PLC");
                     }
                 }
-
-                if (!timeout && data != outData)
-                {
-                    Thread.Sleep(_pollTimer_TimeSpan);
-                }
             } while (data != outData && !timeout);
 
             if (!timeout)
@@ -696,6 +814,7 @@ namespace CommunicationService
                 // Read it back
                 do
                 {
+                    Sleep(DCConfig.Instance.AdamWaitBeforeRead);
                     data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
 
                     Log.Trace(string.Format("Read ACK from PLC: {0}", data));
@@ -710,11 +829,6 @@ namespace CommunicationService
                             //RaiseErrorEvent("Timout occurred waiting for signal from PLC");
                         }
                     }
-
-                    if (!timeout && data != Constants.ACK)
-                    {
-                        Thread.Sleep(_pollTimer_TimeSpan);
-                    }
                 } while (data != Constants.ACK && !timeout);
             }
 
@@ -725,7 +839,14 @@ namespace CommunicationService
 
         public bool Write(ushort startAddress, byte data)
         {
+            Sleep(DCConfig.Instance.AdamWaitBeforeWrite);
             return _comm.Write(startAddress, data);
+        }
+
+        private static void Sleep(int w)
+        {
+            if (w > 0)
+                Thread.Sleep(w);
         }
 
         #region Error Event

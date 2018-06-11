@@ -109,8 +109,10 @@ namespace Configuration
                 IsAdamErrorTimeoutActive = _profile.GetValue("Adam", nameof(IsAdamErrorTimeoutActive), true);
                 AdamErrorTimeout = _profile.GetValue("Adam", nameof(AdamErrorTimeout), 1000);
                 AdamAllowedTimeouts = _profile.GetValue("Adam", nameof(AdamAllowedTimeouts), 20);
-                AdamWaitBeforeWrite = _profile.GetValue("Adam", nameof(AdamWaitBeforeWrite), 400);
-                AdamPollInterval = _profile.GetValue("Adam", nameof(AdamPollInterval), 200);
+                AdamWaitBeforeWrite = _profile.GetValue("Adam", nameof(AdamWaitBeforeWrite), 10);
+                AdamWaitBeforeRead = _profile.GetValue("Adam", nameof(AdamWaitBeforeRead), 10);
+                AdamMinRereads = _profile.GetValue("Adam", nameof(AdamMinRereads), 3);
+                AdamPollInterval = _profile.GetValue("Adam", nameof(AdamPollInterval), 10);
                 AdamLogTelegrams = _profile.GetValue("Adam", nameof(AdamLogTelegrams), false);
                 // GUI
                 ResetInputValues = _profile.GetValue("GUI", nameof(ResetInputValues), true);
@@ -164,6 +166,8 @@ namespace Configuration
                 _profile.SetValue("Adam", nameof(AdamErrorTimeout), AdamErrorTimeout);
                 _profile.SetValue("Adam", nameof(AdamAllowedTimeouts), AdamAllowedTimeouts);
                 _profile.SetValue("Adam", nameof(AdamWaitBeforeWrite), AdamWaitBeforeWrite);
+                _profile.SetValue("Adam", nameof(AdamWaitBeforeRead), AdamWaitBeforeRead);
+                _profile.SetValue("Adam", nameof(AdamMinRereads), AdamMinRereads);
                 _profile.SetValue("Adam", nameof(AdamPollInterval), AdamPollInterval);
                 _profile.SetValue("Adam", nameof(AdamLogTelegrams), AdamLogTelegrams);
                 // GUI
@@ -250,6 +254,13 @@ namespace Configuration
         /// This so that the PLC have time to read the last ACK
         /// </summary>
         public int AdamWaitBeforeWrite { get; set; }
+
+        public int AdamWaitBeforeRead { get; set; }
+
+        /// <summary>
+        /// Number of times we re-read a param to be sure that we have gotten the correct one!
+        /// </summary>
+        public int AdamMinRereads { get; set; }
 
         /// <summary>
         /// Interval in milliseconds between polling the ADAM module

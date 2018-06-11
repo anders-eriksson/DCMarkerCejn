@@ -145,45 +145,45 @@ namespace DCAdam
                 SendCommands.Add(Constants.ETX);
                 SendCommands.Add(Constants.ACK);
 
-                // Start/OK
-                SendCommands.Add(Constants.STX);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(Constants.OkCode);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(49);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(Constants.ETX);
-                SendCommands.Add(Constants.ACK);
+                //// Start/OK
+                //SendCommands.Add(Constants.STX);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(Constants.OkCode);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(49);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(Constants.ETX);
+                //SendCommands.Add(Constants.ACK);
 
-                // reply on PC SetKant
-                SendCommands.Add(Constants.STX);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(Constants.SetKantCode);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(49);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(Constants.ETX);
-                SendCommands.Add(Constants.ACK);
+                //// reply on PC SetKant
+                //SendCommands.Add(Constants.STX);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(Constants.SetKantCode);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(49);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(Constants.ETX);
+                //SendCommands.Add(Constants.ACK);
 
-                // reply on PC BatchNotReady
-                SendCommands.Add(Constants.STX);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(Constants.BatchNotReadyCode);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(49);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(Constants.ETX);
-                SendCommands.Add(Constants.ACK);
+                //// reply on PC BatchNotReady
+                //SendCommands.Add(Constants.STX);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(Constants.BatchNotReadyCode);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(49);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(Constants.ETX);
+                //SendCommands.Add(Constants.ACK);
 
-                // reply on PC ReadyToMark
-                SendCommands.Add(Constants.STX);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(Constants.ReadyToMarkCode);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(49);
-                SendCommands.Add(Constants.ACK);
-                SendCommands.Add(Constants.ETX);
-                SendCommands.Add(Constants.ACK);
+                //// reply on PC ReadyToMark
+                //SendCommands.Add(Constants.STX);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(Constants.ReadyToMarkCode);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(49);
+                //SendCommands.Add(Constants.ACK);
+                //SendCommands.Add(Constants.ETX);
+                //SendCommands.Add(Constants.ACK);
             }
         }
 
@@ -198,6 +198,9 @@ namespace DCAdam
                 SendCommands.Add(Constants.ACK);
                 SendCommands.Add(Constants.OkCode);
                 SendCommands.Add(Constants.ACK);
+                // partial reads
+                SendCommands.Add(51);
+                SendCommands.Add(49);
                 SendCommands.Add(49);
                 SendCommands.Add(Constants.ACK);
                 SendCommands.Add(Constants.ETX);
