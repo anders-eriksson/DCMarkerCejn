@@ -108,6 +108,7 @@ namespace LaserWrapper
                 Log.Error(ex, "Laser: Error executing document");
                 result = false;
             }
+            Log.Trace("Laser: Execute Returns");
             return result;
         }
 

@@ -93,6 +93,7 @@ namespace DCMarker
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             mainViewModel.Abort();
+            Log.Shutdown();
         }
 
         private void ResetSignals_Click(object sender, RoutedEventArgs e)

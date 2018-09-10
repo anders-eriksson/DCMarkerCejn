@@ -119,6 +119,12 @@ namespace DCLog
             return fileName;
         }
 
+        public static void Shutdown()
+        {
+            LogManager.Flush();
+            LogManager.Shutdown();
+        }
+
         /// <summary>
         /// The actual logging to NLog
         /// </summary>

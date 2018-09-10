@@ -37,11 +37,23 @@ namespace CommunicationService
         private byte[] _invalidCharsArray;
 #endif
 
+#if DEBUG
+
         /// <summary>
         /// Current command data
         /// </summary>
+        ///
+        public CommandData _currentCommand;
+
+#else
+
+        /// <summary>
+        /// Current command data
+        /// </summary>
+        ///
         private CommandData _currentCommand;
 
+#endif
         private object execLock = new object();
 
         public bool IsWaitingForAnswer { get; private set; }
@@ -117,11 +129,6 @@ namespace CommunicationService
             }
 
             return result;
-        }
-
-        public byte Read(ushort startAddress, ushort totalPoints)
-        {
-            return _comm.Read(startAddress, totalPoints);
         }
 
         public bool StartPoll(int pollinterval, int errortimout)
@@ -266,6 +273,7 @@ namespace CommunicationService
 
             do
             {
+                Sleep(DCConfig.Instance.AdamWaitBeforeCommand);
                 bool brc = SendStartCommand();
                 if (brc)
                 {
@@ -378,7 +386,7 @@ namespace CommunicationService
                 Monitor.TryEnter(execLock, DCConfig.Instance.AdamErrorTimeout, ref lockCreated);
                 if (lockCreated)
                 {
-                    byte data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
+                    byte data = Read(Constants.DIstartAddress, Constants.DItotalPoints);
                     if (_oldData != data)
                     {
                         _oldData = data;
@@ -448,7 +456,7 @@ namespace CommunicationService
                 string msg = string.Format("Communication with PLC has timed out more than {0} times! Check PLC, ADAM module and restart DCMarker!", DCConfig.Instance.AdamAllowedTimeouts);
                 Log.Fatal(msg);
                 RaiseErrorEvent(msg);
-                _comm.Write(Constants.DOstartAddress, 0);
+                Write(Constants.DOstartAddress, 0);
                 //Abort();
                 return;
             }
@@ -566,8 +574,7 @@ namespace CommunicationService
 
             do
             {
-                Sleep(DCConfig.Instance.AdamWaitBeforeRead);
-                data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
+                data = Read(Constants.DIstartAddress, Constants.DItotalPoints);
                 Log.Trace(string.Format("data: {0}", data));
                 if (DCConfig.Instance.IsAdamErrorTimeoutActive)
                 {
@@ -599,8 +606,7 @@ namespace CommunicationService
             Log.Trace(string.Format("ReadParamUntilNewData oldData: {0}", oldData));
             do
             {
-                Sleep(DCConfig.Instance.AdamWaitBeforeRead);
-                data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
+                data = Read(Constants.DIstartAddress, Constants.DItotalPoints);
                 Log.Trace(string.Format("data: {0}", data));
                 if (DCConfig.Instance.IsAdamErrorTimeoutActive)
                 {
@@ -628,7 +634,13 @@ namespace CommunicationService
             return result;
         }
 
+#if DEBUG
+
+        public bool IsParamAllowed(byte data)
+#else
+
         private bool IsParamAllowed(byte data)
+#endif
         {
             bool result = false;
             if (_currentCommand.Type == CommandTypes.ArtNo)
@@ -638,8 +650,8 @@ namespace CommunicationService
 #if FULLFILENAME
                 // result = IsValidFileChar(data);
 #else
-                // The PLC will only send digits! So I limit the data to 0 - 9
-                if (data > 47 && data < 58)
+                // The PLC will only send digits! So I limit the data to 0 - 9 and ETX
+                if (data > 47 && data < 58 || data == Constants.ETX)
                     result = true;
                 else
                     result = false;
@@ -656,6 +668,9 @@ namespace CommunicationService
 #if FULLFILENAME
         private bool IsValidFileChar(byte data)
         {
+            if(data==Constants.ETX)
+                return true;
+
             if (data < 32 || data == 127)
                 return false;
 
@@ -735,11 +750,10 @@ namespace CommunicationService
             Log.Trace("\tAcknowledgeRead");
             try
             {
-                _comm.Write(Constants.DOstartAddress, data);
+                Write(Constants.DOstartAddress, data);
                 do
                 {
-                    Sleep(DCConfig.Instance.AdamWaitBeforeRead);
-                    data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
+                    data = Read(Constants.DIstartAddress, Constants.DItotalPoints);
                     Log.Trace(string.Format("data: {0}", data));
                     if (data == null)
                     {
@@ -762,7 +776,8 @@ namespace CommunicationService
                 if (!timeout)
                 {
                     _oldData = data.Value;
-                    _comm.Write(Constants.DOstartAddress, data);
+
+                    Write(Constants.DOstartAddress, data);
                 }
                 result = !timeout;
             }
@@ -792,8 +807,7 @@ namespace CommunicationService
 
             do
             {
-                Sleep(DCConfig.Instance.AdamWaitBeforeRead);
-                data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
+                data = Read(Constants.DIstartAddress, Constants.DItotalPoints);
                 Log.Trace(string.Format("Read Command from PLC: Read: {0} - Waiting for: {1}", data, outData));
                 if (DCConfig.Instance.IsAdamErrorTimeoutActive)
                 {
@@ -809,13 +823,12 @@ namespace CommunicationService
             if (!timeout)
             {
                 // Send ACK
-                _comm.Write(Constants.DOstartAddress, Constants.ACK);
+                Write(Constants.DOstartAddress, Constants.ACK);
                 Log.Trace("Send ACK");
                 // Read it back
                 do
                 {
-                    Sleep(DCConfig.Instance.AdamWaitBeforeRead);
-                    data = _comm.Read(Constants.DIstartAddress, Constants.DItotalPoints);
+                    data = Read(Constants.DIstartAddress, Constants.DItotalPoints);
 
                     Log.Trace(string.Format("Read ACK from PLC: {0}", data));
 
@@ -837,7 +850,13 @@ namespace CommunicationService
             return result;
         }
 
-        public bool Write(ushort startAddress, byte data)
+        public byte Read(ushort startAddress, ushort totalPoints)
+        {
+            Sleep(DCConfig.Instance.AdamWaitBeforeRead);
+            return _comm.Read(startAddress, totalPoints);
+        }
+
+        public bool Write(ushort startAddress, byte? data)
         {
             Sleep(DCConfig.Instance.AdamWaitBeforeWrite);
             return _comm.Write(startAddress, data);

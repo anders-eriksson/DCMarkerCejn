@@ -111,7 +111,7 @@ namespace Configuration
                 AdamAllowedTimeouts = _profile.GetValue("Adam", nameof(AdamAllowedTimeouts), 20);
                 AdamWaitBeforeWrite = _profile.GetValue("Adam", nameof(AdamWaitBeforeWrite), 10);
                 AdamWaitBeforeRead = _profile.GetValue("Adam", nameof(AdamWaitBeforeRead), 10);
-                AdamMinRereads = _profile.GetValue("Adam", nameof(AdamMinRereads), 3);
+                AdamWaitBeforeCommand = _profile.GetValue("Adam", nameof(AdamWaitBeforeCommand), 0);
                 AdamPollInterval = _profile.GetValue("Adam", nameof(AdamPollInterval), 10);
                 AdamLogTelegrams = _profile.GetValue("Adam", nameof(AdamLogTelegrams), false);
                 // GUI
@@ -167,7 +167,7 @@ namespace Configuration
                 _profile.SetValue("Adam", nameof(AdamAllowedTimeouts), AdamAllowedTimeouts);
                 _profile.SetValue("Adam", nameof(AdamWaitBeforeWrite), AdamWaitBeforeWrite);
                 _profile.SetValue("Adam", nameof(AdamWaitBeforeRead), AdamWaitBeforeRead);
-                _profile.SetValue("Adam", nameof(AdamMinRereads), AdamMinRereads);
+                _profile.SetValue("Adam", nameof(AdamWaitBeforeCommand), AdamWaitBeforeCommand);
                 _profile.SetValue("Adam", nameof(AdamPollInterval), AdamPollInterval);
                 _profile.SetValue("Adam", nameof(AdamLogTelegrams), AdamLogTelegrams);
                 // GUI
@@ -249,6 +249,8 @@ namespace Configuration
         /// </summary>
         public int AdamAllowedTimeouts { get; set; }
 
+        public int AdamWaitBeforeCommand { get; set; }
+
         /// <summary>
         /// Number of milliseconds we wait before we send an STX.
         /// This so that the PLC have time to read the last ACK
@@ -256,11 +258,6 @@ namespace Configuration
         public int AdamWaitBeforeWrite { get; set; }
 
         public int AdamWaitBeforeRead { get; set; }
-
-        /// <summary>
-        /// Number of times we re-read a param to be sure that we have gotten the correct one!
-        /// </summary>
-        public int AdamMinRereads { get; set; }
 
         /// <summary>
         /// Interval in milliseconds between polling the ADAM module
