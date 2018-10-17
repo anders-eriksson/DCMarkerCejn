@@ -1,4 +1,4 @@
-namespace DCMarker.Model
+namespace Contracts
 {
     using Contracts;
     using System;
@@ -55,6 +55,7 @@ namespace DCMarker.Model
         void UserHasApprovedTOnumber(bool state);
 
 #if DEBUG
+
         void _laser_ItemInPositionEvent();
 
         void ArtNo(string artno);

@@ -246,7 +246,10 @@ namespace DCMarker.Model
         private void _articleInput_StartMarkingEvent(object sender, EventArgs e)
         {
             _articleInput.ReadyToMark(false);
-            _laser.Execute();
+            bool berror = _laser.Execute();
+            if (!berror)
+            {
+            }
         }
 
         private void _articleInput_RestartEvent(object sender, EventArgs e)

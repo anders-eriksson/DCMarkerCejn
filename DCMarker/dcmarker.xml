@@ -23,7 +23,7 @@
     <entry name="ToNumberLength">7</entry>
   </section>
   <section name="Machine">
-    <entry name="TypeOfMachine">4</entry>
+    <entry name="TypeOfMachine">5</entry>
     <entry name="GuiLanguage">sv-SE</entry>
     <entry name="Debug">True</entry>
     <entry name="ClearClipboard">True</entry>

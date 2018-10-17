@@ -105,13 +105,21 @@
     <Compile Include="ErrorMainWindow.xaml.cs">
       <DependentUpon>ErrorMainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Flexible\FlexibleItem.cs" />
+    <Compile Include="Flexible\FlexibleItemStates.cs" />
     <Compile Include="FocusAdvancement.cs" />
     <Compile Include="FocusExtension.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Flexible\FlexibleMainViewModel.cs" />
     <Compile Include="ManualMainViewModel.cs" />
+    <Compile Include="Flexible\FlexibleMainWindow.xaml.cs">
+      <DependentUpon>FlexibleMainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ManualMainWindow.xaml.cs">
       <DependentUpon>ManualMainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Flexible\FlexibleWorkFlow.cs" />
+    <Compile Include="Flexible\FlexibleArticleInput.cs" />
     <Compile Include="Model\NippleWorkFlow.cs" />
     <Compile Include="Model\AdamArticleInput.cs" />
     <Compile Include="Model\TcpArticleInputWithTOnr.cs" />
@@ -144,6 +152,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Flexible\FlexibleMainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ManualMainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -189,6 +201,7 @@
     <EmbeddedResource Include="Properties\Resources.sv.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.sv.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>
@@ -215,6 +228,7 @@
       <DependentUpon>dcmarker.xml</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
     </None>
+    <Resource Include="MachineType.txt" />
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -287,6 +301,10 @@
     <Resource Include="LoadingDatabase.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Type1\" />
+    <Folder Include="Type3\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets" Label="MultilingualAppToolkit" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\v$(MultilingualAppToolkitVersion)\Microsoft.Multilingual.ResxResources.targets')" />

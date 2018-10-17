@@ -154,7 +154,7 @@
     <value>DCMarker</value>
   </data>
   <data name="ToNumber" xml:space="preserve">
-    <value>Production</value>
+    <value>TO Number</value>
   </data>
   <data name="Update_didnt_work_on_this_article_and_layout_Article0_Layout1" xml:space="preserve">
     <value>Update didn't work on this article and layout! Article={0}, Layout={1}</value>
