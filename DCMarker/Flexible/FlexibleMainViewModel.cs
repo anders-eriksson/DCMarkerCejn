@@ -89,28 +89,7 @@ namespace DCMarker
 
         private void InitializeMachine()
         {
-            switch (cfg.TypeOfMachine)
-            {
-                case 1: // PLC controlled. Kenny
-                case 2: // PLC controlled with TO-number.
-                    _wf = new WorkFlow();
-                    break;
-
-                case 3:
-                    _wf = new ManualWorkFlow();
-                    break;
-
-                case 4:
-                    _wf = new NippleWorkFlow();
-                    break;
-
-                case 5:
-                    _wf = new FlexibleWorkFlow();
-                    break;
-
-                default:
-                    throw new Exception(string.Format(GlblRes.Type_of_machine_not_available_Type0, cfg.TypeOfMachine));
-            }
+            _wf = new FlexibleWorkFlow();
         }
 
         internal void ResetAllIoSignals()

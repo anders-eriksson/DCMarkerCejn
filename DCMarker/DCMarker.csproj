@@ -112,7 +112,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Flexible\FlexibleMainViewModel.cs" />
     <Compile Include="ManualMainViewModel.cs" />
-    <Compile Include="Flexible\FlexibleMainWindow.xaml.cs">
+    <Compile Include="FlexibleMainWindow.xaml.cs">
       <DependentUpon>FlexibleMainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ManualMainWindow.xaml.cs">
@@ -152,7 +152,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Flexible\FlexibleMainWindow.xaml">
+    <Page Include="FlexibleMainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
