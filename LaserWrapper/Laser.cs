@@ -12,7 +12,7 @@ using GlblRes = global::LaserWrapper.Properties.Resources;
 
 namespace LaserWrapper
 {
-    public class Laser : ILaser, IDigitalIo, Contracts.IAxis
+    public partial class Laser : ILaser, IDigitalIo, Contracts.IAxis
     {
         private static object lockObj = new object();
         private LaserDoc _doc;
@@ -328,6 +328,8 @@ namespace LaserWrapper
                 _laserAxis.sigAxisError += _laserAxis_sigAxisError;
 
                 _laserSystem = _laser.System;
+
+                // sigQueryStart will only trigger when an External Start signal is recieved. Thus we must use sigLaserStart when debugging...
                 _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
 #if DEBUG
                 _laserSystem.sigLaserStart += _laserSystem_sigLaserStart;
@@ -481,44 +483,6 @@ namespace LaserWrapper
                 Log.Debug(string.Format("IO port is null! SetReady: {0}", OnOff));
             }
             return false;
-        }
-
-        private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
-        {
-#if DEBUG
-            Log.Trace(string.Format("Port: {0} - Bit: {1}", p_nPort, p_nBits));
-            // Item In Place
-            if ((p_nBits & sig.MASK_ITEMINPLACE) == sig.MASK_ITEMINPLACE)
-            {
-                Log.Debug("MASK_ITEMINPLACE");
-                // bit is set
-                if ((currentBits & sig.MASK_ITEMINPLACE) != sig.MASK_ITEMINPLACE)
-                {
-                    currentBits |= sig.MASK_ITEMINPLACE;
-                    RaiseItemInPositionEvent();
-                }
-            }
-            else
-            {
-                currentBits &= ~sig.MASK_ITEMINPLACE;
-            }
-
-            // Reset IO
-            if ((p_nBits & sig.MASK_RESET) == sig.MASK_RESET)
-            {
-                Log.Debug("MASK_RESET");
-                // bit is set
-                if ((currentBits & sig.MASK_RESET) != sig.MASK_RESET)
-                {
-                    currentBits |= sig.MASK_RESET;
-                    RaiseResetIoEvent();
-                }
-            }
-            else
-            {
-                currentBits &= ~sig.MASK_RESET;
-            }
-#endif
         }
 
         #endregion Digital IO

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Contracts;
 
 namespace DCMarker.Flexible
 {
@@ -14,12 +10,25 @@ namespace DCMarker.Flexible
         public int ItemId { get; set; }
         public int NumberOfEdges { get; set; }
         public int CurrentEdge { get; set; }
+        public Article Article { get; set; }
         public FlexibleItemStates ItemState { get; set; }
 
         public FlexibleItem()
         {
+            ItemId = 0;
             CurrentEdge = 0;
+            NumberOfEdges = 0;
+            Article = new Article();
             ItemState = FlexibleItemStates.None;
+        }
+
+        public void Set(int itemid, int numberofedges, int currentedge, Article article, FlexibleItemStates state)
+        {
+            ItemId = itemid;
+            NumberOfEdges = numberofedges;
+            CurrentEdge = currentedge;
+            Article = article;
+            ItemState = state;
         }
     }
 }

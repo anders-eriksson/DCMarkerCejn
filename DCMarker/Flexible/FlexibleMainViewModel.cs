@@ -294,6 +294,32 @@ namespace DCMarker
             return true;
         }
 
+        private ICommand _ExecuteMarkingCommand;
+
+        public ICommand ExecuteMarkingCommand
+        {
+            get
+            {
+                if (_ExecuteMarkingCommand == null)
+                {
+                    _ExecuteMarkingCommand = new RelayCommand(
+                        p => this.CanExecuteMarkingCommandExecute(),
+                        p => this.DoExecuteMarkingCommand());
+                }
+                return _ExecuteMarkingCommand;
+            }
+        }
+
+        private void DoExecuteMarkingCommand()
+        {
+        }
+
+        private bool CanExecuteMarkingCommandExecute()
+        {
+            // change this to the actual condition that should result to activate the command
+            return true;
+        }
+
         private ICommand _OkButtonCommand;
 
         public ICommand OkButtonCommand
@@ -477,6 +503,7 @@ namespace DCMarker
                 }
 
                 _articleNumber = value;
+                DoLoadArticleCommand();
                 NotifyPropertyChanged();
             }
         }

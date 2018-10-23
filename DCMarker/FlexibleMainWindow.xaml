@@ -190,7 +190,7 @@
             Margin="392,183,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Click="LoadButton_Click"
+            Command="{Binding LoadArticleCommand}"
             Content="Load"
             IsTabStop="False" />
         <Button
@@ -199,7 +199,7 @@
             Margin="392,210,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Click="ExecuteButton_Click"
+            Command="{Binding ExecuteMarkingCommand}"
             Content="Execute"
             IsTabStop="False" />
         <Ellipse

@@ -20,7 +20,7 @@ namespace DCMarker.Flexible
         private readonly IoSignals sig;
         private string _articleNumber;
         private List<Article> _articles;
-        private List<FlexibleItem> _items;
+        private FlexibleItem[] _items;
         private int _currentEdge;
         private DB _db;
         private bool _hasEdges;
@@ -327,13 +327,20 @@ namespace DCMarker.Flexible
         {
             try
             {
-                // TODO: Do wee need to init the machine?
+                CreateNewItems();
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Error initializing machine");
                 throw;
             }
+        }
+
+        private void CreateNewItems()
+        {
+            _items = new FlexibleItem[2];
+            _items[0] = new FlexibleItem();
+            _items[1] = new FlexibleItem();
         }
 
         private string NormalizeLayoutName(string layoutname)
@@ -503,6 +510,13 @@ namespace DCMarker.Flexible
                 _articles[i].TOnumber = article.TOnumber;
                 _articles[i].IsTestItemSelected = !article.IsTestItemSelected;
             }
+        }
+
+        private FlexibleItem CreateFlexibleItem()
+        {
+            FlexibleItem result = null;
+
+            return result;
         }
 
         private void UpdateViewModel(List<Article> articles)

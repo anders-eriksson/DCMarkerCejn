@@ -25,7 +25,7 @@
   <section name="Machine">
     <entry name="TypeOfMachine">5</entry>
     <entry name="GuiLanguage">sv-SE</entry>
-    <entry name="Debug">True</entry>
+    <entry name="Debug">False</entry>
     <entry name="ClearClipboard">True</entry>
     <entry name="CommunicationModule">1</entry>
   </section>

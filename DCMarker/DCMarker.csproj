@@ -105,6 +105,7 @@
     <Compile Include="ErrorMainWindow.xaml.cs">
       <DependentUpon>ErrorMainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Flexible\DigitalIO.cs" />
     <Compile Include="Flexible\FlexibleItem.cs" />
     <Compile Include="Flexible\FlexibleItemStates.cs" />
     <Compile Include="FocusAdvancement.cs" />

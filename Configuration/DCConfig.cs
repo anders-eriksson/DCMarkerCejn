@@ -89,10 +89,14 @@ namespace Configuration
                 LayoutPath = _profile.GetValue("Laser", nameof(LayoutPath), @"C:\DCMarker\Layouts");
                 ExecuteTimeout = _profile.GetValue("Laser", nameof(ExecuteTimeout), 10000);
                 IsIoEnabled = _profile.GetValue("Laser", nameof(IsIoEnabled), true);
+
+                // Laser IO
                 ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x01);                    // OUTPUT 0
                 MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);                    // OUTPUT 1
                 ArticleReady = _profile.GetValue("Laser", nameof(ArticleReady), 0x10);                  // OUTPUT 4
                 NextToLast = _profile.GetValue("Laser", nameof(NextToLast), 0x40);                      // OUTPUT 6
+                LastEdge = _profile.GetValue("Laser", nameof(LastEdge), 0x04);
+                HandleWithCare = _profile.GetValue("Laser", nameof(HandleWithCare), 0x20);
                 Error = _profile.GetValue("Laser", nameof(Error), 0x80);                                // OUTPUT 7
                 ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x02);                    // INPUT 1
                 EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x10);              // INPUT 4
@@ -145,10 +149,14 @@ namespace Configuration
                 _profile.SetValue("Laser", nameof(LayoutPath), LayoutPath);
                 _profile.SetValue("Laser", nameof(ExecuteTimeout), ExecuteTimeout);
                 _profile.SetValue("Laser", nameof(IsIoEnabled), IsIoEnabled);
+
+                // Laser IO
                 _profile.SetValue("Laser", nameof(ArticleReady), ArticleReady);
                 _profile.SetValue("Laser", nameof(ReadyToMark), ReadyToMark);
                 _profile.SetValue("Laser", nameof(MarkingDone), MarkingDone);
                 _profile.SetValue("Laser", nameof(NextToLast), NextToLast);
+                _profile.SetValue("Laser", nameof(LastEdge), LastEdge);
+                _profile.SetValue("Laser", nameof(HandleWithCare), HandleWithCare);
                 _profile.SetValue("Laser", nameof(Error), Error);
                 _profile.SetValue("Laser", nameof(ItemInPlace), ItemInPlace);
                 _profile.SetValue("Laser", nameof(EmergencyError), EmergencyError);
@@ -205,6 +213,8 @@ namespace Configuration
         public int ReadyToMark { get; set; }
         public int MarkingDone { get; set; }
         public int NextToLast { get; set; }
+        public int LastEdge { get; set; }
+        public int HandleWithCare { get; set; }
         public int Error { get; set; }
         public int ItemInPlace { get; set; }
         public int EmergencyError { get; set; }
