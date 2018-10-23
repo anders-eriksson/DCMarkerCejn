@@ -22,6 +22,14 @@ namespace DCMarker.Flexible
             ItemState = FlexibleItemStates.None;
         }
 
+        /// <summary>
+        /// Set values of Item
+        /// </summary>
+        /// <param name="itemid">Sequence number of current batch</param>
+        /// <param name="numberofedges">Number of Edges that should be marked</param>
+        /// <param name="currentedge">Current edge that will be marked</param>
+        /// <param name="article">Article data that will be used for marking</param>
+        /// <param name="state">Item state</param>
         public void Set(int itemid, int numberofedges, int currentedge, Article article, FlexibleItemStates state)
         {
             ItemId = itemid;
