@@ -9,6 +9,8 @@ namespace DCMarker.Flexible
     public enum FlexibleItemStates
     {
         None,
+        Error,
+        ArticleLoaded,
         ItemInPlace,
         Marking,
         MarkingDone,

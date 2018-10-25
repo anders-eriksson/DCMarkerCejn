@@ -236,7 +236,7 @@ namespace LaserWrapper
                 }
                 else
                 {
-                    Log.Error(string.Format("Laser: Layout: {0} - Can't find a field for ID: {1}", _layoutName, id));
+                    Log.Info(string.Format("Laser: Layout: {0} - Can't find a field for ID: {1}", _layoutName, id));
                 }
             }
 
@@ -530,23 +530,6 @@ namespace LaserWrapper
         }
 
         #endregion LaserError Event
-
-        #region Item in Position Event
-
-        public delegate void ItemInPositionHandler();
-
-        public event ItemInPositionHandler ItemInPositionEvent;
-
-        internal void RaiseItemInPositionEvent()
-        {
-            ItemInPositionHandler handler = ItemInPositionEvent;
-            if (handler != null)
-            {
-                handler();
-            }
-        }
-
-        #endregion Item in Position Event
 
         #region LaserQueryStart Event
 

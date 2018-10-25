@@ -52,5 +52,22 @@ namespace LaserWrapper
             }
 #endif
         }
+
+        #region Item in Position Event
+
+        public delegate void ItemInPositionHandler();
+
+        public event ItemInPositionHandler ItemInPositionEvent;
+
+        internal void RaiseItemInPositionEvent()
+        {
+            ItemInPositionHandler handler = ItemInPositionEvent;
+            if (handler != null)
+            {
+                handler();
+            }
+        }
+
+        #endregion Item in Position Event
     }
 }

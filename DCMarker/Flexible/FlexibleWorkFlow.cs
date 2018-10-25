@@ -21,10 +21,15 @@ namespace DCMarker.Flexible
         private string _articleNumber;
         private List<Article> _articles;
         private FlexibleItem[] _items;
+        private int _currentItem;
         private int _currentEdge;
         private DB _db;
         private bool _hasEdges;
         private Laser _laser;
+        private volatile bool ArticleHasToNumber = false;
+        private volatile string TOnumber;
+        private volatile bool IsTOnumberUpdated = false;
+        private volatile bool IsTOnumberApproved = false;
 
         public bool FirstMarkingResetZ { get; set; }
 
@@ -187,8 +192,23 @@ namespace DCMarker.Flexible
                 UpdateLayout();
             }
 #else
+            _currentItem = IncrementCurrentItem(_currentItem);
+
             UpdateLayout();
 #endif
+        }
+
+        private int IncrementCurrentItem(int currentItem)
+        {
+            int result = 0;
+
+            currentItem++;
+            if (currentItem > 1)
+                currentItem = 0;
+
+            result = currentItem;
+
+            return result;
         }
 
         private void _laser_LaserEndEvent()
@@ -197,6 +217,8 @@ namespace DCMarker.Flexible
             {
                 FirstMarkingResetZ = false;
                 _laser.SetPort(0, sig.MASK_MARKINGDONE);
+                _items[_currentItem].ItemState = FlexibleItemStates.MarkingDone;
+                _currentEdge++;
             }
             else
             {
@@ -396,27 +418,29 @@ namespace DCMarker.Flexible
         {
             RaiseErrorEvent(string.Empty);
 
-            Article article = null;
-            if (_articles != null && _articles.Count > 0)
+            Article article = GetItemArticle(_currentItem);
+            if (article != null)
             {
-                if (_hasEdges && _currentEdge >= _articles.Count)
-                {
-                    _hasEdges = false;
-                    _currentEdge = 1;
-                }
+                //if (_articles != null && _articles.Count > 0)
+                //{
+                //    if (_hasEdges && _currentEdge >= _articles.Count)
+                //    {
+                //        _hasEdges = false;
+                //        _currentEdge = 1;
+                //    }
 
-                if (_hasEdges)
-                {
-                    _currentEdge++;
-                    article = _articles[_currentEdge - 1];
-                }
-                else
-                {
-                    _currentEdge = 0;
+                //    if (_hasEdges)
+                //    {
+                //        _currentEdge++;
+                //        article = _articles[_currentEdge - 1];
+                //    }
+                //    else
+                //    {
+                //        _currentEdge = 0;
 
-                    article = _articles[_currentEdge];
-                    _currentEdge++;
-                }
+                //        article = _articles[_currentEdge];
+                //        _currentEdge++;
+                //    }
 
                 string layoutname = article.Template;
                 if (!string.IsNullOrEmpty(layoutname))
@@ -485,6 +509,18 @@ namespace DCMarker.Flexible
             }
         }
 
+        private Article GetItemArticle(int currentItem)
+        {
+            Article result = null;
+
+            FlexibleItem item = _items[currentItem];
+            var edge = item.CurrentEdge;
+
+            result = item.Articles[edge];
+
+            return result;
+        }
+
         public void UpdateWorkflow(Article article)
         {
             _articleNumber = article.F1;
@@ -510,6 +546,11 @@ namespace DCMarker.Flexible
                 _articles[i].TOnumber = article.TOnumber;
                 _articles[i].IsTestItemSelected = !article.IsTestItemSelected;
             }
+            _items[0].Articles = _articles;
+            _items[0].ItemState = FlexibleItemStates.ArticleLoaded;
+            _items[0].Articles = _articles;
+            _items[1].ItemState = FlexibleItemStates.ArticleLoaded;
+            _currentItem = 0;
         }
 
         private FlexibleItem CreateFlexibleItem()
@@ -548,8 +589,11 @@ namespace DCMarker.Flexible
             return data;
         }
 
-        public void UpdateTOnumber(string onr)
-        { }
+        public void UpdateTOnumber(string tonr)
+        {
+            TOnumber = tonr;
+            IsTOnumberUpdated = false;
+        }
 
         #region only used by NippleWorkFlow // AME - 2018-05-12
 

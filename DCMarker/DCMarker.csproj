@@ -108,6 +108,7 @@
     <Compile Include="Flexible\DigitalIO.cs" />
     <Compile Include="Flexible\FlexibleItem.cs" />
     <Compile Include="Flexible\FlexibleItemStates.cs" />
+    <Compile Include="Flexible\FlexibleMainViewModelCommands.cs" />
     <Compile Include="FocusAdvancement.cs" />
     <Compile Include="FocusExtension.cs" />
     <Compile Include="GlobalSuppressions.cs" />

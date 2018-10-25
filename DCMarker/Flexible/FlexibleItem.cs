@@ -1,4 +1,5 @@
 ﻿using Contracts;
+using System.Collections.Generic;
 
 namespace DCMarker.Flexible
 {
@@ -10,7 +11,7 @@ namespace DCMarker.Flexible
         public int ItemId { get; set; }
         public int NumberOfEdges { get; set; }
         public int CurrentEdge { get; set; }
-        public Article Article { get; set; }
+        public List<Article> Articles { get; set; }
         public FlexibleItemStates ItemState { get; set; }
 
         public FlexibleItem()
@@ -18,7 +19,7 @@ namespace DCMarker.Flexible
             ItemId = 0;
             CurrentEdge = 0;
             NumberOfEdges = 0;
-            Article = new Article();
+            Articles = new List<Article>();
             ItemState = FlexibleItemStates.None;
         }
 
@@ -28,14 +29,14 @@ namespace DCMarker.Flexible
         /// <param name="itemid">Sequence number of current batch</param>
         /// <param name="numberofedges">Number of Edges that should be marked</param>
         /// <param name="currentedge">Current edge that will be marked</param>
-        /// <param name="article">Article data that will be used for marking</param>
+        /// <param name="articles">Article data that will be used for marking</param>
         /// <param name="state">Item state</param>
-        public void Set(int itemid, int numberofedges, int currentedge, Article article, FlexibleItemStates state)
+        public void Set(int itemid, int numberofedges, int currentedge, List<Article> articles, FlexibleItemStates state)
         {
             ItemId = itemid;
             NumberOfEdges = numberofedges;
             CurrentEdge = currentedge;
-            Article = article;
+            Articles = articles;
             ItemState = state;
         }
     }
