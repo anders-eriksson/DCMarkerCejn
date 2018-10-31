@@ -69,6 +69,8 @@ namespace DCMarker
                 BatchesDone = 0;
                 //OrderInProgress = false;
                 OrderNotStarted = false;
+                ItemDone = "";
+                TableSide = TableName[0];
 
                 _wf.UpdateWorkflow(article);
                 _wf.UpdateTOnumber(TOnr);
@@ -108,6 +110,7 @@ namespace DCMarker
         {
             ErrorMessage = string.Empty;
 
+            _wf.ResetCareful();
             _wf.ResetArticleReady();
             _wf.ResetNextToLast();
             ResetInputValues();
@@ -166,14 +169,16 @@ namespace DCMarker
                     bool? enableTO = dbResult[0].EnableTO;
                     // only have to check on the first Edge/Kant
                     HasTOnr = enableTO.HasValue ? enableTO.Value : false;
+
+                    bool? careful = dbResult[0].Careful;
+                    IsCareful = careful.HasValue ? careful.Value : false;
+
                     TOnr = string.Empty;
 
                     if (dbResult.Count > 1)
                     {
                         // the article has edges/kant
-                        //HasKant = true;
-                        ErrorMessage = GlblRes.Edge_marking_is_not_supported_in_this_version;
-                        result = ErrorMessage;
+                        HasKant = true;
                     }
                     else
                     {
@@ -217,6 +222,8 @@ namespace DCMarker
 
         private void DoExecuteMarkingCommand()
         {
+            if (_wf != null)
+                _wf.Execute();
         }
 
         private bool CanExecuteMarkingCommandExecute()

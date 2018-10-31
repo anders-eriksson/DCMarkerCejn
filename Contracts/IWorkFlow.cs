@@ -20,15 +20,21 @@ namespace Contracts
 
         event EventHandler<ArticleHasToNumberArgs> ArticleHasToNumberEvent;
 
+        event EventHandler<ItemDoneArgs> ItemDoneEvent;
+
         void Close();
 
         bool Initialize();
 
         void SimulateItemInPlace(int seq);
 
+        void SimulateItemInPlace(string articlenumber);
+
         void ResetAllIoSignals();
 
         void ResetArticleData();
+
+        void ResetCareful();
 
         void SetNextToLast();
 

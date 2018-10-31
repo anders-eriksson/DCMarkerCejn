@@ -53,6 +53,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ErrorArgs.cs" />
     <Compile Include="Errors.cs" />
+    <Compile Include="FocusEventArgs.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="ICommandQueue.cs" />
     <Compile Include="ICommunicationModule.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="IAxis.cs" />
     <Compile Include="IDigitalIo.cs" />
     <Compile Include="ILaser.cs" />
+    <Compile Include="ItemDoneArgs.cs" />
     <Compile Include="IWorkFlow.cs" />
     <Compile Include="IWorkFlowDebug.cs" />
     <Compile Include="LaserBusyEventArgs.cs" />
@@ -71,6 +73,12 @@
     <Compile Include="StatusArgs.cs" />
     <Compile Include="UpdateMainViewModelArgs.cs" />
     <Compile Include="UpdateViewModelData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Configuration\Configuration.csproj">
+      <Project>{6d98c06d-7a94-4be5-932c-733df4bfa391}</Project>
+      <Name>Configuration</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

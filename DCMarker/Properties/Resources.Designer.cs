@@ -178,6 +178,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handle with care!.
+        /// </summary>
+        public static string CarefulHeader {
+            get {
+                return ResourceManager.GetString("CarefulHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CreateSerialNumber Exception.
         /// </summary>
         public static string CreateSerialNumber_Exception {
@@ -453,6 +462,15 @@ namespace DCMarker.Properties {
         public static string Status {
             get {
                 return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Side.
+        /// </summary>
+        public static string TableSide {
+            get {
+                return ResourceManager.GetString("TableSide", resourceCulture);
             }
         }
         

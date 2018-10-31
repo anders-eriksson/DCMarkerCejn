@@ -189,6 +189,7 @@ namespace DCMarker.Model
                       Kant = x.Kant,
                       FixtureId = x.FixtureId,
                       EnableTO = x.EnableTO,
+                      Careful = x.Careful,
                       Template = x.Template,
                   }).ToList();
             }

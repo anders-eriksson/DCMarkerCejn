@@ -253,6 +253,14 @@
           <source>You must enter Production number BEFORE giving start signal to the machine!</source>
           <target state="translated">Skanna production nummer innan du startar robotcellen!</target>
         </trans-unit>
+        <trans-unit id="TableSide" translate="yes" xml:space="preserve">
+          <source>Side</source>
+          <target state="new">Side</target>
+        </trans-unit>
+        <trans-unit id="CarefulHeader" translate="yes" xml:space="preserve">
+          <source>Handle with care!</source>
+          <target state="new">Handle with care!</target>
+        </trans-unit>
       </group>
     </body>
   </file>

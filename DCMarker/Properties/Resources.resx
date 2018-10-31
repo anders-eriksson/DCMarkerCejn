@@ -300,4 +300,10 @@
   <data name="You_must_enter_Production_number_BEFORE_giving_start_signal_to_the_machine" xml:space="preserve">
     <value>You must enter Production number BEFORE giving start signal to the machine!</value>
   </data>
+  <data name="TableSide" xml:space="preserve">
+    <value>Side</value>
+  </data>
+  <data name="CarefulHeader" xml:space="preserve">
+    <value>Handle with care!</value>
+  </data>
 </root>

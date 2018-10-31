@@ -15,5 +15,6 @@ namespace Contracts
         public bool NeedUserInput { get; set; }
         public string Status { get; set; }
         public string Template { get; set; }
+        public int CurrentItem { get; set; }
     }
 }

@@ -1,8 +1,11 @@
 using Configuration;
 using DCLog;
+using System;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
 using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
@@ -32,7 +35,24 @@ namespace DCMarker
                 ExecuteButton.Visibility = Visibility.Hidden;
             }
             mainViewModel = new FlexibleMainViewModel();
+            mainViewModel.FocusEvent += MainViewModel_FocusEvent;
             DataContext = mainViewModel;
+        }
+
+        private void MainViewModel_FocusEvent(object sender, Contracts.FocusEventArgs e)
+        {
+            if (e.Text == "TO-Number")
+            {
+                Log.Trace("FocusEvent");
+
+                Dispatcher.BeginInvoke(DispatcherPriority.Input,
+                new Action(delegate ()
+                {
+                    this.Activate();               // Set mainWindow focus
+                    TOnrTextbox.Focus();         // Set Logical Focus
+                    Keyboard.Focus(TOnrTextbox); // Set Keyboard Focus
+                }));
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

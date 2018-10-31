@@ -8,6 +8,9 @@ using System.Windows.Data;
 
 namespace DCHistory
 {
+    // if it should be used add
+    // , Converter={StaticResource CheckBoxConverter}
+    // to binding
     public class CheckBoxConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

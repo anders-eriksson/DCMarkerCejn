@@ -130,6 +130,11 @@ namespace DCMarker.Model
             ////UpdateLayout();
         }
 
+        public void SimulateItemInPlace(string articlenumber)
+        {
+            throw new NotImplementedException("Not implemented in Nipple");
+        }
+
 #if DEBUG
 
         public void _laser_ItemInPositionEvent()
@@ -859,6 +864,17 @@ namespace DCMarker.Model
         }
 
         #endregion only used by ManualWorkFlow // AME - 2017-05-12
+
+        #region only used in FlexibleWorkFlow // AME - 2018-10-29
+
+        public event EventHandler<ItemDoneArgs> ItemDoneEvent;
+
+        public void ResetCareful()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion only used in FlexibleWorkFlow // AME - 2018-10-29
 
         #region Laser Busy Event
 

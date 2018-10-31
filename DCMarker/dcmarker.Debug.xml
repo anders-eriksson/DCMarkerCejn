@@ -5,6 +5,9 @@
   <section name="Laser">
     <entry name="DeviceAddress" xdt:Transform="Replace"  xdt:Locator="Match(name)">192.168.1.192</entry>
   </section>
+  <section name="Machine">
+    <entry name="Debug"  xdt:Transform="Replace" xdt:Locator="Match(name)">True</entry>
+  </section>
   <section name="Adam">
     <entry name="AdamIpAddress" xdt:Transform="Replace" xdt:Locator="Match(name)">192.168.1.100</entry>
     <entry name="AdamErrorTimeout" xdt:Transform="Replace" xdt:Locator="Match(name)">1200000</entry>

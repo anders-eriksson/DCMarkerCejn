@@ -34,8 +34,8 @@ namespace DCMarker.Model
                 {
                     RaiseErrorMsgEvent("Config file is not found! dcmarker.xml in program directory");
                 }
-                sig = new IoSignals();
-                UpdateIoMasks();
+                sig = IoSignals.Instance;
+                //UpdateIoMasks();
                 FirstMarkingResetZ = false;
                 Initialize();
             }
@@ -72,6 +72,15 @@ namespace DCMarker.Model
                 Log.Debug("_laser == null");
             }
         }
+
+        #region Only used in Flexible
+
+        public void ResetCareful()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion Only used in Flexible
 
 #if DEBUG
 
@@ -130,6 +139,11 @@ namespace DCMarker.Model
         public void SimulateItemInPlace(int seq)
         {
             UpdateLayout();
+        }
+
+        public void SimulateItemInPlace(string articlenumber)
+        {
+            throw new NotImplementedException("Not implemented in Manual");
         }
 
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
@@ -363,21 +377,21 @@ namespace DCMarker.Model
             }
         }
 
-        private void UpdateIoMasks()
-        {
-            // Out
-            sig.MASK_ARTICLEREADY = cfg.ArticleReady;
-            sig.MASK_READYTOMARK = cfg.ReadyToMark;
-            sig.MASK_NEXTTOLAST = cfg.NextToLast;
-            sig.MASK_MARKINGDONE = cfg.MarkingDone;
-            sig.MASK_ERROR = cfg.Error;
-            sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
+        //private void UpdateIoMasks()
+        //{
+        //    // Out
+        //    sig.MASK_ARTICLEREADY = cfg.ArticleReady;
+        //    sig.MASK_READYTOMARK = cfg.ReadyToMark;
+        //    sig.MASK_NEXTTOLAST = cfg.NextToLast;
+        //    sig.MASK_MARKINGDONE = cfg.MarkingDone;
+        //    sig.MASK_ERROR = cfg.Error;
+        //    sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
 
-            // In
-            sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
-            sig.MASK_EMERGENCY = cfg.EmergencyError;
-            sig.MASK_RESET = cfg.ResetIo;
-        }
+        //    // In
+        //    sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
+        //    sig.MASK_EMERGENCY = cfg.EmergencyError;
+        //    sig.MASK_RESET = cfg.ResetIo;
+        //}
 
         /// <summary>
         /// Loads and updates the Layout when we have gotten an ItemInPlace signal from PLC
@@ -534,6 +548,26 @@ namespace DCMarker.Model
         public void UpdateTOnumber(string onr)
         { }
 
+        public bool ResetZAxis()
+        {
+            Log.Debug("ResetZAxis");
+            bool result = _laser.ResetZAxis();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Starts polling of an IO service
+        /// Only used in connection of a hardware that don't use Events
+        /// </summary>
+        /// <param name="pollInterval">number of milliseconds between each poll</param>
+        /// <param name="errorTimeout">number of milliseconds untile an error timeout is triggered</param>
+        /// <returns>true if successful, otherwise false</returns>
+        public bool StartPoll(int pollInterval, int errorTimeout)
+        {
+            return true;
+        }
+
         #region only used by NippleWorkFlow // AME - 2018-05-12
 
         public void LoadArticleNumber(string _articleNumber)
@@ -570,6 +604,12 @@ namespace DCMarker.Model
         #endregion Article has TO-number Event
 
         #endregion only used by NippleWorkFlow // AME - 2018-05-12
+
+        #region only used in FlexibleWorkFlow // AME - 2018-10-29
+
+        public event EventHandler<ItemDoneArgs> ItemDoneEvent;
+
+        #endregion only used in FlexibleWorkFlow // AME - 2018-10-29
 
         #region Error Event
 
@@ -657,26 +697,6 @@ namespace DCMarker.Model
                 var arg = new LaserBusyEventArgs(busy);
                 handler(null, arg);
             }
-        }
-
-        public bool ResetZAxis()
-        {
-            Log.Debug("ResetZAxis");
-            bool result = _laser.ResetZAxis();
-
-            return result;
-        }
-
-        /// <summary>
-        /// Starts polling of an IO service
-        /// Only used in connection of a hardware that don't use Events
-        /// </summary>
-        /// <param name="pollInterval">number of milliseconds between each poll</param>
-        /// <param name="errorTimeout">number of milliseconds untile an error timeout is triggered</param>
-        /// <returns>true if successful, otherwise false</returns>
-        public bool StartPoll(int pollInterval, int errorTimeout)
-        {
-            return true;
         }
 
         #endregion Laser Busy Event

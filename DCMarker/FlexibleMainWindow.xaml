@@ -7,8 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:p="clr-namespace:DCMarker.Properties"
     Title="DCMarker"
-    Width="566.349"
-    Height="303.402"
+    Width="574.609"
+    Height="349.656"
     Closing="Window_Closing"
     Icon="dclasersystem.ico"
     Loaded="Window_Loaded"
@@ -31,9 +31,9 @@
         </DataTemplate>
     </Window.Resources>
 
-    <Grid>
-        <DockPanel Margin="0,0,0,239">
-            <Menu DockPanel.Dock="Top" IsTabStop="False" KeyboardNavigation.IsTabStop="False" Height="35">
+    <Grid Margin="0,-26,0,13">
+        <DockPanel VerticalAlignment="Top" Height="26">
+            <Menu DockPanel.Dock="Top" IsTabStop="False" KeyboardNavigation.IsTabStop="False" Height="40">
                 <MenuItem Header="{x:Static p:Resources.FileMenuHeader}" IsTabStop="False">
 
                     <MenuItem
@@ -83,13 +83,25 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             FontSize="20"
+            MinWidth="400"
             IsEnabled="{Binding HasFixture}"
             Text="{Binding Fixture}"
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
         <TextBlock
+            x:Name="Careful"
+            Margin="37,79,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontSize="20"
+            Foreground="Red"
+            IsEnabled="{Binding HasFixture}"
+            Text="{x:Static p:Resources.CarefulHeader}"
+            TextWrapping="Wrap"
+            Visibility="{Binding Path=IsCareful, Converter={StaticResource BoolToVis}}" />
+        <TextBlock
             x:Name="ArticleTextblock"
-            Margin="42,78,0,0"
+            Margin="44,122,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.ArticleNumber}"
@@ -98,7 +110,7 @@
         <TextBox
             x:Name="ArticleTextBox"
             Width="132"
-            Margin="139,76,0,0"
+            Margin="141,120,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
@@ -109,20 +121,20 @@
 
         <TextBlock
             x:Name="TOnrLabel"
-            Margin="301,76,0,0"
+            Margin="44,153,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.ToNumber}"
              Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
         <ContentPresenter
-            Height="20"
-            Margin="350,103,10,148"
-            Content="{Binding ElementName=TOnrTextbox, Path=(Validation.Errors)/}"
-            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+            Height="30"
+            Margin="64,177,296,127"
+            Content="{Binding ElementName=TOnrTextbox, Path=(Validation.Errors)/}" />
+        <!--Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}"-->
         <TextBox
             x:Name="TOnrTextbox"
-            Width="118"
-            Margin="368,76,0,0"
+            Width="132"
+            Margin="141,155,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding OrderNotStarted}"
@@ -131,10 +143,10 @@
             Text="{Binding TOnr, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
-
+        <TextBlock x:Name="TableSideLabel" HorizontalAlignment="Left" Margin="303,144,0,0" TextWrapping="NoWrap" Text="{x:Static p:Resources.TableSide}" VerticalAlignment="Top" />
         <TextBlock
             x:Name="KantLabel"
-            Margin="301,124,0,0"
+            Margin="303,168,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasKant}"
@@ -144,32 +156,38 @@
         <TextBlock
             x:Name="KantTextBlock"
             Width="143"
-            Margin="350,124,0,0"
+            Margin="352,168,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasKant}"
             Text="{Binding Kant}"
             TextWrapping="Wrap"
             Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
-
+        <TextBlock
+        x:Name="TableSide"
+            Width="143"
+            Margin="346,144,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{Binding TableSide}" />
         <TextBlock
             x:Name="BatchDoneLabel"
-            Margin="301,147,0,0"
+            Margin="303,191,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.BatchDone}" />
         <TextBlock
-            x:Name="BatchDone"
+            x:Name="ItemDone"
             Width="143"
-            Margin="350,147,0,0"
+            Margin="346,191,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Text="{Binding BatchesDone}" />
+            Text="{Binding ItemDone}" />
 
         <Button
             x:Name="OkButton"
             Width="75"
-            Margin="139,195,0,0"
+            Margin="141,239,0,0"
             IsEnabled="{Binding OrderNotStarted}"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -181,22 +199,22 @@
             Command="{Binding CancelButtonCommand, Mode=OneWay}"
             Content="{x:Static p:Resources.Cancel}"
             HorizontalAlignment="Left"
-            Margin="219,195,0,0"
+            Margin="221,239,0,0"
             VerticalAlignment="Top"
             Width="75" />
         <Button
             x:Name="LoadButton"
             Width="75"
-            Margin="392,183,0,0"
+            Margin="394,227,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Command="{Binding LoadArticleCommand}"
-            Content="Load"
+            Click="LoadButton_Click"
+            Content="ItemInPos"
             IsTabStop="False" />
         <Button
             x:Name="ExecuteButton"
             Width="75"
-            Margin="392,210,0,0"
+            Margin="394,254,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Command="{Binding ExecuteMarkingCommand}"
@@ -213,20 +231,20 @@
                 <SolidColorBrush Color="{Binding ColorStatus, UpdateSourceTrigger=PropertyChanged}" />
             </Ellipse.Fill>
         </Ellipse>
-        <StackPanel VerticalAlignment="Bottom">
+        <StackPanel VerticalAlignment="Bottom" Margin="-1,0,1,-13">
             <TextBlock
                 x:Name="textBlock"
                 Foreground="Red"
                 Text="{Binding ErrorMessage}"
                 TextWrapping="Wrap" />
             <StatusBar Margin="0,0,0,0" VerticalAlignment="Bottom">
-                <StatusBarItem>
+                <StatusBarItem VerticalAlignment="Bottom">
                     <TextBlock Text="{Binding Status}" />
                 </StatusBarItem>
             </StatusBar>
         </StackPanel>
         <CheckBox
-            Margin="139,129,0,0"
+            Margin="303,120,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"

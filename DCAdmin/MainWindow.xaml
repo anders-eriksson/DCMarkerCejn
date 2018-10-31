@@ -9,7 +9,7 @@
     xmlns:p="clr-namespace:DCAdmin.Properties"
     xmlns:view="clr-namespace:DCAdmin.View"
     Title="DCAmin"
-    Width="611"
+    Width="1332.946"
     Height="401"
     MaxWidth="{x:Static local:MainWindow.MaxScreenSize}"
     Closing="Window_Closing"

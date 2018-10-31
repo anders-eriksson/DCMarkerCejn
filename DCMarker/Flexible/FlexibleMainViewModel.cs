@@ -69,7 +69,7 @@ namespace DCMarker
             if (_wf != null)
             {
                 _wf._laser_ItemInPositionEvent();
-                //_wf.SimulateItemInPlace();
+                //_wf.SimulateItemInPlace(ArticleNumber);
             }
 #endif
         }
@@ -90,6 +90,12 @@ namespace DCMarker
         private void InitializeMachine()
         {
             _wf = new FlexibleWorkFlow();
+            _wf.ItemDoneEvent += _wf_ItemDoneEvent;
+        }
+
+        private void _wf_ItemDoneEvent(object sender, ItemDoneArgs e)
+        {
+            ItemDone = e.NumberofItemsDone.ToString();
         }
 
         internal void ResetAllIoSignals()
@@ -207,11 +213,59 @@ namespace DCMarker
             HasBatchSize = e.Data.HasBatchSize;
             NeedUserInput = e.Data.NeedUserInput;
             Status = e.Data.Status;
+            TableSide = TableName[e.Data.CurrentItem];
+            CurrentSide = e.Data.CurrentItem;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
+        private string[] TableName = new string[2] { "A", "B" };
+        private string _TableSide;
+
+        public string TableSide
+        {
+            get
+            {
+                return _TableSide;
+            }
+            set
+            {
+                _TableSide = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _ItemDone;
+
+        public string ItemDone
+        {
+            get
+            {
+                return _ItemDone;
+            }
+            set
+            {
+                _ItemDone = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private int _CurrentSide;
+
+        public int CurrentSide
+        {
+            get
+            {
+                return _CurrentSide;
+            }
+            set
+            {
+                _CurrentSide = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         private bool _OrderInProgress;
 
@@ -431,6 +485,8 @@ namespace DCMarker
             {
                 _hasTOnr = value;
                 NotifyPropertyChanged();
+
+                RaiseFocusEventEvent("TO-Number");
             }
         }
 
@@ -495,6 +551,21 @@ namespace DCMarker
             set
             {
                 _TOnr = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool _IsCareful;
+
+        public bool IsCareful
+        {
+            get
+            {
+                return _IsCareful;
+            }
+            set
+            {
+                _IsCareful = value;
                 NotifyPropertyChanged();
             }
         }
@@ -644,6 +715,24 @@ namespace DCMarker
 
             return result;
         }
+
+        #region Focus Event Event
+
+        public delegate void FocusEventHandler(string msg);
+
+        public event EventHandler<FocusEventArgs> FocusEvent;
+
+        internal void RaiseFocusEventEvent(string msg)
+        {
+            var handler = FocusEvent;
+            if (handler != null)
+            {
+                var arg = new FocusEventArgs(msg);
+                handler(null, arg);
+            }
+        }
+
+        #endregion Focus Event Event
 
         #endregion IDataErrorInfo
 

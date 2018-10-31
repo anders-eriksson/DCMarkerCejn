@@ -7,5 +7,6 @@ namespace Contracts
         public string TOnr { get; set; }
         public int BatchSize { get; set; }
         public bool TestItem { get; set; }
+        public int CurrentItem { get; set; }
     }
 }

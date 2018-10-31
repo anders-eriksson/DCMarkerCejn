@@ -24,7 +24,7 @@ namespace DCMarker.Flexible
             {
                 //RaiseErrorEvent("Config file is not found! dcmarker.xml in program directory");
             }
-            sig = new IoSignals();
+            sig = IoSignals.Instance;
             UpdateIoMasks();
         }
 

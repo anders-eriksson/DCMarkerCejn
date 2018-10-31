@@ -30,6 +30,7 @@ namespace DCMarker.Flexible
         private volatile string TOnumber;
         private volatile bool IsTOnumberUpdated = false;
         private volatile bool IsTOnumberApproved = false;
+        private bool _testItem;
 
         public bool FirstMarkingResetZ { get; set; }
 
@@ -42,9 +43,10 @@ namespace DCMarker.Flexible
                 {
                     RaiseErrorMsgEvent("Config file is not found! dcmarker.xml in program directory");
                 }
-                sig = new IoSignals();
-                UpdateIoMasks();
+                sig = IoSignals.Instance;
+                //UpdateIoMasks();
                 FirstMarkingResetZ = false;
+                _currentItem = 0;
                 Initialize();
             }
             catch (Exception)
@@ -74,6 +76,18 @@ namespace DCMarker.Flexible
             if (_laser != null)
             {
                 _laser.ResetPort(0, sig.MASK_ARTICLEREADY);
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
+        }
+
+        public void ResetCareful()
+        {
+            if (_laser != null)
+            {
+                _laser.ResetPort(0, sig.MASK_HANDLEWITHCARE);
             }
             else
             {
@@ -137,7 +151,16 @@ namespace DCMarker.Flexible
 
         public void SimulateItemInPlace(int seq)
         {
-            UpdateLayout();
+            throw new NotImplementedException("Not implemented in Flexible");
+        }
+
+        public void SimulateItemInPlace(string articlenumber)
+        {
+            //UpdateLayout();
+            ArticleData data = new ArticleData();
+            data.ArticleNumber = articlenumber;
+            ArticleArgs e = new ArticleArgs(data);
+            _articleInput_ArticleEvent(null, e);
         }
 
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
@@ -190,11 +213,12 @@ namespace DCMarker.Flexible
             else
             {
                 UpdateLayout();
+                _currentItem = IncrementCurrentItem(_currentItem);
             }
 #else
-            _currentItem = IncrementCurrentItem(_currentItem);
 
             UpdateLayout();
+            _currentItem = IncrementCurrentItem(_currentItem);
 #endif
         }
 
@@ -218,7 +242,12 @@ namespace DCMarker.Flexible
                 FirstMarkingResetZ = false;
                 _laser.SetPort(0, sig.MASK_MARKINGDONE);
                 _items[_currentItem].ItemState = FlexibleItemStates.MarkingDone;
-                _currentEdge++;
+                if (_items[_currentItem].CurrentEdge >= _items[_currentItem].NumberOfEdges)
+                {
+                    // we are done with the item. Reset it for the next item
+                    ResetItem(_currentItem);
+                    RaiseItemDoneEvent(_items[_currentItem].ItemId);
+                }
             }
             else
             {
@@ -228,6 +257,13 @@ namespace DCMarker.Flexible
             // TODO should this be Waiting for product? And Order done when the whole order is marked?
             //RaiseStatusEvent(GlblRes.Marking_is_done);
             RaiseStatusEvent(GlblRes.Waiting_for_product);
+        }
+
+        private void ResetItem(int currentItem)
+        {
+            _items[_currentItem].ItemId++;
+            _items[_currentItem].CurrentEdge = 0;
+            _items[_currentItem].ItemState = FlexibleItemStates.None;
         }
 
         private void _laser_LaserErrorEvent(string msg)
@@ -421,26 +457,19 @@ namespace DCMarker.Flexible
             Article article = GetItemArticle(_currentItem);
             if (article != null)
             {
-                //if (_articles != null && _articles.Count > 0)
-                //{
-                //    if (_hasEdges && _currentEdge >= _articles.Count)
-                //    {
-                //        _hasEdges = false;
-                //        _currentEdge = 1;
-                //    }
+                var item = _items[_currentItem];
+                if (item.NumberOfEdges > 1 && item.CurrentEdge > 1)
+                    _hasEdges = true;
+                else
+                    _hasEdges = false;
 
-                //    if (_hasEdges)
-                //    {
-                //        _currentEdge++;
-                //        article = _articles[_currentEdge - 1];
-                //    }
-                //    else
-                //    {
-                //        _currentEdge = 0;
-
-                //        article = _articles[_currentEdge];
-                //        _currentEdge++;
-                //    }
+                ArticleData data = new ArticleData();
+                data.ArticleNumber = article.F1;
+                data.IsNewArticleNumber = false;
+                data.TestItem = _testItem;
+                data.CurrentItem = _currentItem;
+                ArticleArgs e = new ArticleArgs(data);
+                UpdateViewModel(item, e);
 
                 string layoutname = article.Template;
                 if (!string.IsNullOrEmpty(layoutname))
@@ -451,10 +480,6 @@ namespace DCMarker.Flexible
                     {
                         //HistoryData historyData = GetHistoryData(_articleNumber, article.Kant, _hasEdges);
                         HistoryData historyData = GetHistoryData(article, _hasEdges);
-                        if (_articles.Count > 1)
-                        {
-                            _hasEdges = true;
-                        }
 
                         if (historyData != null)
                         {
@@ -513,10 +538,19 @@ namespace DCMarker.Flexible
         {
             Article result = null;
 
-            FlexibleItem item = _items[currentItem];
-            var edge = item.CurrentEdge;
+            var edge = _items[currentItem].CurrentEdge;
+            _items[currentItem].CurrentEdge++;
+            if (_items[currentItem].CurrentEdge > _items[currentItem].NumberOfEdges)
+            {
+                // FIX: Change this to something better....
+                RaiseErrorEvent("Trying to mark more edges than is defined");
 
-            result = item.Articles[edge];
+                result = null;
+            }
+            else
+            {
+                result = _items[currentItem].Articles[edge];
+            }
 
             return result;
         }
@@ -527,7 +561,14 @@ namespace DCMarker.Flexible
             _articles = _db.GetArticle(_articleNumber);
             if (_articles != null)
             {
-                FinishUpdateWorkflow(article);
+                if (TemplateExists(_articles[0].Template))
+                {
+                    FinishUpdateWorkflow(article);
+                }
+                else
+                {
+                    RaiseErrorEvent(string.Format("Template was not found! {0}.xlp", _articles[0].Template));
+                }
             }
             else
             {
@@ -536,8 +577,25 @@ namespace DCMarker.Flexible
             }
         }
 
+        private bool TemplateExists(string template)
+        {
+            bool result = true;
+            string layout = string.Format("{0}.xlp", template);
+            result = _laser.Load(layout);
+            return result;
+        }
+
         private void FinishUpdateWorkflow(Article article)
         {
+            if (article.Careful.HasValue && article.Careful.Value)
+            {
+                _laser.SetPort(0, sig.MASK_HANDLEWITHCARE);
+            }
+            else
+            {
+                _laser.ResetPort(0, sig.MASK_HANDLEWITHCARE);
+            }
+
             _laser.SetPort(0, sig.MASK_ARTICLEREADY);
 
             // reverse IsTestItemSelected to make it easier for the if statement!
@@ -548,8 +606,13 @@ namespace DCMarker.Flexible
             }
             _items[0].Articles = _articles;
             _items[0].ItemState = FlexibleItemStates.ArticleLoaded;
-            _items[0].Articles = _articles;
+            _items[0].NumberOfEdges = _articles.Count;
+            _items[0].CurrentEdge = 0;
+
+            _items[1].Articles = _articles;
             _items[1].ItemState = FlexibleItemStates.ArticleLoaded;
+            _items[1].NumberOfEdges = _articles.Count;
+            _items[1].CurrentEdge = 0;
             _currentItem = 0;
         }
 
@@ -567,7 +630,14 @@ namespace DCMarker.Flexible
             RaiseUpdateMainViewModelEvent(data);
         }
 
-        private static UpdateViewModelData CreateUpdateViewModelData(List<Article> articles)
+        private void UpdateViewModel(FlexibleItem item, ArticleArgs e)
+        {
+            UpdateViewModelData data = CreateUpdateViewModelData(item, e);
+
+            RaiseUpdateMainViewModelEvent(data);
+        }
+
+        private UpdateViewModelData CreateUpdateViewModelData(List<Article> articles)
         {
             var data = new UpdateViewModelData();
             Article article = articles[0];
@@ -586,6 +656,62 @@ namespace DCMarker.Flexible
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
             data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
             data.Template = article.Template;
+
+            return data;
+        }
+
+        private UpdateViewModelData CreateUpdateViewModelData(FlexibleItem item, ArticleArgs e)
+        {
+            Log.Trace("CreateUpdateViewModelData");
+            var data = new UpdateViewModelData();
+            Article article = item.Articles[item.CurrentEdge - 1];
+            data.TotalKant = item.Articles.Count.ToString();
+            data.Provbit = e.Data.TestItem;
+            data.ArticleNumber = string.IsNullOrWhiteSpace(article.F1) ? e.Data.ArticleNumber : article.F1;
+            data.IsNewArticleNumber = e.Data.IsNewArticleNumber;
+            if (string.IsNullOrWhiteSpace(article.Kant))
+            {
+                data.HasKant = false;
+                data.Kant = article.Kant;
+            }
+            else
+            {
+                data.HasKant = true;
+                //data.Kant = articles.Count.ToString();
+                data.Kant = article.Kant;
+            }
+            data.Fixture = article.FixtureId;
+            data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
+
+            // TO-number should only be entered once when the article is loaded!
+            if (!ArticleHasToNumber)
+            {
+                data.HasTOnr = false;
+
+                foreach (Article a in item.Articles)
+                {
+                    if (a.EnableTO.HasValue)
+                    {
+                        data.HasTOnr = a.EnableTO.Value;
+                    }
+                }
+                if (data.HasTOnr)
+                {
+                    ArticleHasToNumber = true;
+                    RaiseArticleHasToNumberEvent(true);
+                }
+                else
+                {
+                    ArticleHasToNumber = false;
+                    RaiseArticleHasToNumberEvent(false);
+                }
+            }
+
+            data.Template = article.Template;
+            data.HasTOnr = ArticleHasToNumber;
+
+            data.CurrentItem = e.Data.CurrentItem;
+            Log.Trace("CreateUpdateViewModelData Done");
             return data;
         }
 
@@ -741,5 +867,23 @@ namespace DCMarker.Flexible
         }
 
         #endregion Laser Busy Event
+
+        #region Item Done Event
+
+        public delegate void ItemDoneHandler(int numberofItemsDone);
+
+        public event EventHandler<ItemDoneArgs> ItemDoneEvent;
+
+        internal void RaiseItemDoneEvent(int numberofItemsDone)
+        {
+            var handler = ItemDoneEvent;
+            if (handler != null)
+            {
+                var arg = new ItemDoneArgs(numberofItemsDone);
+                handler(null, arg);
+            }
+        }
+
+        #endregion Item Done Event
     }
 }

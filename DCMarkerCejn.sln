@@ -55,8 +55,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAdamComm", "TestAdamCom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunicationServiceTests", "DCAdam\CommunicationServiceTests\CommunicationServiceTests.csproj", "{4DCC3108-EDB9-4A36-983E-A1A210CED1DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleItems", "MultipleItems\MultipleItems.csproj", "{EF0EE8A0-067F-4047-8F30-516F52F338E0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -385,7 +383,6 @@ Global
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.ReleaseTEST|x86.ActiveCfg = Release|Any CPU
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.ReleaseTEST|x86.Build.0 = Release|Any CPU
 		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.Debug|x86.Build.0 = Debug|Any CPU
 		{AEEBE63E-0201-4709-9F09-5A8E00A9DC21}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
@@ -416,22 +413,6 @@ Global
 		{4DCC3108-EDB9-4A36-983E-A1A210CED1DF}.ReleaseTEST|Any CPU.Build.0 = Release|Any CPU
 		{4DCC3108-EDB9-4A36-983E-A1A210CED1DF}.ReleaseTEST|x86.ActiveCfg = Release|Any CPU
 		{4DCC3108-EDB9-4A36-983E-A1A210CED1DF}.ReleaseTEST|x86.Build.0 = Release|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.Debug|x86.Build.0 = Debug|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.DebugLocal|x86.ActiveCfg = Debug|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.DebugLocal|x86.Build.0 = Debug|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.Release|x86.ActiveCfg = Release|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.Release|x86.Build.0 = Release|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.ReleaseTEST|Any CPU.ActiveCfg = Release|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.ReleaseTEST|Any CPU.Build.0 = Release|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.ReleaseTEST|x86.ActiveCfg = Release|Any CPU
-		{EF0EE8A0-067F-4047-8F30-516F52F338E0}.ReleaseTEST|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

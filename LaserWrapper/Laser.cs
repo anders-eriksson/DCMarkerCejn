@@ -48,8 +48,8 @@ namespace LaserWrapper
             _isIoEnabled = cfg.IsIoEnabled;
 
             _layoutName = string.Empty;
-            sig = new IoSignals();
-            UpdateIoMasks();
+            sig = IoSignals.Instance;
+            //UpdateIoMasks();
             IoFix.Init();
             NextToLast = false;
 
@@ -179,6 +179,7 @@ namespace LaserWrapper
             }
         }
 
+#if false
         public bool UpdateToNumber(string tonumber)
         {
             bool result = false;
@@ -190,6 +191,7 @@ namespace LaserWrapper
 
             return result;
         }
+#endif
 
         public bool Update(List<LaserObjectData> objectList)
         {
@@ -426,7 +428,11 @@ namespace LaserWrapper
             RaiseQueryStartEvent(GlblRes.Marking);
             ResetPort(0, sig.MASK_READYTOMARK);
             RaiseLaserBusyEvent(true);
-            _doc.execute(true, true);
+            bool brc = _doc.execute(true, true);
+            if (!brc)
+            {
+                RaiseDeviceErrorEvent("Laser: Execute failed!");
+            }
         }
 
 #endif

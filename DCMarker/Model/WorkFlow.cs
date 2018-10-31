@@ -35,7 +35,7 @@ namespace DCMarker.Model
                 {
                     RaiseErrorMsgEvent("Config file is not found! dcmarker.xml in program directory");
                 }
-                sig = new IoSignals();
+                sig = IoSignals.Instance;
                 UpdateIoMasks();
                 Initialize();
             }
@@ -108,6 +108,11 @@ namespace DCMarker.Model
         public void SimulateItemInPlace(int seq)
         {
             UpdateLayout();
+        }
+
+        public void SimulateItemInPlace(string articlenumber)
+        {
+            throw new NotImplementedException("Not implemented in Automatic");
         }
 
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
@@ -476,6 +481,17 @@ namespace DCMarker.Model
         #endregion Article has TO-number Event
 
         #endregion only used by NippleWorkFlow // AME - 2018-05-12
+
+        #region only used in FlexibleWorkFlow // AME - 2018-10-29
+
+        public event EventHandler<ItemDoneArgs> ItemDoneEvent;
+
+        public void ResetCareful()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion only used in FlexibleWorkFlow // AME - 2018-10-29
 
         #region Laser Busy Event
 
