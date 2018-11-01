@@ -25,7 +25,17 @@ namespace DCMarker.Flexible
                 //RaiseErrorEvent("Config file is not found! dcmarker.xml in program directory");
             }
             sig = IoSignals.Instance;
-            UpdateIoMasks();
+            //UpdateIoMasks();
+        }
+
+        public bool SetArticleReady()
+        {
+            return _laserWrapper.SetPort(0, sig.MASK_ARTICLEREADY);
+        }
+
+        public bool ResetArticleReady()
+        {
+            return _laserWrapper.ResetPort(0, sig.MASK_ARTICLEREADY);
         }
 
         public bool SetReady(bool mode)

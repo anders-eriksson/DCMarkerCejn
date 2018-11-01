@@ -18,6 +18,7 @@ namespace DCMarker.Flexible
     {
         private readonly DCConfig cfg;
         private readonly IoSignals sig;
+        private DigitalIO digitalIO;
         private string _articleNumber;
         private List<Article> _articles;
         private FlexibleItem[] _items;
@@ -73,26 +74,12 @@ namespace DCMarker.Flexible
 
         public void ResetArticleReady()
         {
-            if (_laser != null)
-            {
-                _laser.ResetPort(0, sig.MASK_ARTICLEREADY);
-            }
-            else
-            {
-                Log.Debug("_laser == null");
-            }
+            digitalIO.ResetArticleReady();
         }
 
         public void ResetCareful()
         {
-            if (_laser != null)
-            {
-                _laser.ResetPort(0, sig.MASK_HANDLEWITHCARE);
-            }
-            else
-            {
-                Log.Debug("_laser == null");
-            }
+            digitalIO.ResetHandleWithCare();
         }
 
 #if DEBUG
@@ -140,6 +127,7 @@ namespace DCMarker.Flexible
                 InitializeMachine();
                 InitializeDatabase();
                 InitializeLaser();
+                digitalIO = new DigitalIO(_laser);
             }
             catch (Exception)
             {
@@ -431,21 +419,21 @@ namespace DCMarker.Flexible
             }
         }
 
-        private void UpdateIoMasks()
-        {
-            // Out
-            sig.MASK_ARTICLEREADY = cfg.ArticleReady;
-            sig.MASK_READYTOMARK = cfg.ReadyToMark;
-            sig.MASK_NEXTTOLAST = cfg.NextToLast;
-            sig.MASK_MARKINGDONE = cfg.MarkingDone;
-            sig.MASK_ERROR = cfg.Error;
-            sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
+        //private void UpdateIoMasks()
+        //{
+        //    // Out
+        //    sig.MASK_ARTICLEREADY = cfg.ArticleReady;
+        //    sig.MASK_READYTOMARK = cfg.ReadyToMark;
+        //    sig.MASK_NEXTTOLAST = cfg.NextToLast;
+        //    sig.MASK_MARKINGDONE = cfg.MarkingDone;
+        //    sig.MASK_ERROR = cfg.Error;
+        //    sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
 
-            // In
-            sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
-            sig.MASK_EMERGENCY = cfg.EmergencyError;
-            sig.MASK_RESET = cfg.ResetIo;
-        }
+        //    // In
+        //    sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
+        //    sig.MASK_EMERGENCY = cfg.EmergencyError;
+        //    sig.MASK_RESET = cfg.ResetIo;
+        //}
 
         /// <summary>
         /// Loads and updates the Layout when we have gotten an ItemInPlace signal from PLC
@@ -591,14 +579,14 @@ namespace DCMarker.Flexible
         {
             if (article.Careful.HasValue && article.Careful.Value)
             {
-                _laser.SetPort(0, sig.MASK_HANDLEWITHCARE);
+                digitalIO.SetHandleWithCare();
             }
             else
             {
-                _laser.ResetPort(0, sig.MASK_HANDLEWITHCARE);
+                digitalIO.ResetHandleWithCare();
             }
 
-            _laser.SetPort(0, sig.MASK_ARTICLEREADY);
+            digitalIO.SetArticleReady();
 
             // reverse IsTestItemSelected to make it easier for the if statement!
             for (int i = 0; i < _articles.Count; i++)
