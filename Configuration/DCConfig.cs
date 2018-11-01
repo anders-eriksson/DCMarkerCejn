@@ -72,7 +72,7 @@ namespace Configuration
                  *  2   Automatic with TO number    e.g. Filip?
                  *  3   Manual with TO number       e.g. Ultraflow
                  *  4   Automatic with ADAM         e.g. Nippel- & flödeskoppling
-                 *  5   Manual wit TO number
+                 *  5   Manual with TO number
                  *      and digital IO              e.g. Flexibel 1 & 2
                  */
 

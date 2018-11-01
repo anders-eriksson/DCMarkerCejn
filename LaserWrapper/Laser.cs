@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using GlblRes = global::LaserWrapper.Properties.Resources;
@@ -33,6 +34,7 @@ namespace LaserWrapper
         private string _imagePath;
         private bool _isIoEnabled;
         private string _layoutPath;
+        private Dictionary<int, string> _maskDictionary;
 
         #endregion Configurable variables
 
@@ -67,20 +69,20 @@ namespace LaserWrapper
             }
         }
 
-        private void UpdateIoMasks()
-        {
-            sig.MASK_ARTICLEREADY = cfg.ArticleReady;
-            sig.MASK_READYTOMARK = cfg.ReadyToMark;
-            sig.MASK_NEXTTOLAST = cfg.NextToLast;
-            sig.MASK_MARKINGDONE = cfg.MarkingDone;
-            sig.MASK_ERROR = cfg.Error;
-            sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
+        //private void UpdateIoMasks()
+        //{
+        //    sig.MASK_ARTICLEREADY = cfg.ArticleReady;
+        //    sig.MASK_READYTOMARK = cfg.ReadyToMark;
+        //    sig.MASK_NEXTTOLAST = cfg.NextToLast;
+        //    sig.MASK_MARKINGDONE = cfg.MarkingDone;
+        //    sig.MASK_ERROR = cfg.Error;
+        //    sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
 
-            // In
-            sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
-            sig.MASK_EMERGENCY = cfg.EmergencyError;
-            sig.MASK_RESET = cfg.ResetIo;
-        }
+        //    // In
+        //    sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
+        //    sig.MASK_EMERGENCY = cfg.EmergencyError;
+        //    sig.MASK_RESET = cfg.ResetIo;
+        //}
 
         public void ResetDocument()
         {
@@ -97,6 +99,10 @@ namespace LaserWrapper
             try
             {
                 result = _doc.execute(true, true);
+                if (!result)
+                {
+                    RaiseDeviceErrorEvent("Laser: Execute failed!");
+                }
             }
             catch (NullReferenceException ex)
             {
@@ -420,6 +426,8 @@ namespace LaserWrapper
 
         /// <summary>
         /// Event for Start marking
+        /// NB! This is called everytime _doc.execute() is executed!
+        /// Which is why it can't exist in the Release version!!!
         /// </summary>
         private void _laserSystem_sigLaserStart()
         {
@@ -428,11 +436,11 @@ namespace LaserWrapper
             RaiseQueryStartEvent(GlblRes.Marking);
             ResetPort(0, sig.MASK_READYTOMARK);
             RaiseLaserBusyEvent(true);
-            bool brc = _doc.execute(true, true);
-            if (!brc)
-            {
-                RaiseDeviceErrorEvent("Laser: Execute failed!");
-            }
+            //bool brc = _doc.execute(true, true);
+            //if (!brc)
+            //{
+            //    RaiseDeviceErrorEvent("Laser: Execute failed!");
+            //}
         }
 
 #endif
@@ -448,13 +456,13 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
-                Log.Debug(string.Format("Reset IO Mask: {0}", mask));
+                Log.Debug(string.Format("Reset IO Mask: {0} - {1}", GetMaskName(mask), mask));
                 IoFix.Delete(mask);
                 return _ioPort.resetPort(port, mask);
             }
             else
             {
-                Log.Debug(string.Format("IO port is null! Mask: {0}", mask));
+                Log.Debug(string.Format("IO port is null! Mask: {0} - {1}", GetMaskName(mask), mask));
             }
 
             return false;
@@ -464,17 +472,29 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
-                Log.Debug(string.Format("Set IO Mask: {0}", mask));
+                Log.Debug(string.Format("Set IO Mask: {0} - {1}", GetMaskName(mask), mask));
                 int currentMask = IoFix.Add(mask);
                 Log.Trace(string.Format("Mask: {0} - CurrentMask: {1}", mask, currentMask));
                 return _ioPort.setPort(port, currentMask);
             }
             else
             {
-                Log.Debug(string.Format("IO port is null! Mask: {0}", mask));
+                Log.Debug(string.Format("IO port is null! Mask: {0} - {1}", GetMaskName(mask), mask));
             }
 
             return false;
+        }
+
+        private string GetMaskName(int mask)
+        {
+            string result = string.Empty;
+
+            bool brc = sig.NameDict.TryGetValue(mask, out result);
+            if (!brc)
+                Log.Debug(string.Format("Mask Name Not Found: {0}", mask));
+
+            return result;
+            throw new NotImplementedException();
         }
 
         public bool SetReady(bool OnOff)

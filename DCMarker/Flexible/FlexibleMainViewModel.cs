@@ -577,7 +577,8 @@ namespace DCMarker
         {
             get
             {
-                throw new NotImplementedException();
+                return string.Empty;
+                //throw new NotImplementedException();
             }
         }
 
@@ -699,10 +700,14 @@ namespace DCMarker
                 {
                     result = "!"; // string.Empty; // "TO Number is required";
                 }
+
+#if false
+                // No limits on the length for this machine!
                 else if (TOnr.Length != DCConfig.Instance.ToNumberLength)
                 {
                     result = string.Format(GlblRes.TO_Number_must_be_0_characters, DCConfig.Instance.ToNumberLength);
                 }
+#endif
                 else
                 {
                     ValidatedPropertiesState[GetIndex("TOnr")] = true;

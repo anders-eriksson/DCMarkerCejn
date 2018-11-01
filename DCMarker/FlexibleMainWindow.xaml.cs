@@ -1,6 +1,7 @@
 using Configuration;
 using DCLog;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
@@ -121,6 +122,12 @@ namespace DCMarker
             {
                 MessageBox.Show(GlblRes.No_Connection_with_Z_axis, GlblRes.ERROR, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void LogPath_Click(object sender, RoutedEventArgs e)
+        {
+            string LogfilePath = NLogHelper.GetLogFileDirectory("dclogfile");
+            Process.Start(LogfilePath);
         }
     }
 }

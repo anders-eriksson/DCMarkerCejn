@@ -580,8 +580,10 @@ namespace DCMarker.Flexible
         private bool TemplateExists(string template)
         {
             bool result = true;
-            string layout = string.Format("{0}.xlp", template);
+
+            var layout = NormalizeLayoutName(template);
             result = _laser.Load(layout);
+
             return result;
         }
 

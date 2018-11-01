@@ -7,9 +7,11 @@
     <entry name="LayoutPath">C:\DCMarkerCejn\Layouts 8855</entry>
     <entry name="ExecuteTimeout">10000</entry>
     <entry name="IsIoEnabled">True</entry>
-    <entry name="ArticleReady">32</entry>
     <entry name="ReadyToMark">1</entry>
     <entry name="MarkingDone">2</entry>
+    <entry name="ArticleReady">16</entry>
+    <entry name="LastEdge">4</entry>
+    <entry name="HandleWithCare">32</entry>
     <entry name="NextToLast">64</entry>
     <entry name="Error">128</entry>
     <entry name="ItemInPlace">2</entry>
