@@ -482,7 +482,7 @@ namespace DCMarker.Model
 
         #endregion only used by NippleWorkFlow // AME - 2018-05-12
 
-        #region only used in FlexibleWorkFlow // AME - 2018-10-29
+        #region only used in FlexibleWorkFlow // AME - 2018-11-05
 
         public event EventHandler<ItemDoneArgs> ItemDoneEvent;
 
@@ -491,7 +491,11 @@ namespace DCMarker.Model
             throw new NotImplementedException();
         }
 
-        #endregion only used in FlexibleWorkFlow // AME - 2018-10-29
+        public event EventHandler<UpdateItemStatusArgs> UpdateItemStatusEvent;
+
+        public event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;
+
+        #endregion only used in FlexibleWorkFlow // AME - 2018-11-05
 
         #region Laser Busy Event
 

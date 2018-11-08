@@ -23,14 +23,14 @@ namespace DCMarker.Flexible
         private List<Article> _articles;
         private FlexibleItem[] _items;
         private int _currentItem;
-        private int _currentEdge;
         private DB _db;
         private bool _hasEdges;
         private Laser _laser;
         private volatile bool ArticleHasToNumber = false;
         private volatile string TOnumber;
         private volatile bool IsTOnumberUpdated = false;
-        private volatile bool IsTOnumberApproved = false;
+
+        //private volatile bool IsTOnumberApproved = false;
         private bool _testItem;
 
         public bool FirstMarkingResetZ { get; set; }
@@ -154,7 +154,8 @@ namespace DCMarker.Flexible
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
         {
             RaiseErrorEvent(string.Empty);
-            _laser.ResetPort(0, sig.MASK_READYTOMARK);
+            digitalIO.SetReadyToMark();
+            //_laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
             RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
 
@@ -170,7 +171,8 @@ namespace DCMarker.Flexible
                 List<Article> emptyList = new List<Article>();
                 emptyList.Add(empty);
                 UpdateViewModel(emptyList);
-                _laser.SetPort(0, sig.MASK_ERROR);
+                digitalIO.SetError();
+                //_laser.SetPort(0, sig.MASK_ERROR);
                 // Can't find article in database.
 
                 RaiseErrorEvent(string.Format(GlblRes.Article_not_defined_in_database_Article0, _articleNumber));
@@ -200,12 +202,16 @@ namespace DCMarker.Flexible
             }
             else
             {
+                digitalIO.ResetLastEdge();
+
                 UpdateLayout();
                 _currentItem = IncrementCurrentItem(_currentItem);
+                RaiseUpdateItemStatusEvent(_items[_currentItem]);
             }
 #else
-
+            digitalIO.ResetLastEdge();
             UpdateLayout();
+            RaiseUpdateItemStatusEvent(_items[_currentItem]);
             _currentItem = IncrementCurrentItem(_currentItem);
 #endif
         }
@@ -228,13 +234,16 @@ namespace DCMarker.Flexible
             if (_laser != null)
             {
                 FirstMarkingResetZ = false;
-                _laser.SetPort(0, sig.MASK_MARKINGDONE);
-                _items[_currentItem].ItemState = FlexibleItemStates.MarkingDone;
-                if (_items[_currentItem].CurrentEdge >= _items[_currentItem].NumberOfEdges)
+                digitalIO.SetMarkingDone();
+                int n = _currentItem - 1 < 0 ? 0 : _currentItem - 1;
+                _items[n].ItemState = FlexibleItemStates.MarkingDone;
+                RaiseUpdateItemStatusEvent(_items[_currentItem]);
+                if (_items[n].CurrentEdge >= _items[n].NumberOfEdges)
                 {
+                    digitalIO.SetLastEdge();
                     // we are done with the item. Reset it for the next item
-                    ResetItem(_currentItem);
-                    RaiseItemDoneEvent(_items[_currentItem].ItemId);
+                    ResetItem(n);
+                    RaiseItemDoneEvent(_items[n].ItemId);
                 }
             }
             else
@@ -260,7 +269,8 @@ namespace DCMarker.Flexible
             {
                 if (!string.IsNullOrWhiteSpace(msg))
                 {
-                    _laser.SetPort(0, sig.MASK_ERROR);
+                    digitalIO.SetError();
+                    //_laser.SetPort(0, sig.MASK_ERROR);
                 }
             }
             else
@@ -361,7 +371,9 @@ namespace DCMarker.Flexible
 
         private void _laser_ZeroReachedEvent(string msg)
         {
+            digitalIO.ResetLastEdge();
             UpdateLayout();
+            _currentItem = IncrementCurrentItem(_currentItem);
         }
 
         private void _laser_LaserBusyEvent(bool busy)
@@ -385,8 +397,8 @@ namespace DCMarker.Flexible
         private void CreateNewItems()
         {
             _items = new FlexibleItem[2];
-            _items[0] = new FlexibleItem();
-            _items[1] = new FlexibleItem();
+            _items[0] = new FlexibleItem("A");
+            _items[1] = new FlexibleItem("B");
         }
 
         private string NormalizeLayoutName(string layoutname)
@@ -488,32 +500,38 @@ namespace DCMarker.Flexible
                                 {
                                     // we are ready to mark...
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
-                                    _laser.ResetPort(0, sig.MASK_MARKINGDONE);
-                                    _laser.SetPort(0, sig.MASK_READYTOMARK);
+                                    digitalIO.ResetMarkingDone();
+                                    //_laser.ResetPort(0, sig.MASK_MARKINGDONE);
+                                    digitalIO.SetReadyToMark();
+                                    //_laser.SetPort(0, sig.MASK_READYTOMARK);
                                 }
                                 else
                                 {
                                     RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
-                                    _laser.SetPort(0, sig.MASK_ERROR);
+                                    digitalIO.SetError();
+                                    //_laser.SetPort(0, sig.MASK_ERROR);
                                 }
                             }
                             else
                             {
                                 RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
-                                _laser.SetPort(0, sig.MASK_ERROR);
+                                digitalIO.SetError();
+                                //_laser.SetPort(0, sig.MASK_ERROR);
                             }
                         }
                     }
                     else
                     {
                         RaiseErrorEvent(string.Format(GlblRes.Error_loading_layout_0, layoutname));
-                        _laser.SetPort(0, sig.MASK_ERROR);
+                        digitalIO.SetError();
+                        //_laser.SetPort(0, sig.MASK_ERROR);
                     }
                 }
                 else
                 {
                     RaiseErrorEvent(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
-                    _laser.SetPort(0, sig.MASK_ERROR);
+                    digitalIO.SetError();
+                    //_laser.SetPort(0, sig.MASK_ERROR);
                 }
             }
             else
@@ -604,6 +622,8 @@ namespace DCMarker.Flexible
             _items[1].NumberOfEdges = _articles.Count;
             _items[1].CurrentEdge = 0;
             _currentItem = 0;
+
+            RaiseSetupItemStatusEvent(_items);
         }
 
         private FlexibleItem CreateFlexibleItem()
@@ -875,5 +895,41 @@ namespace DCMarker.Flexible
         }
 
         #endregion Item Done Event
+
+        #region Setup Item Status Event
+
+        public delegate void SetupItemStatusHandler(FlexibleItem[] items);
+
+        public event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;
+
+        internal void RaiseSetupItemStatusEvent(FlexibleItem[] items)
+        {
+            var handler = SetupItemStatusEvent;
+            if (handler != null)
+            {
+                var arg = new SetupItemStatusArgs(items);
+                handler(null, arg);
+            }
+        }
+
+        #endregion Setup Item Status Event
+
+        #region Update Item Status Event
+
+        public delegate void UpdateItemStatusHandler(FlexibleItem data);
+
+        public event EventHandler<UpdateItemStatusArgs> UpdateItemStatusEvent;
+
+        internal void RaiseUpdateItemStatusEvent(FlexibleItem data)
+        {
+            var handler = UpdateItemStatusEvent;
+            if (handler != null)
+            {
+                var arg = new UpdateItemStatusArgs(data);
+                handler(null, arg);
+            }
+        }
+
+        #endregion Update Item Status Event
     }
 }

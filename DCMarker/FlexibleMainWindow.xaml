@@ -17,6 +17,7 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <local:CheckBoxConverter x:Key="CheckBoxConverter" />
+        <local:KantConverter x:Key="KantConverter" />
 
         <DataTemplate DataType="{x:Type ValidationError}">
             <TextBlock
@@ -33,8 +34,15 @@
 
     <Grid>
         <DockPanel Height="35" VerticalAlignment="Top">
-            <Menu DockPanel.Dock="Top" IsTabStop="False" KeyboardNavigation.IsTabStop="False" Height="28">
-                <MenuItem Header="{x:Static p:Resources.FileMenuHeader}" IsTabStop="False" Grid.Column="0">
+            <Menu
+                Height="28"
+                DockPanel.Dock="Top"
+                IsTabStop="False"
+                KeyboardNavigation.IsTabStop="False">
+                <MenuItem
+                    Grid.Column="0"
+                    Header="{x:Static p:Resources.FileMenuHeader}"
+                    IsTabStop="False">
 
                     <MenuItem
                         x:Name="Exit"
@@ -73,17 +81,21 @@
 
         <TextBlock
             x:Name="FixtureTextBlock"
+            Width="400"
+            Height="27"
+            MinWidth="400"
             Margin="146,40,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             FontSize="20"
-            MinWidth="400"
             IsEnabled="{Binding HasFixture}"
             Text="{Binding Fixture}"
             TextWrapping="Wrap"
-            Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}"  Height="27" Width="400" />
+            Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
         <TextBlock
             x:Name="Careful"
+            Width="155"
+            Height="27"
             Margin="34,72,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -92,18 +104,22 @@
             IsEnabled="{Binding HasFixture}"
             Text="{x:Static p:Resources.CarefulHeader}"
             TextWrapping="NoWrap"
-            Visibility="{Binding Path=IsCareful, Converter={StaticResource BoolToVis}}" Height="27" Width="155" />
+            Visibility="{Binding Path=IsCareful, Converter={StaticResource BoolToVis}}" />
         <TextBlock
             x:Name="ArticleTextblock"
+            Width="41"
+            Height="17"
             Margin="42,122,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.ArticleNumber}"
-            TextWrapping="Wrap" Height="17" Width="41" />
+            TextWrapping="Wrap" />
 
         <TextBox
             x:Name="ArticleTextBox"
+            Grid.Column="2"
             Width="132"
+            Height="18"
             Margin="139,120,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -111,105 +127,209 @@
             IsEnabled="{Binding OrderNotStarted}"
             TabIndex="0"
             Text="{Binding ArticleNumber, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
-            TextWrapping="Wrap" Grid.Column="2" Height="18" />
+            TextWrapping="Wrap" />
 
         <TextBlock
             x:Name="TOnrLabel"
+            Grid.ColumnSpan="2"
+            Width="62"
+            Height="16"
             Margin="42,153,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.ToNumber}"
-             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}"  Height="16" Width="62" Grid.ColumnSpan="2" />
+            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
 
         <TextBox
             x:Name="TOnrTextbox"
             Width="132"
+            Height="18"
             Margin="139,155,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            IsEnabled="{Binding OrderNotStarted}"
             local:FocusAdvancement.AdvancesByEnterKey="True"
+            IsEnabled="{Binding OrderNotStarted}"
             TabIndex="2"
             Text="{Binding TOnr, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             TextWrapping="Wrap"
-            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" Height="18" />
-        <TextBlock x:Name="TableSideLabel" HorizontalAlignment="Left" Margin="301,147,0,0" TextWrapping="NoWrap" Text="{x:Static p:Resources.TableSide}" VerticalAlignment="Top" Height="16" Width="23" />
-        <TextBlock
-            x:Name="KantLabel"
-            Margin="301,168,0,0"
-            HorizontalAlignment="Left"
+            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+        <Border
+            Height="59"
+            Margin="299,89,5,0"
             VerticalAlignment="Top"
-            IsEnabled="{Binding HasKant}"
-            Text="{x:Static p:Resources.Kant}"
-            TextWrapping="Wrap"
-            Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}"  Height="18" Width="29" />
-        <TextBlock
-            x:Name="KantTextBlock"
-            Width="143"
-            Margin="350,168,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            IsEnabled="{Binding HasKant}"
-            Text="{Binding Kant}"
-            TextWrapping="Wrap"
-            Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}"  Height="16" />
-        <TextBlock
-        x:Name="TableSide"
-            Width="143"
-            Margin="350,147,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="{Binding TableSide}" Height="16" />
-        <TextBlock
-            x:Name="BatchDoneLabel"
-            Margin="301,191,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="{x:Static p:Resources.BatchDone}" Grid.ColumnSpan="2" Grid.Column="3" Height="16" Width="29" />
-        <TextBlock
-            x:Name="ItemDone"
-            Width="143"
-            Margin="350,191,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="{Binding ItemDone}" Height="16" />
+            Background="{Binding IsActiveA}">
+            <!--<GroupBox Background="{Binding IsActiveA}" Header="Position A">-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="34*" />
+                    <ColumnDefinition Width="34*" />
+                    <ColumnDefinition Width="54*" />
+                    <ColumnDefinition Width="47*" />
+                    <ColumnDefinition Width="79*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    x:Name="SideA"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    Width="50"
+                    Height="18"
+                    Text="{x:Static p:Resources.TableSideA}" />
+                <TextBlock
+                    x:Name="KantLabel"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="29"
+                    Height="18"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{x:Static p:Resources.Kant}"
+                    TextWrapping="Wrap" />
+                <!--  Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}"  -->
 
+                <TextBlock
+                    x:Name="KantTextBlock"
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Width="49"
+                    Height="16"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{Binding KantA}"
+                    TextWrapping="Wrap" />
+
+                <TextBlock
+                    x:Name="TotalKantLabel"
+                    Grid.Row="0"
+                    Grid.Column="3"
+                    Width="29"
+                    Height="18"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{x:Static p:Resources.TotalKant}"
+                    TextWrapping="Wrap" />
+                <TextBlock
+                    x:Name="TotalKantTextBlock"
+                    Grid.Row="0"
+                    Grid.Column="4"
+                    Width="49"
+                    Height="16"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{Binding TotalKant}"
+                    TextWrapping="Wrap" />
+            </Grid>
+            <!--</GroupBox>-->
+        </Border>
+        <Border
+            Height="41"
+            Margin="299,164,10,0"
+            VerticalAlignment="Top"
+            Background="{Binding IsActiveB}">
+            <GroupBox Background="{Binding IsActiveB}" Header="Position B">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="34*" />
+                        <ColumnDefinition Width="34*" />
+                        <ColumnDefinition Width="54*" />
+                        <ColumnDefinition Width="47*" />
+                        <ColumnDefinition Width="79*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        x:Name="KantLabel1"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Width="29"
+                        Height="18"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Text="{x:Static p:Resources.Kant}"
+                        TextWrapping="Wrap" />
+                    <!--  Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}"  -->
+
+                    <TextBlock
+                        x:Name="KantTextBlock1"
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Width="49"
+                        Height="16"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Text="{Binding KantB}"
+                        TextWrapping="Wrap" />
+
+                    <TextBlock
+                        x:Name="TotalKantLabel1"
+                        Grid.Row="0"
+                        Grid.Column="3"
+                        Width="29"
+                        Height="18"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Text="{x:Static p:Resources.TotalKant}"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        x:Name="TotalKantTextBlock1"
+                        Grid.Row="0"
+                        Grid.Column="4"
+                        Width="49"
+                        Height="16"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Text="{Binding TotalKant}"
+                        TextWrapping="Wrap" />
+                </Grid>
+            </GroupBox>
+        </Border>
         <Button
             x:Name="OkButton"
             Width="75"
+            Height="20"
             Margin="125,254,0,0"
-            IsEnabled="{Binding OrderNotStarted}"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Command="{Binding OkButtonCommand, Mode=OneWay}"
             Content="{x:Static p:Resources.OK}"
-            TabIndex="4"  Height="20" />
+            IsEnabled="{Binding OrderNotStarted}"
+            TabIndex="4" />
         <Button
             x:Name="CancelButton"
-            Command="{Binding CancelButtonCommand, Mode=OneWay}"
-            Content="{x:Static p:Resources.Cancel}"
-            HorizontalAlignment="Left"
+            Width="75"
+            Height="20"
             Margin="205,254,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Width="75"  Height="20" />
+            Command="{Binding CancelButtonCommand, Mode=OneWay}"
+            Content="{x:Static p:Resources.Cancel}" />
         <Button
             x:Name="LoadButton"
+            Grid.Column="4"
             Width="75"
+            Height="20"
             Margin="392,227,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Click="LoadButton_Click"
             Content="ItemInPos"
-            IsTabStop="False"  Grid.Column="4" Height="20" />
+            IsTabStop="False" />
         <Button
             x:Name="ExecuteButton"
             Width="75"
+            Height="20"
             Margin="392,254,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Command="{Binding ExecuteMarkingCommand}"
             Content="Execute"
-            IsTabStop="False"  Height="20" />
+            IsTabStop="False" />
         <Ellipse
             x:Name="InMarking"
             Width="20"
@@ -223,15 +343,16 @@
         </Ellipse>
 
         <CheckBox
-            Margin="139,202,0,0"
+            Width="75"
+            Height="15"
+            Margin="139,178,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
             Content="{x:Static p:Resources.TestItem}"
             IsChecked="{Binding IsTestItemSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             IsEnabled="{Binding OrderNotStarted}"
-            IsTabStop="False"
-            TabIndex="3" Height="15" Width="75" />
+            TabIndex="3" />
         <StackPanel VerticalAlignment="Bottom">
             <TextBlock
                 x:Name="textBlock"
@@ -246,6 +367,8 @@
         </StackPanel>
         <TextBlock
             x:Name="FixtureLabel_Copy"
+            Width="70"
+            Height="25"
             Margin="34,40,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -253,6 +376,6 @@
             IsEnabled="{Binding HasFixture}"
             Text="{x:Static p:Resources.Fixture}"
             TextWrapping="NoWrap"
-            Visibility="{Binding HasFixture, Converter={StaticResource BoolToVis}}"  Height="25" Width="70" />
+            Visibility="{Binding HasFixture, Converter={StaticResource BoolToVis}}" />
     </Grid>
 </Window>

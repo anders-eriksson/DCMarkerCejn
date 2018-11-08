@@ -53,6 +53,8 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ErrorArgs.cs" />
     <Compile Include="Errors.cs" />
+    <Compile Include="FlexibleItem.cs" />
+    <Compile Include="FlexibleItemStates.cs" />
     <Compile Include="FocusEventArgs.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="ICommandQueue.cs" />
@@ -70,7 +72,9 @@
     <Compile Include="MachineTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SetFocusToNumberArgs.cs" />
+    <Compile Include="SetupItemStatusArgs.cs" />
     <Compile Include="StatusArgs.cs" />
+    <Compile Include="UpdateItemStatusArgs.cs" />
     <Compile Include="UpdateMainViewModelArgs.cs" />
     <Compile Include="UpdateViewModelData.cs" />
   </ItemGroup>

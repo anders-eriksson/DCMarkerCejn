@@ -34,7 +34,6 @@ namespace LaserWrapper
         private string _imagePath;
         private bool _isIoEnabled;
         private string _layoutPath;
-        private Dictionary<int, string> _maskDictionary;
 
         #endregion Configurable variables
 

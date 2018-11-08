@@ -261,6 +261,14 @@
           <source>Handle with care!</source>
           <target state="new">Handle with care!</target>
         </trans-unit>
+        <trans-unit id="TableSideA" translate="yes" xml:space="preserve">
+          <source>Position A</source>
+          <target state="new">Position A</target>
+        </trans-unit>
+        <trans-unit id="TableSideB" translate="yes" xml:space="preserve">
+          <source>Position B</source>
+          <target state="new">Position B</target>
+        </trans-unit>
       </group>
     </body>
   </file>

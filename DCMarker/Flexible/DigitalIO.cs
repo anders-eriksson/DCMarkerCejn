@@ -83,6 +83,16 @@ namespace DCMarker.Flexible
             return _laserWrapper.ResetPort(0, sig.MASK_MARKINGDONE);
         }
 
+        public bool SetError()
+        {
+            return _laserWrapper.SetPort(0, sig.MASK_ERROR);
+        }
+
+        public bool ResetError()
+        {
+            return _laserWrapper.ResetPort(0, sig.MASK_ERROR);
+        }
+
         private void UpdateIoMasks()
         {
             // Out

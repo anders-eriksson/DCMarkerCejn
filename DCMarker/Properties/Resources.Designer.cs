@@ -475,6 +475,24 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Position A.
+        /// </summary>
+        public static string TableSideA {
+            get {
+                return ResourceManager.GetString("TableSideA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Position B.
+        /// </summary>
+        public static string TableSideB {
+            get {
+                return ResourceManager.GetString("TableSideB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Test Item.
         /// </summary>
         public static string TestItem {

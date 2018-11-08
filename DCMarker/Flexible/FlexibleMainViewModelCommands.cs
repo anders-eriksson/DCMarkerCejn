@@ -59,7 +59,7 @@ namespace DCMarker
                 Article article = new Article()
                 {
                     F1 = ArticleNumber,
-                    Kant = Kant,
+                    //Kant = Kant,
                     FixtureId = Fixture,
                     EnableTO = HasTOnr,
                     TOnumber = TOnr,
@@ -70,7 +70,7 @@ namespace DCMarker
                 //OrderInProgress = false;
                 OrderNotStarted = false;
                 ItemDone = "";
-                TableSide = TableName[0];
+                //TableSide = TableName[0];
 
                 _wf.UpdateWorkflow(article);
                 _wf.UpdateTOnumber(TOnr);

@@ -14,6 +14,8 @@ namespace Contracts
 
         event EventHandler<UpdateMainViewModelArgs> UpdateMainViewModelEvent;
 
+        event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;
+
         event EventHandler<StatusArgs> ErrorMsgEvent;
 
         event EventHandler<LaserBusyEventArgs> LaserBusyEvent;
@@ -21,6 +23,8 @@ namespace Contracts
         event EventHandler<ArticleHasToNumberArgs> ArticleHasToNumberEvent;
 
         event EventHandler<ItemDoneArgs> ItemDoneEvent;
+
+        event EventHandler<UpdateItemStatusArgs> UpdateItemStatusEvent;
 
         void Close();
 

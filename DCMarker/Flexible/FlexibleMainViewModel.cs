@@ -19,9 +19,24 @@ namespace DCMarker
         private readonly Color BUSYCOLOR = Colors.Red;
         private readonly Color WAITINGCOLOR = Colors.LightGreen;
 
+        private readonly Brush ACTIVEBRUSH = CreateBrush(0xff, 0xcc, 0xcc);
+        private readonly Brush INACTIVEBRUSH = CreateBrush(0x66, 0xff, 0xcc);
+
+        private static Brush CreateBrush(int r, int g, int b)
+        {
+            Brush result = null;
+            var brush = new SolidColorBrush(Color.FromArgb(255, (byte)r, (byte)g, (byte)b));
+            result = brush;
+
+            return result;
+        }
+
         private IWorkFlow _wf = null;
 
         private DCConfig cfg;
+
+        private string[] TableName = new string[2] { "A", "B" };
+        private int[] _itemsDone = new int[2] { 0, 0 };
 
         public FlexibleMainViewModel()
         {
@@ -29,7 +44,7 @@ namespace DCMarker
             Fixture = string.Empty;
             HasFixture = false;
             HasKant = false;
-            Kant = string.Empty;
+            KantA = string.Empty;
             HasTestItem = false;
             TestItem = string.Empty;
             HasBatchSize = false;
@@ -95,7 +110,8 @@ namespace DCMarker
 
         private void _wf_ItemDoneEvent(object sender, ItemDoneArgs e)
         {
-            ItemDone = e.NumberofItemsDone.ToString();
+            _itemsDone[_CurrentSide] = e.NumberofItemsDone;
+            ItemDone = _itemsDone[_CurrentSide].ToString();
         }
 
         internal void ResetAllIoSignals()
@@ -124,10 +140,47 @@ namespace DCMarker
             {
                 _wf.ErrorEvent += _wf_ErrorEvent;
                 _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;
+                _wf.UpdateItemStatusEvent += _wf_UpdateItemStatusEvent;
+                _wf.SetupItemStatusEvent += _wf_SetupItemStatusEvent;
                 _wf.StatusEvent += _wf_StatusEvent;
                 _wf.ErrorMsgEvent += _wf_ErrorMsgEvent;
                 _wf.LaserBusyEvent += _wf_LaserBusyEvent;
             }
+        }
+
+        private void _wf_SetupItemStatusEvent(object sender, SetupItemStatusArgs e)
+        {
+            KantA = e.Items[0].CurrentEdge.ToString();
+            KantB = e.Items[1].CurrentEdge.ToString();
+            TotalKant = e.Items[0].NumberOfEdges.ToString();
+            ItemDone = "0";
+        }
+
+        private void _wf_UpdateItemStatusEvent(object sender, UpdateItemStatusArgs e)
+        {
+            string edge = string.Empty;
+            TableSide = e.Item.Side;
+            if (TableSide == "A")
+            {
+                //if (e.Item.CurrentEdge == 0)
+                //    KantA = "1";
+                //else
+                KantA = e.Item.CurrentEdge.ToString();
+
+                SetActiveItem(0);
+            }
+            else
+            {
+                //if (e.Item.CurrentEdge == 0)
+                //    KantB = "1";
+                //else
+                KantB = e.Item.CurrentEdge.ToString();
+
+                SetActiveItem(1);
+            }
+            TotalKant = e.Item.NumberOfEdges.ToString();
+
+            //ItemDone = _itemsDone[_CurrentSide].ToString(); ;
         }
 
         private void _wf_LaserBusyEvent(object sender, LaserBusyEventArgs e)
@@ -207,21 +260,65 @@ namespace DCMarker
             Fixture = e.Data.Fixture;
             HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
             ArticleNumber = e.Data.ArticleNumber;
-            Kant = e.Data.Kant;
-            HasKant = string.IsNullOrWhiteSpace(Kant) ? false : true;
+            //Kant = e.Data.Kant;
+            HasKant = string.IsNullOrWhiteSpace(KantA) ? false : true;
+            //TotalKant = e.Data.TotalKant;
             HasTOnr = e.Data.HasTOnr;
             HasBatchSize = e.Data.HasBatchSize;
             NeedUserInput = e.Data.NeedUserInput;
             Status = e.Data.Status;
-            TableSide = TableName[e.Data.CurrentItem];
+            //TableSide = TableName[e.Data.CurrentItem];
             CurrentSide = e.Data.CurrentItem;
+        }
+
+        private void SetActiveItem(int side)
+        {
+            if (side == 0)
+            {
+                IsActiveA = ACTIVEBRUSH;
+                IsActiveB = INACTIVEBRUSH;
+            }
+            else
+            {
+                IsActiveA = INACTIVEBRUSH;
+                IsActiveB = ACTIVEBRUSH;
+            }
+        }
+
+        private Brush _IsActiveA;
+
+        public Brush IsActiveA
+        {
+            get
+            {
+                return _IsActiveA;
+            }
+            set
+            {
+                _IsActiveA = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private Brush _IsActiveB;
+
+        public Brush IsActiveB
+        {
+            get
+            {
+                return _IsActiveB;
+            }
+            set
+            {
+                _IsActiveB = value;
+                NotifyPropertyChanged();
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
-        private string[] TableName = new string[2] { "A", "B" };
         private string _TableSide;
 
         public string TableSide
@@ -503,15 +600,45 @@ namespace DCMarker
             }
         }
 
-        public string Kant
+        public string KantA
         {
             get
             {
-                return _kant;
+                return _KantA;
             }
             set
             {
-                _kant = value;
+                _KantA = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _KantB;
+
+        public string KantB
+        {
+            get
+            {
+                return _KantB;
+            }
+            set
+            {
+                _KantB = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _TotalKant;
+
+        public string TotalKant
+        {
+            get
+            {
+                return _TotalKant;
+            }
+            set
+            {
+                _TotalKant = value;
                 NotifyPropertyChanged();
             }
         }
@@ -750,7 +877,7 @@ namespace DCMarker
         private bool _hasKant;
         private bool _hasTestItem;
         private bool _hasTOnr;
-        private string _kant;
+        private string _KantA;
         private string _status;
         private string _testItem;
         private string _TOnr;
