@@ -40,6 +40,8 @@ namespace Contracts
 
         void ResetCareful();
 
+        void ResetItemsDone();
+
         void SetNextToLast();
 
         void ResetNextToLast();

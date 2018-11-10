@@ -8,11 +8,13 @@ namespace Contracts
 {
     public class UpdateItemStatusArgs : EventArgs
     {
-        public UpdateItemStatusArgs(FlexibleItem item)
+        public UpdateItemStatusArgs(FlexibleItem[] items, int currentItem)
         {
-            Item = item;
+            Items = items;
+            CurrentItem = currentItem;
         }
 
-        public FlexibleItem Item { get; private set; }
+        public FlexibleItem[] Items { get; private set; }
+        public int CurrentItem { get; set; }
     }
 }

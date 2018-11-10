@@ -306,6 +306,9 @@
   <data name="CarefulHeader" xml:space="preserve">
     <value>Handle with care!</value>
   </data>
+  <data name="ItemsDone" xml:space="preserve">
+    <value>Items Done</value>
+  </data>
   <data name="TableSideA" xml:space="preserve">
     <value>Position A</value>
   </data>

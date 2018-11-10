@@ -874,6 +874,11 @@ namespace DCMarker.Model
             throw new NotImplementedException();
         }
 
+        public void ResetItemsDone()
+        {
+            throw new NotImplementedException();
+        }
+
         public event EventHandler<UpdateItemStatusArgs> UpdateItemStatusEvent;
 
         public event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;

@@ -21,7 +21,10 @@ namespace DCMarker.Flexible
         private DigitalIO digitalIO;
         private string _articleNumber;
         private List<Article> _articles;
+
         private FlexibleItem[] _items;
+        private int _itemsDone;
+
         private int _currentItem;
         private DB _db;
         private bool _hasEdges;
@@ -70,6 +73,11 @@ namespace DCMarker.Flexible
             }
             _articleNumber = string.Empty;
             _laser.ResetDocument();
+        }
+
+        public void ResetItemsDone()
+        {
+            _itemsDone = 0;
         }
 
         public void ResetArticleReady()
@@ -211,8 +219,8 @@ namespace DCMarker.Flexible
 #else
             digitalIO.ResetLastEdge();
             UpdateLayout();
-            RaiseUpdateItemStatusEvent(_items[_currentItem]);
-            _currentItem = IncrementCurrentItem(_currentItem);
+            RaiseUpdateItemStatusEvent(_items, _currentItem);
+            //_currentItem = IncrementCurrentItem(_currentItem);
 #endif
         }
 
@@ -235,16 +243,17 @@ namespace DCMarker.Flexible
             {
                 FirstMarkingResetZ = false;
                 digitalIO.SetMarkingDone();
-                int n = _currentItem - 1 < 0 ? 0 : _currentItem - 1;
+                int n = _currentItem;//_currentItem - 1 < 0 ? 0 : _currentItem - 1;
                 _items[n].ItemState = FlexibleItemStates.MarkingDone;
-                RaiseUpdateItemStatusEvent(_items[_currentItem]);
                 if (_items[n].CurrentEdge >= _items[n].NumberOfEdges)
                 {
                     digitalIO.SetLastEdge();
                     // we are done with the item. Reset it for the next item
                     ResetItem(n);
-                    RaiseItemDoneEvent(_items[n].ItemId);
+                    RaiseItemDoneEvent(++_itemsDone);
                 }
+                _currentItem = IncrementCurrentItem(_currentItem);
+                RaiseUpdateItemStatusEvent(_items, _currentItem);
             }
             else
             {
@@ -916,16 +925,16 @@ namespace DCMarker.Flexible
 
         #region Update Item Status Event
 
-        public delegate void UpdateItemStatusHandler(FlexibleItem data);
+        public delegate void UpdateItemStatusHandler(FlexibleItem[] data, int currentItem);
 
         public event EventHandler<UpdateItemStatusArgs> UpdateItemStatusEvent;
 
-        internal void RaiseUpdateItemStatusEvent(FlexibleItem data)
+        internal void RaiseUpdateItemStatusEvent(FlexibleItem[] data, int currentItem)
         {
             var handler = UpdateItemStatusEvent;
             if (handler != null)
             {
-                var arg = new UpdateItemStatusArgs(data);
+                var arg = new UpdateItemStatusArgs(data, currentItem);
                 handler(null, arg);
             }
         }

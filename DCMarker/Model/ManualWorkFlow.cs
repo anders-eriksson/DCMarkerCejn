@@ -73,15 +73,6 @@ namespace DCMarker.Model
             }
         }
 
-        #region Only used in Flexible
-
-        public void ResetCareful()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion Only used in Flexible
-
 #if DEBUG
 
         public void ArtNo(string artno)
@@ -612,6 +603,16 @@ namespace DCMarker.Model
         public event EventHandler<UpdateItemStatusArgs> UpdateItemStatusEvent;
 
         public event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;
+
+        public void ResetItemsDone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ResetCareful()
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion only used in FlexibleWorkFlow // AME - 2018-11-05
 

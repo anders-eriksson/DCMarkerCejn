@@ -69,7 +69,7 @@ namespace DCMarker
                 BatchesDone = 0;
                 //OrderInProgress = false;
                 OrderNotStarted = false;
-                ItemDone = "";
+                ItemsDone = "";
                 //TableSide = TableName[0];
 
                 _wf.UpdateWorkflow(article);
@@ -113,6 +113,7 @@ namespace DCMarker
             _wf.ResetCareful();
             _wf.ResetArticleReady();
             _wf.ResetNextToLast();
+            _wf.ResetItemsDone();
             ResetInputValues();
             Status = string.Empty;
 

@@ -313,6 +313,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Items Done.
+        /// </summary>
+        public static string ItemsDone {
+            get {
+                return ResourceManager.GetString("ItemsDone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edges.
         /// </summary>
         public static string Kant {

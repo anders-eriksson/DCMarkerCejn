@@ -110,8 +110,9 @@ namespace DCMarker
 
         private void _wf_ItemDoneEvent(object sender, ItemDoneArgs e)
         {
-            _itemsDone[_CurrentSide] = e.NumberofItemsDone;
-            ItemDone = _itemsDone[_CurrentSide].ToString();
+            //_itemsDone[_CurrentSide] = e.NumberofItemsDone;
+            //ItemDone = _itemsDone[_CurrentSide].ToString();
+            ItemsDone = e.NumberofItemsDone.ToString();
         }
 
         internal void ResetAllIoSignals()
@@ -153,20 +154,20 @@ namespace DCMarker
             KantA = e.Items[0].CurrentEdge.ToString();
             KantB = e.Items[1].CurrentEdge.ToString();
             TotalKant = e.Items[0].NumberOfEdges.ToString();
-            ItemDone = "0";
+            ItemsDone = "0";
         }
 
         private void _wf_UpdateItemStatusEvent(object sender, UpdateItemStatusArgs e)
         {
             string edge = string.Empty;
-            TableSide = e.Item.Side;
+            TableSide = e.Items[e.CurrentItem].Side;
             if (TableSide == "A")
             {
                 //if (e.Item.CurrentEdge == 0)
                 //    KantA = "1";
                 //else
-                KantA = e.Item.CurrentEdge.ToString();
-
+                KantA = e.Items[0].CurrentEdge.ToString();
+                KantB = e.Items[1].CurrentEdge.ToString();
                 SetActiveItem(0);
             }
             else
@@ -174,11 +175,12 @@ namespace DCMarker
                 //if (e.Item.CurrentEdge == 0)
                 //    KantB = "1";
                 //else
-                KantB = e.Item.CurrentEdge.ToString();
+                KantA = e.Items[0].CurrentEdge.ToString();
+                KantB = e.Items[1].CurrentEdge.ToString();
 
                 SetActiveItem(1);
             }
-            TotalKant = e.Item.NumberOfEdges.ToString();
+            TotalKant = e.Items[e.CurrentItem].NumberOfEdges.ToString();
 
             //ItemDone = _itemsDone[_CurrentSide].ToString(); ;
         }
@@ -336,7 +338,7 @@ namespace DCMarker
 
         private string _ItemDone;
 
-        public string ItemDone
+        public string ItemsDone
         {
             get
             {

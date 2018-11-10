@@ -269,6 +269,10 @@
           <source>Position B</source>
           <target state="new">Position B</target>
         </trans-unit>
+        <trans-unit id="ItemsDone" translate="yes" xml:space="preserve">
+          <source>Items Done</source>
+          <target state="new">Items Done</target>
+        </trans-unit>
       </group>
     </body>
   </file>
