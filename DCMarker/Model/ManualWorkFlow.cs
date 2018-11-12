@@ -90,6 +90,8 @@ namespace DCMarker.Model
             throw new NotImplementedException();
         }
 
+#endif
+
         public void Execute()
         {
             if (_laser != null)
@@ -102,8 +104,6 @@ namespace DCMarker.Model
                 Log.Debug("_laser == null");
             }
         }
-
-#endif
 
         public List<Article> GetArticle(string articleNumber)
         {

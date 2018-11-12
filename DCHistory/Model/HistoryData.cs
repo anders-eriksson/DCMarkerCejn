@@ -82,7 +82,7 @@ namespace DCHistory.Model
         [StringLength(50)]
         public string TOnr { get; set; }
 
-        public bool? Carefull { get; set; }
+        public bool? Careful { get; set; }
 
         [StringLength(30)]
         public string Snr { get; set; }

@@ -69,13 +69,6 @@ namespace DCMarker.Model
             _articleInput.ReadCommand((byte)CommandTypes.OK, _currentEdge, _totalEdges);
         }
 
-        private int edge = 1;
-
-        public void Execute()
-        {
-            _articleInput.ReadCommand((byte)CommandTypes.StartMarking, edge++, _totalEdges);
-        }
-
         public void Execute2()
         {
             _articleInput.ReadCommand((byte)CommandTypes.StartMarking2, _totalEdges, _totalEdges);
@@ -83,6 +76,12 @@ namespace DCMarker.Model
         }
 
 #endif
+        private int edge = 1;
+
+        public void Execute()
+        {
+            _articleInput.ReadCommand((byte)CommandTypes.StartMarking, edge++, _totalEdges);
+        }
 
         public List<Article> GetArticle(string articleNumber)
         {

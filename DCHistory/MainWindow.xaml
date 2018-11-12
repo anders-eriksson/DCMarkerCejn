@@ -373,17 +373,17 @@
                     Binding="{Binding EnableTO, IsAsync=True}"
                     Header="EnableTO" />
                 <DataGridCheckBoxColumn
-                    x:Name="carefullColumn"
+                    x:Name="CarefulColumn"
                     Width="*"
                     MinWidth="50"
                     IsThreeState="False"
-                    Binding="{Binding Carefull, IsAsync=True}"
-                    Header="Carefull" />
+                    Binding="{Binding Careful, IsAsync=True}"
+                    Header="Careful" />
                 <DataGridTextColumn
                     x:Name="test"
                     Width="*"
                     MinWidth="50"
-                    Binding="{Binding Carefull, IsAsync=True, TargetNullValue=''}"
+                    Binding="{Binding Careful, IsAsync=True, TargetNullValue=''}"
                     Header="TEst" />
                 <DataGridTextColumn
                     x:Name="tOnrColumn"

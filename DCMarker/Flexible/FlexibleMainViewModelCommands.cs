@@ -74,6 +74,8 @@ namespace DCMarker
 
                 _wf.UpdateWorkflow(article);
                 _wf.UpdateTOnumber(TOnr);
+
+                // TODO should FirstMarkingResetZ be used ???
                 _wf.FirstMarkingResetZ = true;
 
                 Status = GlblRes.Waiting_for_product;

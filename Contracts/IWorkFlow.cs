@@ -66,6 +66,8 @@ namespace Contracts
 
         void UserHasApprovedTOnumber(bool state);
 
+        void Execute();
+
 #if DEBUG
 
         void _laser_ItemInPositionEvent();
@@ -73,8 +75,6 @@ namespace Contracts
         void ArtNo(string artno);
 
         void StartOk();
-
-        void Execute();
 
         void Execute2();
 

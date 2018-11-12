@@ -106,6 +106,7 @@ namespace DCMarker.Flexible
         {
             throw new NotImplementedException();
         }
+#endif
 
         public void Execute()
         {
@@ -119,8 +120,6 @@ namespace DCMarker.Flexible
                 Log.Debug("_laser == null");
             }
         }
-
-#endif
 
         public List<Article> GetArticle(string articleNumber)
         {
@@ -213,8 +212,8 @@ namespace DCMarker.Flexible
                 digitalIO.ResetLastEdge();
 
                 UpdateLayout();
-                _currentItem = IncrementCurrentItem(_currentItem);
-                RaiseUpdateItemStatusEvent(_items[_currentItem]);
+                //_currentItem = IncrementCurrentItem(_currentItem);
+                RaiseUpdateItemStatusEvent(_items, _currentItem);
             }
 #else
             digitalIO.ResetLastEdge();
@@ -511,7 +510,7 @@ namespace DCMarker.Flexible
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
                                     digitalIO.ResetMarkingDone();
                                     //_laser.ResetPort(0, sig.MASK_MARKINGDONE);
-                                    digitalIO.SetReadyToMark();
+                                    //digitalIO.SetReadyToMark();
                                     //_laser.SetPort(0, sig.MASK_READYTOMARK);
                                 }
                                 else
@@ -614,6 +613,10 @@ namespace DCMarker.Flexible
             }
 
             digitalIO.SetArticleReady();
+
+            // HACK: ReadyToMark is set before UpdateLayout, according how it was in the old program
+            // HACK: This should be changed.....
+            digitalIO.SetReadyToMark();
 
             // reverse IsTestItemSelected to make it easier for the if statement!
             for (int i = 0; i < _articles.Count; i++)

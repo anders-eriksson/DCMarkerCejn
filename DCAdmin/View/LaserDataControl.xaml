@@ -280,9 +280,9 @@
                     <DataGridCheckBoxColumn
                         Width="*"
                         MinWidth="50"
-                        Binding="{Binding Carefull, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
+                        Binding="{Binding Careful, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
                         IsThreeState="False"
-                        Header="Carefull" />
+                        Header="Careful" />
                     <DataGridTextColumn
                         Width="*"
                         MinWidth="50"
