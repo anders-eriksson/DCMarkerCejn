@@ -305,7 +305,7 @@
         <StackPanel Margin="299,239,10,74" Orientation="Horizontal">
             <TextBlock
                 x:Name="ItemsDoneLabel"
-                Width="100"
+                Width="150"
                 Height="18"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
@@ -316,10 +316,10 @@
                 x:Name="ItemsDone"
                 Width="100"
                 Height="20"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 FontWeight="Bold"
-                Text="{Binding ItemsDone, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue='0'}" />
+                Text="{Binding ItemsDone, FallbackValue=0, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
         <Button
             x:Name="OkButton"

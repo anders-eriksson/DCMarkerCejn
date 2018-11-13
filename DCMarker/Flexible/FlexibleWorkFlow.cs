@@ -72,7 +72,7 @@ namespace DCMarker.Flexible
             try
             {
                 _ReadyToMarkTimer = new System.Timers.Timer();
-                _ReadyToMarkTimer.Interval = 1000;
+                _ReadyToMarkTimer.Interval = cfg.ReadyToMarkDelay;
                 _ReadyToMarkTimer.AutoReset = false;
                 _ReadyToMarkTimer.Elapsed += _ReadyToMarkTimer_Elapsed; ;
 
@@ -235,6 +235,7 @@ namespace DCMarker.Flexible
             else
             {
                 digitalIO.ResetLastEdge();
+                // TODO Remember to remove this delay
                 //digitalIO.SetLastEdge();
 
                 RaiseUpdateItemStatusEvent(_items, _currentItem);
@@ -268,7 +269,6 @@ namespace DCMarker.Flexible
             if (_laser != null)
             {
                 FirstMarkingResetZ = false;
-                digitalIO.SetMarkingDone();
                 int n = _currentItem;//_currentItem - 1 < 0 ? 0 : _currentItem - 1;
                 _items[n].ItemState = FlexibleItemStates.MarkingDone;
                 if (_items[n].CurrentEdge >= _items[n].NumberOfEdges)
@@ -280,6 +280,10 @@ namespace DCMarker.Flexible
                     ResetItem(n);
                     RaiseItemDoneEvent(++_itemsDone);
                 }
+
+                digitalIO.SetMarkingDone();
+                System.Threading.Thread.Sleep(20);
+
                 _currentItem = IncrementCurrentItem(_currentItem);
                 RaiseUpdateItemStatusEvent(_items, _currentItem);
                 Log.Trace("Before Start _ReadyToMarkTimer");
@@ -621,7 +625,8 @@ namespace DCMarker.Flexible
             {
                 if (TemplateExists(_articles[0].Template))
                 {
-                    FinishUpdateWorkflow(article);
+
+                    FinishUpdateWorkflow(_articles[0]);
                 }
                 else
                 {

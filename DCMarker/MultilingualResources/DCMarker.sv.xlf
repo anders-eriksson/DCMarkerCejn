@@ -255,19 +255,19 @@
         </trans-unit>
         <trans-unit id="TableSide" translate="yes" xml:space="preserve">
           <source>Side</source>
-          <target state="new">Side</target>
+          <target state="translated">Sida</target>
         </trans-unit>
         <trans-unit id="CarefulHeader" translate="yes" xml:space="preserve">
           <source>Handle with care!</source>
-          <target state="new">Handle with care!</target>
+          <target state="translated">Varsam hantering!</target>
         </trans-unit>
         <trans-unit id="TableSideA" translate="yes" xml:space="preserve">
           <source>Position A</source>
-          <target state="new">Position A</target>
+          <target state="translated">Position A</target>
         </trans-unit>
         <trans-unit id="TableSideB" translate="yes" xml:space="preserve">
           <source>Position B</source>
-          <target state="new">Position B</target>
+          <target state="translated">Position B</target>
         </trans-unit>
         <trans-unit id="ItemsDone" translate="yes" xml:space="preserve">
           <source>Items Done</source>

@@ -122,6 +122,8 @@ namespace DCMarker
             // TODO remove this since we don't use it.... // AME 2017-06-13
             OrderInProgress = true;
             OrderNotStarted = true;
+
+            RaiseFocusEventEvent("ArticleNumber");
         }
 
         private ICommand _ArticleChanged;

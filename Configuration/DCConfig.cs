@@ -92,6 +92,7 @@ namespace Configuration
 
                 // Laser IO
                 ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x01);                    // OUTPUT 0
+                ReadyToMarkDelay = _profile.GetValue("Laser", nameof(ReadyToMarkDelay), 200);
                 MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);                    // OUTPUT 1
                 ArticleReady = _profile.GetValue("Laser", nameof(ArticleReady), 0x10);                  // OUTPUT 4
                 NextToLast = _profile.GetValue("Laser", nameof(NextToLast), 0x40);                      // OUTPUT 6
@@ -154,6 +155,7 @@ namespace Configuration
                 // Laser IO
                 _profile.SetValue("Laser", nameof(ArticleReady), ArticleReady);
                 _profile.SetValue("Laser", nameof(ReadyToMark), ReadyToMark);
+                _profile.SetValue("Laser", nameof(ReadyToMarkDelay), ReadyToMarkDelay);
                 _profile.SetValue("Laser", nameof(MarkingDone), StartSignal);
                 _profile.SetValue("Laser", nameof(MarkingDone), MarkingDone);
                 _profile.SetValue("Laser", nameof(NextToLast), NextToLast);
@@ -214,6 +216,7 @@ namespace Configuration
         public int StartSignal { get; set; }
         public int ArticleReady { get; set; }
         public int ReadyToMark { get; set; }
+        public int ReadyToMarkDelay { get; set; }
         public int MarkingDone { get; set; }
         public int NextToLast { get; set; }
         public int LastEdge { get; set; }

@@ -42,9 +42,22 @@ namespace DCMarker
 
         private void MainViewModel_FocusEvent(object sender, Contracts.FocusEventArgs e)
         {
+            if(e.Text == "ArticleNumber")
+            {
+                Log.Trace("FocusEvent ArticleNumber");
+
+                Dispatcher.BeginInvoke(DispatcherPriority.Input,
+                new Action(delegate ()
+                {
+                    this.Activate();               // Set mainWindow focus
+                    ArticleTextBox.Focus();         // Set Logical Focus
+                    Keyboard.Focus(ArticleTextBox); // Set Keyboard Focus
+                    ArticleTextBox.SelectAll();
+                }));
+            }
             if (e.Text == "TO-Number")
             {
-                Log.Trace("FocusEvent");
+                Log.Trace("FocusEvent TO-Number");
 
                 Dispatcher.BeginInvoke(DispatcherPriority.Input,
                 new Action(delegate ()

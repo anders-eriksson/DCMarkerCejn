@@ -99,8 +99,22 @@ namespace LaserWrapper
             bool result = false;
             try
             {
+#if false
+                InitLanguage();
                 RaiseQueryStartEvent(GlblRes.Marking);
+#endif
+                if("sv-SE"== DCConfig.Instance.GuiLanguage)
+                {
+                    RaiseQueryStartEvent("Märker ...");
+                }
+                else
+                {
+                    RaiseQueryStartEvent("Marking...");
+
+                }
+
                 result = _doc.execute(true, true);
+
                 if (!result)
                 {
                     Log.Trace("Laser: Execute failed!");
@@ -442,15 +456,26 @@ namespace LaserWrapper
         public void _laserSystem_sigLaserStart()
         {
             Log.Trace("Start of marking");
-            InitLanguage();
-            RaiseQueryStartEvent(GlblRes.Marking);
+#if false
+                InitLanguage();
+                RaiseQueryStartEvent(GlblRes.Marking);
+#endif
+            if ("sv-SE" == DCConfig.Instance.GuiLanguage)
+            {
+                RaiseQueryStartEvent("Märker ...");
+            }
+            else
+            {
+                RaiseQueryStartEvent("Marking...");
+
+            }
             ResetPort(0, sig.MASK_READYTOMARK);
             RaiseLaserBusyEvent(true);
         }
 
 #endif
 
-        #region Digital IO
+#region Digital IO
 
         public int GetPort(int port)
         {
