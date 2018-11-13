@@ -93,6 +93,9 @@ namespace DCMarker.Flexible
             return _laserWrapper.ResetPort(0, sig.MASK_ERROR);
         }
 
+        
+
+
         private void UpdateIoMasks()
         {
             // Out

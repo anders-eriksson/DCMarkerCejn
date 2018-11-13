@@ -99,6 +99,7 @@ namespace Configuration
                 HandleWithCare = _profile.GetValue("Laser", nameof(HandleWithCare), 0x20);
                 Error = _profile.GetValue("Laser", nameof(Error), 0x80);                                // OUTPUT 7
                 ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x02);                    // INPUT 1
+                StartSignal = _profile.GetValue("Laser", nameof(MarkingDone),0x08);                     // INPUT 3
                 EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x10);              // INPUT 4
                 ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x8);                             // INPUT 3
 
@@ -153,6 +154,7 @@ namespace Configuration
                 // Laser IO
                 _profile.SetValue("Laser", nameof(ArticleReady), ArticleReady);
                 _profile.SetValue("Laser", nameof(ReadyToMark), ReadyToMark);
+                _profile.SetValue("Laser", nameof(MarkingDone), StartSignal);
                 _profile.SetValue("Laser", nameof(MarkingDone), MarkingDone);
                 _profile.SetValue("Laser", nameof(NextToLast), NextToLast);
                 _profile.SetValue("Laser", nameof(LastEdge), LastEdge);
@@ -209,6 +211,7 @@ namespace Configuration
         public string LayoutPath { get; set; }
         public int ExecuteTimeout { get; set; }
         public bool IsIoEnabled { get; set; }
+        public int StartSignal { get; set; }
         public int ArticleReady { get; set; }
         public int ReadyToMark { get; set; }
         public int MarkingDone { get; set; }

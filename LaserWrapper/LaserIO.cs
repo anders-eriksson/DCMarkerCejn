@@ -22,11 +22,16 @@ namespace LaserWrapper
             {
                 Log.Debug("MASK_ITEMINPLACE");
                 // bit is set
+                Log.Trace(string.Format("(currentBits & MASK_ITEMINPLACE): {0}", (currentBits & sig.MASK_ITEMINPLACE)));
                 if ((currentBits & sig.MASK_ITEMINPLACE) != sig.MASK_ITEMINPLACE)
                 {
                     Log.Trace("Set ITEMINPLACE ");
                     currentBits |= sig.MASK_ITEMINPLACE;
                     RaiseItemInPositionEvent();
+                }
+                else
+                {
+                    Log.Trace(string.Format("Already in currentBits {0}",currentBits));
                 }
             }
             else
@@ -34,6 +39,8 @@ namespace LaserWrapper
                 Log.Trace("Reset ITEMINPLACE ");
                 currentBits &= ~sig.MASK_ITEMINPLACE;
             }
+
+            
 #if false
             // Reset IO
             if ((p_nBits & sig.MASK_RESET) == sig.MASK_RESET)
@@ -69,5 +76,7 @@ namespace LaserWrapper
         }
 
         #endregion Item in Position Event
+
+     
     }
 }

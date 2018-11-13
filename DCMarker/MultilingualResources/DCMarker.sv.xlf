@@ -271,7 +271,7 @@
         </trans-unit>
         <trans-unit id="ItemsDone" translate="yes" xml:space="preserve">
           <source>Items Done</source>
-          <target state="new">Items Done</target>
+          <target state="translated">Produkter märkta</target>
         </trans-unit>
       </group>
     </body>

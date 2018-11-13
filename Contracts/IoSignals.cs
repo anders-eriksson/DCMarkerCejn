@@ -78,10 +78,10 @@ namespace Contracts
 
         // In signals
 
-        public int MASK_ITEMINPLACE = 0x2;
-        public int MASK_EMERGENCY = 0x10;
+        public int MASK_ITEMINPLACE=0x02;
+        public int MASK_EMERGENCY=0x10 ;
 
-        public int MASK_RESET = 0x8;
+        public int MASK_RESET=0x80;
 
         #endregion Laser IO
     }

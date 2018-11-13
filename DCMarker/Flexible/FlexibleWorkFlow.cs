@@ -32,12 +32,14 @@ namespace DCMarker.Flexible
         private volatile bool ArticleHasToNumber = false;
         private volatile string TOnumber;
         private volatile bool IsTOnumberUpdated = false;
+        private System.Timers.Timer _ReadyToMarkTimer;
 
         //private volatile bool IsTOnumberApproved = false;
         private bool _testItem;
 
         public bool FirstMarkingResetZ { get; set; }
 
+        
         public FlexibleWorkFlow()
         {
             try
@@ -63,6 +65,29 @@ namespace DCMarker.Flexible
         {
             ResetAllIoSignals();
             _laser.Release();
+        }
+
+        private void CreateTimer()
+        {
+            try
+            {
+                _ReadyToMarkTimer = new System.Timers.Timer();
+                _ReadyToMarkTimer.Interval = 1000;
+                _ReadyToMarkTimer.AutoReset = false;
+                _ReadyToMarkTimer.Elapsed += _ReadyToMarkTimer_Elapsed; ;
+
+                //_ReadyToMarkTimer.Start();
+            }
+            catch (Exception)
+            {
+                RaiseErrorEvent(GlblRes.Cant_start_timer_for_polling_ADAM_Module);
+                throw;
+            }
+        }
+
+        private void _ReadyToMarkTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            digitalIO.SetReadyToMark();
         }
 
         public void ResetArticleData()
@@ -210,15 +235,17 @@ namespace DCMarker.Flexible
             else
             {
                 digitalIO.ResetLastEdge();
+                //digitalIO.SetLastEdge();
 
+                RaiseUpdateItemStatusEvent(_items, _currentItem);
                 UpdateLayout();
                 //_currentItem = IncrementCurrentItem(_currentItem);
-                RaiseUpdateItemStatusEvent(_items, _currentItem);
+              
             }
 #else
             digitalIO.ResetLastEdge();
-            UpdateLayout();
             RaiseUpdateItemStatusEvent(_items, _currentItem);
+            UpdateLayout();
             //_currentItem = IncrementCurrentItem(_currentItem);
 #endif
         }
@@ -247,12 +274,17 @@ namespace DCMarker.Flexible
                 if (_items[n].CurrentEdge >= _items[n].NumberOfEdges)
                 {
                     digitalIO.SetLastEdge();
+                    //digitalIO.ResetLastEdge();
+
                     // we are done with the item. Reset it for the next item
                     ResetItem(n);
                     RaiseItemDoneEvent(++_itemsDone);
                 }
                 _currentItem = IncrementCurrentItem(_currentItem);
                 RaiseUpdateItemStatusEvent(_items, _currentItem);
+                Log.Trace("Before Start _ReadyToMarkTimer");
+                _ReadyToMarkTimer.Start();
+                //digitalIO.SetReadyToMark();
             }
             else
             {
@@ -377,11 +409,14 @@ namespace DCMarker.Flexible
             _laser.ZeroReachedEvent += _laser_ZeroReachedEvent;
         }
 
+        
         private void _laser_ZeroReachedEvent(string msg)
         {
             digitalIO.ResetLastEdge();
-            UpdateLayout();
-            _currentItem = IncrementCurrentItem(_currentItem);
+            //digitalIO.SetLastEdge();
+
+            //UpdateLayout();
+            //_currentItem = IncrementCurrentItem(_currentItem);
         }
 
         private void _laser_LaserBusyEvent(bool busy)
@@ -394,6 +429,7 @@ namespace DCMarker.Flexible
             try
             {
                 CreateNewItems();
+                CreateTimer();
             }
             catch (Exception ex)
             {
@@ -460,11 +496,13 @@ namespace DCMarker.Flexible
         /// </summary>
         public void UpdateLayout()
         {
+            Log.Trace("UpdateLayout");
             RaiseErrorEvent(string.Empty);
 
             Article article = GetItemArticle(_currentItem);
             if (article != null)
             {
+                Log.Debug("Article found");
                 var item = _items[_currentItem];
                 if (item.NumberOfEdges > 1 && item.CurrentEdge > 1)
                     _hasEdges = true;
@@ -482,6 +520,7 @@ namespace DCMarker.Flexible
                 string layoutname = article.Template;
                 if (!string.IsNullOrEmpty(layoutname))
                 {
+                    Log.Debug("Layout found");
                     layoutname = NormalizeLayoutName(layoutname);
                     bool brc = _laser.Load(layoutname);
                     if (brc)
@@ -509,9 +548,14 @@ namespace DCMarker.Flexible
                                     // we are ready to mark...
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
                                     digitalIO.ResetMarkingDone();
-                                    //_laser.ResetPort(0, sig.MASK_MARKINGDONE);
-                                    //digitalIO.SetReadyToMark();
-                                    //_laser.SetPort(0, sig.MASK_READYTOMARK);
+                                    digitalIO.ResetReadyToMark();
+
+                                    // this is moved to FinishUpdateWorkflow and _laser_LaserEndEvent
+                                    //// digitalIO.SetReadyToMark();
+                                    ///
+
+                                    Log.Trace("Calling sigLaserStart");
+                                    Execute();
                                 }
                                 else
                                 {
