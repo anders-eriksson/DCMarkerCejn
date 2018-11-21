@@ -14,7 +14,7 @@
     mc:Ignorable="d">
     <Window.Resources>
         <local:BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
-        <!--<local:CheckBoxConverter x:Key="CheckBoxConverter" />-->
+        <local:CheckBoxConverter x:Key="CheckBoxConverter" />
         <local:NumberFormatter x:Key="myNumberFormatter" />
     </Window.Resources>
     <Grid>
@@ -362,23 +362,23 @@
                     x:Name="externTestColumn"
                     Width="*"
                     MinWidth="50"
-                    Binding="{Binding ExternTest, IsAsync=True}"
-                    IsThreeState="False"
-                    Header="Extern Test" />
+                    Binding="{Binding ExternTest, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
+                    Header="Extern Test"
+                    IsThreeState="False" />
                 <DataGridCheckBoxColumn
                     x:Name="enableTOColumn"
                     Width="*"
                     MinWidth="50"
-                    IsThreeState="False"
-                    Binding="{Binding EnableTO, IsAsync=True}"
-                    Header="EnableTO" />
+                    Binding="{Binding EnableTO, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
+                    Header="EnableTO"
+                    IsThreeState="False" />
                 <DataGridCheckBoxColumn
                     x:Name="CarefulColumn"
                     Width="*"
                     MinWidth="50"
-                    IsThreeState="False"
-                    Binding="{Binding Careful, IsAsync=True}"
-                    Header="Careful" />
+                    Binding="{Binding Careful, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
+                    Header="Careful"
+                    IsThreeState="False" />
                 <DataGridTextColumn
                     x:Name="test"
                     Width="*"

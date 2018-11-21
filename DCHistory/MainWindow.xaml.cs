@@ -98,9 +98,17 @@ namespace DCHistory
 
         private void FindButton_Click(object sender, RoutedEventArgs e)
         {
+            SearchError.Text = string.Empty;
             var selectedRow = mainVM.FindArticleAndScrollIntoView(FindTextbox.Text.Trim());
-            HistoryGrid.Focus();
-            HistoryGrid.ScrollToCenterOfView(selectedRow);
+            if (selectedRow != null)
+            {
+                HistoryGrid.Focus();
+                HistoryGrid.ScrollToCenterOfView(selectedRow);
+            }
+            else
+            {
+                SearchError.Text = "Can't find Article number";
+            }
         }
 
         private void FindArticleAndScrollIntoView()
@@ -282,7 +290,7 @@ namespace DCHistory
                 {
                     mainVM.HasFilterType = FilterType.Date;
                 }
-                else if (key == "ExternTest" || key == "EnableTO")
+                else if (key == "Careful" || key == "ExternTest" || key == "EnableTO")
                 {
                     mainVM.HasFilterType = FilterType.Bool;
                 }

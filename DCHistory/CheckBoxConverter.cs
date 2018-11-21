@@ -19,7 +19,7 @@ namespace DCHistory
                 return false;
             if ((bool)value)
                 return true;
-            return null;   //value is false
+            return false;   //value is false
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -2,6 +2,12 @@ namespace Contracts
 {
     public class Article
     {
+        public Article()
+        {
+            EnableTO = false;
+            Careful = false;
+            IsTestItemSelected = false;
+        }
         public int Id { get; set; }
         public string F1 { get; set; }
         public bool IsNewArticleNumber { get; set; }

@@ -6,6 +6,13 @@ namespace DCMarkerEF
     [Table("LaserData")]
     public partial class LaserData
     {
+        public LaserData()
+        {
+            ExternTest = false;
+            EnableTO = false;
+            Careful = false;
+        }
+
         public int Id { get; set; }
 
         [Required]
