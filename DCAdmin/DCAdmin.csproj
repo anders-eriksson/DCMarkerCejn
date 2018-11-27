@@ -314,7 +314,7 @@
     <Folder Include="Model\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="dcmarker.xml" />
+    <None Include="dcmarker.xml" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\AddRow_16x.png" />
