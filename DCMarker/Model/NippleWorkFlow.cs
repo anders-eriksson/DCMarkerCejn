@@ -246,7 +246,11 @@ namespace DCMarker.Model
         private void _articleInput_StartMarkingEvent(object sender, EventArgs e)
         {
             _articleInput.ReadyToMark(false);
-            _laser.Execute();
+            bool brc = _laser.Execute();
+            if (!brc)
+            {
+                // TODO reconnect to laser and ??
+            }
         }
 
         private void _articleInput_RestartEvent(object sender, EventArgs e)

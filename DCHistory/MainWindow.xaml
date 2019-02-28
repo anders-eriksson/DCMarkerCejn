@@ -94,6 +94,7 @@
                     x:Name="SearchError"
                     Width="10"
                     Height="23"
+                    HorizontalAlignment="Stretch"
                     Text="{Binding SelectedRow.Snr}" />
                 <TextBlock
                     x:Name="SearchError2"

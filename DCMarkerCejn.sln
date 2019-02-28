@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCAdmin", "DCAdmin\DCAdmin.csproj", "{89F5FCA2-5F58-4380-9E24-7E2EBD087C2D}"
 EndProject
@@ -242,7 +242,6 @@ Global
 		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.Debug|Any CPU.ActiveCfg = Debug
 		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.Debug|x86.ActiveCfg = Debug
 		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.DebugLocal|Any CPU.ActiveCfg = Debug
-		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.DebugLocal|Any CPU.Build.0 = Debug
 		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.DebugLocal|x86.ActiveCfg = Debug
 		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.DebugLocal|x86.Build.0 = Debug
 		{CBFD5E69-2EE6-4A6C-AC1B-A5E5223D1C67}.Release|Any CPU.ActiveCfg = Release
@@ -254,7 +253,6 @@ Global
 		{841CF5A2-0E31-4242-8304-57E862E404F8}.Debug|Any CPU.ActiveCfg = Debug
 		{841CF5A2-0E31-4242-8304-57E862E404F8}.Debug|x86.ActiveCfg = Debug
 		{841CF5A2-0E31-4242-8304-57E862E404F8}.DebugLocal|Any CPU.ActiveCfg = Debug
-		{841CF5A2-0E31-4242-8304-57E862E404F8}.DebugLocal|Any CPU.Build.0 = Debug
 		{841CF5A2-0E31-4242-8304-57E862E404F8}.DebugLocal|x86.ActiveCfg = Debug
 		{841CF5A2-0E31-4242-8304-57E862E404F8}.DebugLocal|x86.Build.0 = Debug
 		{841CF5A2-0E31-4242-8304-57E862E404F8}.Release|Any CPU.ActiveCfg = Release
@@ -297,7 +295,6 @@ Global
 		{775EE088-52C1-4B90-B091-9A780B836A8E}.Debug|Any CPU.ActiveCfg = Debug
 		{775EE088-52C1-4B90-B091-9A780B836A8E}.Debug|x86.ActiveCfg = Debug
 		{775EE088-52C1-4B90-B091-9A780B836A8E}.DebugLocal|Any CPU.ActiveCfg = Debug
-		{775EE088-52C1-4B90-B091-9A780B836A8E}.DebugLocal|Any CPU.Build.0 = Debug
 		{775EE088-52C1-4B90-B091-9A780B836A8E}.DebugLocal|x86.ActiveCfg = Debug
 		{775EE088-52C1-4B90-B091-9A780B836A8E}.DebugLocal|x86.Build.0 = Debug
 		{775EE088-52C1-4B90-B091-9A780B836A8E}.Release|Any CPU.ActiveCfg = Release
@@ -310,7 +307,6 @@ Global
 		{503A73CA-C418-4F1A-9D72-E1AABC54C79B}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{503A73CA-C418-4F1A-9D72-E1AABC54C79B}.Debug|x86.Build.0 = Debug|Any CPU
 		{503A73CA-C418-4F1A-9D72-E1AABC54C79B}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
-		{503A73CA-C418-4F1A-9D72-E1AABC54C79B}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
 		{503A73CA-C418-4F1A-9D72-E1AABC54C79B}.DebugLocal|x86.ActiveCfg = Debug|Any CPU
 		{503A73CA-C418-4F1A-9D72-E1AABC54C79B}.DebugLocal|x86.Build.0 = Debug|Any CPU
 		{503A73CA-C418-4F1A-9D72-E1AABC54C79B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -372,7 +368,6 @@ Global
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.Debug|x86.Build.0 = Debug|Any CPU
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
-		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.DebugLocal|x86.ActiveCfg = Debug|Any CPU
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.DebugLocal|x86.Build.0 = Debug|Any CPU
 		{93446D31-2A0C-4AD4-8572-C56B5D2B2C4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -417,5 +412,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FEA1112B-613D-473D-A5F7-60D3E5D39115}
 	EndGlobalSection
 EndGlobal

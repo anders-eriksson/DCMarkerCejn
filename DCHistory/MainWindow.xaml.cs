@@ -197,7 +197,7 @@ namespace DCHistory
 
         private static string GetLogDirectoryPath()
         {
-            var result = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "DCLasersystem\\DCMarker\\Logs");
+            var result = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "DCLasersystem\\DCHistory\\Logs");
 
             return result;
         }
