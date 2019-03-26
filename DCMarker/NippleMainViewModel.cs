@@ -274,6 +274,10 @@ namespace DCMarker
 
         private void _wf_ErrorEvent(object sender, ErrorArgs e)
         {
+            if (e.Abort)
+            {
+                Abort();
+            }
             // Clear Status since we have an error
             Status = string.Empty;
             ErrorMessage = e.Text;

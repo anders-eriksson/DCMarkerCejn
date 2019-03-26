@@ -204,6 +204,14 @@
     <Content Include="Commands1.TXT" />
     <Content Include="Commands2.TXT" />
     <Content Include="CommandsKant2.TXT" />
+    <None Include="dcmarker.Debug.xml">
+      <DependentUpon>dcmarker.xml</DependentUpon>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
+    <None Include="dcmarker.Release.xml">
+      <DependentUpon>dcmarker.xml</DependentUpon>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

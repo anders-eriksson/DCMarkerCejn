@@ -393,7 +393,6 @@ namespace CommunicationService
                         if (data == Constants.STX)
                         {
                             Log.Trace("StartCommand =========================");
-                            // TODO: change return value to System.TimeoutException!
                             _currentCommand = new CommandData();
                             bool brc = AcknowledgeRead(data);
                             if (brc)
@@ -495,14 +494,22 @@ namespace CommunicationService
                     break;
 
                 case CommandTypes.OK:
-                    Log.Trace(string.Format("OK: Param: {0} - articledata: {1} ", _currentCommand.Params[0], _articleData));
-                    if (_articleData == null)
+                    if (_currentCommand?.Params?.Count > 0)
                     {
-                        SendError((byte)Errors.LayoutNotDefined);
+                        Log.Trace(string.Format("OK: Param: {0} - articledata: {1} ", _currentCommand.Params[0], _articleData));
+                        if (_articleData == null)
+                        {
+                            SendError((byte)Errors.LayoutNotDefined);
+                        }
+                        else if (_currentCommand.Params[0] == 49)
+                        {
+                            RaiseItemInPlaceEvent();
+                        }
                     }
-                    else if (_currentCommand.Params[0] == 49)
+                    else
                     {
-                        RaiseItemInPlaceEvent();
+                        Log.Error("No parameters! Should be 1");
+                        SendError((byte)Errors.ArticleNotFound);
                     }
                     break;
 

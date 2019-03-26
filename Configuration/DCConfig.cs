@@ -86,6 +86,7 @@ namespace Configuration
                 ImagePath = _profile.GetValue("Laser", nameof(ImagePath), @"C:\DCMarker\Images");
                 LayoutPath = _profile.GetValue("Laser", nameof(LayoutPath), @"C:\DCMarker\Layouts");
                 ExecuteTimeout = _profile.GetValue("Laser", nameof(ExecuteTimeout), 10000);
+                TryAgainTimeout = _profile.GetValue("Laser", nameof(TryAgainTimeout), 200);
                 IsIoEnabled = _profile.GetValue("Laser", nameof(IsIoEnabled), true);
                 ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x01);                    // OUTPUT 0
                 MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);                    // OUTPUT 1
@@ -142,6 +143,7 @@ namespace Configuration
                 _profile.SetValue("Laser", nameof(ImagePath), ImagePath);
                 _profile.SetValue("Laser", nameof(LayoutPath), LayoutPath);
                 _profile.SetValue("Laser", nameof(ExecuteTimeout), ExecuteTimeout);
+                _profile.SetValue("Laser", nameof(TryAgainTimeout), TryAgainTimeout);
                 _profile.SetValue("Laser", nameof(IsIoEnabled), IsIoEnabled);
                 _profile.SetValue("Laser", nameof(ArticleReady), ArticleReady);
                 _profile.SetValue("Laser", nameof(ReadyToMark), ReadyToMark);
@@ -198,6 +200,7 @@ namespace Configuration
         public string ImagePath { get; set; }
         public string LayoutPath { get; set; }
         public int ExecuteTimeout { get; set; }
+        public int TryAgainTimeout { get; set; }
         public bool IsIoEnabled { get; set; }
         public int ArticleReady { get; set; }
         public int ReadyToMark { get; set; }

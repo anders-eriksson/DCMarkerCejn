@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--For more information on using transformations see the web.config examples at http://go.microsoft.com/fwlink/?LinkId=214134. -->
+<profile xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <section name="Laser">
+    <entry name="DeviceAddress">192.168.1.5</entry>
+    <entry name="ImagePath=" xdt:Transform="Replace" xdt:Locator="Match(name)">C:\DCMarkerCejn\Images</entry>
+    <entry name="LayoutPath" xdt:Transform="Replace" xdt:Locator="Match(name)">C:\DCMarkerCejn\Mallar 86206</entry>
+  </section>
+  <section name="Machine">
+    <entry name="Debug" xdt:Transform="Replace" xdt:Locator="Match(name)">True</entry>
+  </section>
+  <section>
+    <entry name="IsAdamErrorTimeout" xdt:Transform="Replace" xdt:Locator="Match(name)">False</entry>
+  </section>
+</profile>
