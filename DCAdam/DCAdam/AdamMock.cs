@@ -1,4 +1,4 @@
-﻿//#define TEST
+﻿#define TEST
 
 using System;
 using System.Collections.Generic;
@@ -198,10 +198,10 @@ namespace DCAdam
                 SendCommands.Add(Constants.ACK);
                 SendCommands.Add(Constants.OkCode);
                 SendCommands.Add(Constants.ACK);
-                // partial reads
-                SendCommands.Add(51);
-                SendCommands.Add(49);
-                SendCommands.Add(49);
+                // aik
+                SendCommands.Add(65);
+                SendCommands.Add(73);
+                SendCommands.Add(75);
                 SendCommands.Add(Constants.ACK);
                 SendCommands.Add(Constants.ETX);
                 SendCommands.Add(Constants.ACK);

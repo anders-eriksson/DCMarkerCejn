@@ -11,6 +11,9 @@ namespace DCHistory
     {
         public static void ScrollToCenterOfView(this ItemsControl itemsControl, object item)
         {
+            if (item == null)
+                return;
+
             // Scroll immediately if possible
             if (!itemsControl.TryScrollToCenterOfView(item))
             {

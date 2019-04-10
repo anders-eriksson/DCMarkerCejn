@@ -386,6 +386,9 @@ namespace MyTests
                         result = ValidateQuantity();
                         break;
                     }
+                default:
+                    result = null;
+                    break;
             };
             return result;
         }

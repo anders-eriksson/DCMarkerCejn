@@ -35,14 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DCLog, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Visual Studio 2013\Projects\LIBRARY\DCLog\bin\Debug\DCLog.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Visual Studio 2013\Projects\LIBRARY\DCLog\bin\Debug\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -108,6 +100,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DCLog\DCLog.csproj">
+      <Project>{f0ad10ca-c138-469e-8a99-cb12b3d364a2}</Project>
+      <Name>DCLog</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DCTcpServer\DCTcpServer.csproj">
       <Project>{c8958368-84a3-4292-bf65-6e1bb61c19d6}</Project>
       <Name>DCTcpServer</Name>

@@ -194,7 +194,7 @@
                     Margin="37,63,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    Content="{x:Static p:Resources.ToNumber}"
+                    Content="{x:Static p:Resources.Production}"
                     IsEnabled="{Binding IsTOnumber}"
                     Visibility="{Binding Path=ArticleHasTOnumber, FallbackValue=Hidden, Converter={StaticResource BoolToVis}}" />
                 <TextBox

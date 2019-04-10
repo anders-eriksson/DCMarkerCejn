@@ -134,7 +134,6 @@ namespace DCTcpServer
 
         private void UpdateWF(byte[] buffer)
         {
-            // TODO: Split buffer into articleNumber and TOnumber
             Protocol protocol = new Protocol(buffer);
             string articleNumber = protocol.ArticleNumber;
             string toNumber = protocol.TOnumber;

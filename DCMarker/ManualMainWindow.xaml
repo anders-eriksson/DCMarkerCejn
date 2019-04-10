@@ -33,7 +33,11 @@
 
     <Grid>
         <DockPanel Margin="0,0,0,239">
-            <Menu DockPanel.Dock="Top" IsTabStop="False" KeyboardNavigation.IsTabStop="False" Height="35">
+            <Menu
+                Height="35"
+                DockPanel.Dock="Top"
+                IsTabStop="False"
+                KeyboardNavigation.IsTabStop="False">
                 <MenuItem Header="{x:Static p:Resources.FileMenuHeader}" IsTabStop="False">
 
                     <MenuItem
@@ -112,20 +116,20 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.ToNumber}"
-             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
         <ContentPresenter
             Height="20"
             Margin="350,103,10,148"
-            Content="{Binding ElementName=TOnrTextbox, Path=(Validation.Errors).CurrentItem}"
+            Content="{Binding ElementName=TOnrTextbox, Path=(Validation.Errors)/ErrorContent}"
             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
         <TextBox
             x:Name="TOnrTextbox"
-            Width="132"
-            Margin="350,76,0,0"
+            Width="118"
+            Margin="392,76,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            IsEnabled="{Binding OrderNotStarted}"
             local:FocusAdvancement.AdvancesByEnterKey="True"
+            IsEnabled="{Binding OrderNotStarted}"
             TabIndex="2"
             Text="{Binding TOnr, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             TextWrapping="Wrap"
@@ -140,7 +144,7 @@
         <ContentPresenter
             Height="20"
             Margin="139,143,264,108"
-            Content="{Binding ElementName=BatchSizeTextbox, Path=(Validation.Errors).CurrentItem}" />
+            Content="{Binding ElementName=BatchSizeTextbox, Path=(Validation.Errors)/ErrorContent}" />
         <TextBox
             x:Name="BatchSizeTextbox"
             Width="132"
@@ -150,7 +154,7 @@
             local:FocusAdvancement.AdvancesByEnterKey="True"
             IsEnabled="{Binding OrderNotStarted}"
             TabIndex="1"
-             Text="{Binding Quantity, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            Text="{Binding Quantity, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
             TextWrapping="Wrap" />
 
         <TextBlock
@@ -191,20 +195,20 @@
             x:Name="OkButton"
             Width="75"
             Margin="139,195,0,0"
-            IsEnabled="{Binding OrderNotStarted}"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Command="{Binding OkButtonCommand, Mode=OneWay}"
             Content="{x:Static p:Resources.OK}"
+            IsEnabled="{Binding OrderNotStarted}"
             TabIndex="4" />
         <Button
             x:Name="CancelButton"
-            Command="{Binding CancelButtonCommand, Mode=OneWay}"
-            Content="{x:Static p:Resources.Cancel}"
-            HorizontalAlignment="Left"
+            Width="75"
             Margin="219,195,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Width="75" />
+            Command="{Binding CancelButtonCommand, Mode=OneWay}"
+            Content="{x:Static p:Resources.Cancel}" />
         <Button
             x:Name="LoadButton"
             Width="75"

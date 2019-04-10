@@ -94,8 +94,17 @@ namespace LaserWrapper
         {
             Log.Debug("Laser: Execute");
             bool result = false;
+
             try
             {
+                while (_laserSystem.isLaserBusy())
+                {
+                    Log.Trace("Laser: isLaserBusy returned true, We will wait and try again");
+                    Thread.Sleep(100);
+                }
+#if DEBUG
+                return false;
+#endif
                 result = _doc.execute(true, true);
             }
             catch (NullReferenceException ex)
@@ -108,7 +117,8 @@ namespace LaserWrapper
                 Log.Error(ex, "Laser: Error executing document");
                 result = false;
             }
-            Log.Trace("Laser: Execute Returns");
+
+            Log.Trace(string.Format("Laser: Execute Returns: {0}", result));
             return result;
         }
 
@@ -485,7 +495,6 @@ namespace LaserWrapper
 
         private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
         {
-#if DEBUG
             Log.Trace(string.Format("Port: {0} - Bit: {1}", p_nPort, p_nBits));
             // Item In Place
             if ((p_nBits & sig.MASK_ITEMINPLACE) == sig.MASK_ITEMINPLACE)
@@ -518,7 +527,6 @@ namespace LaserWrapper
             {
                 currentBits &= ~sig.MASK_RESET;
             }
-#endif
         }
 
         #endregion Digital IO

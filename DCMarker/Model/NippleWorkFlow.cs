@@ -246,7 +246,20 @@ namespace DCMarker.Model
         private void _articleInput_StartMarkingEvent(object sender, EventArgs e)
         {
             _articleInput.ReadyToMark(false);
-            _laser.Execute();
+            bool brc = _laser.Execute();
+
+            if (!brc)
+            {
+                Log.Error("Marking failed, Try again");
+                // Try again
+                Thread.Sleep(DCConfig.Instance.TryAgainTimeout);
+                brc = _laser.Execute();
+
+                if (!brc)
+                {
+                    RaiseErrorEvent("Kommunikationen med laser har avbrutits! Starta om DCMarker!", true);
+                }
+            }
         }
 
         private void _articleInput_RestartEvent(object sender, EventArgs e)
@@ -870,12 +883,12 @@ namespace DCMarker.Model
 
         public event EventHandler<ErrorArgs> ErrorEvent;
 
-        internal void RaiseErrorEvent(string msg)
+        internal void RaiseErrorEvent(string msg, bool abort = false)
         {
             var handler = ErrorEvent;
             if (handler != null)
             {
-                var arg = new ErrorArgs(msg);
+                var arg = new ErrorArgs(msg, abort);
                 handler(null, arg);
             }
         }

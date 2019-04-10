@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <profile>
   <section name="Laser">
-    <entry name="DeviceAddress">172.16.0.3</entry>
+    <entry name="DeviceAddress">10.10.10.10</entry>
     <entry name="DeviceTimeout">10</entry>
     <entry name="ImagePath">C:\DCMarker\Images</entry>
-    <entry name="LayoutPath">C:\DCMarkerCejn\Layouts 8855</entry>
+    <entry name="LayoutPath">W:\Program\Laser\Mallar_86206</entry>
     <entry name="ExecuteTimeout">10000</entry>
     <entry name="IsIoEnabled">True</entry>
     <entry name="ArticleReady">32</entry>
@@ -23,9 +23,9 @@
     <entry name="ToNumberLength">7</entry>
   </section>
   <section name="Machine">
-    <entry name="TypeOfMachine">4</entry>
+    <entry name="TypeOfMachine">3</entry>
     <entry name="GuiLanguage">sv-SE</entry>
-    <entry name="Debug">True</entry>
+    <entry name="Debug">False</entry>
     <entry name="ClearClipboard">True</entry>
     <entry name="CommunicationModule">1</entry>
   </section>
@@ -34,13 +34,14 @@
     <entry name="KeepQuantity">False</entry>
   </section>
   <section name="Adam">
-    <entry name="AdamIpAddress">172.16.0.100</entry>
+    <entry name="AdamIpAddress">10.0.0.1</entry>
     <entry name="AdamIpPort">502</entry>
     <entry name="AdamInvertSignal">False</entry>
-    <entry name="IsAdamErrorTimeoutActive">False</entry>
+    <entry name="IsAdamErrorTimeout">True</entry>
     <entry name="AdamErrorTimeout">10000</entry>
-    <entry name="AdamWaitBeforeWrite">10</entry>
-    <entry name="AdamPollInterval">200</entry>
+    <entry name="AdamWaitBeforeWrite">0</entry>
+    <entry name="AdamWaitBeforeRead">10</entry>
+    <entry name="AdamPollInterval">50</entry>
     <entry name="AdamLogTelegrams">False</entry>
   </section>
 </profile>

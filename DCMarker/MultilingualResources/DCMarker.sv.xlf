@@ -36,10 +36,9 @@
           <source>Status</source>
           <target state="translated">Status</target>
         </trans-unit>
-        <trans-unit id="ToNumber" translate="no" xml:space="preserve">
-          <source>Production</source>
-          <target state="final">Production</target>
-          <note from="MultilingualEditor" annotates="source" priority="4">Customer changed from TO-number to Production, since that is what is says on the Work sheet</note>
+        <trans-unit id="ToNumber" translate="yes" xml:space="preserve">
+          <source>TO number</source>
+          <target state="translated">TO-nummer</target>
         </trans-unit>
         <trans-unit id="Title" translate="no" xml:space="preserve">
           <source>DCMarker</source>
@@ -173,14 +172,6 @@
           <source>Quantity must be 1 or larger</source>
           <target state="translated">Antal måste vara 1 eller högre</target>
         </trans-unit>
-        <trans-unit id="TO_number_must_be_7_number_long_ee_1234567" translate="yes" xml:space="preserve">
-          <source>TO number must be 7 number long (e.e 1234567)</source>
-          <target state="translated">TO-nummer måste vara 7 tecken långt (T ex 1234567)</target>
-        </trans-unit>
-        <trans-unit id="TO_number_must_be_7_number_long" translate="yes" xml:space="preserve">
-          <source>TO number must be 7 number long</source>
-          <target state="translated">TO-nummer måste vara 7 tecken</target>
-        </trans-unit>
         <trans-unit id="ResetZAxisMenuHeader" translate="yes" xml:space="preserve">
           <source>Reset Z Axis</source>
           <target state="translated">Referenskör Z axel</target>
@@ -195,7 +186,7 @@
         </trans-unit>
         <trans-unit id="TO_Number_must_be_0_characters" translate="yes" xml:space="preserve">
           <source>TO Number must be {0} characters</source>
-          <target state="translated">TO-nummer måste vara {0} characters</target>
+          <target state="translated">TO-nummer måste vara {0} tecken</target>
         </trans-unit>
         <trans-unit id="No_Connection_with_Z_axis" translate="yes" xml:space="preserve">
           <source>No Connection with Z axis!</source>
@@ -252,6 +243,15 @@
         <trans-unit id="You_must_enter_Production_number_BEFORE_giving_start_signal_to_the_machine" translate="yes" xml:space="preserve">
           <source>You must enter Production number BEFORE giving start signal to the machine!</source>
           <target state="translated">Skanna production nummer innan du startar robotcellen!</target>
+        </trans-unit>
+        <trans-unit id="Production" translate="no" xml:space="preserve">
+          <source>Production</source>
+          <target state="final">Production</target>
+          <note from="MultilingualEditor" annotates="source" priority="4">This is used instead of ToNumber for Nipple</note>
+        </trans-unit>
+        <trans-unit id="Production_must_be_0_characters" translate="yes" xml:space="preserve">
+          <source>Production must be {0} characters</source>
+          <target state="translated">Production måste vara {0} tecken</target>
         </trans-unit>
       </group>
     </body>
