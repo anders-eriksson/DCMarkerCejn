@@ -12,14 +12,23 @@ namespace DCAdmin
         public object Convert(object value, Type targetType, object
             parameter, System.Globalization.CultureInfo culture)
         {
-            try
+            if (value != null)
             {
-                return System.Convert.ToInt32(value).ToString(parameter as string);
+                if ((string)value == string.Empty)
+                {
+                    return "0";
+                }
+
+                try
+                {
+                    return System.Convert.ToInt32(value).ToString(parameter as string);
+                }
+                catch (Exception ex)
+                {
+                    DCLog.Log.Error(ex, "Error converting value to string!");
+                }
             }
-            catch (Exception ex)
-            {
-                DCLog.Log.Error(ex, "Error converting value to string!");
-            }
+
             return value;
         }
 

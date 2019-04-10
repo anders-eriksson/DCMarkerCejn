@@ -12,18 +12,21 @@ namespace DCHistory
         public object Convert(object value, Type targetType, object
             parameter, System.Globalization.CultureInfo culture)
         {
-            if ((string)value == string.Empty)
+            if (value != null)
             {
-                return "0";
-            }
+                if ((string)value == string.Empty)
+                {
+                    return "0";
+                }
 
-            try
-            {
-                return System.Convert.ToInt32(value).ToString(parameter as string);
-            }
-            catch (Exception ex)
-            {
-                DCLog.Log.Error(ex, "Error converting value to string!");
+                try
+                {
+                    return System.Convert.ToInt32(value).ToString(parameter as string);
+                }
+                catch (Exception ex)
+                {
+                    DCLog.Log.Error(ex, "Error converting value to string!");
+                }
             }
             return value;
         }
