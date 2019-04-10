@@ -19,7 +19,7 @@ namespace DCMarker.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -403,6 +403,24 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Production.
+        /// </summary>
+        public static string Production {
+            get {
+                return ResourceManager.GetString("Production", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production must be {0} characters.
+        /// </summary>
+        public static string Production_must_be_0_characters {
+            get {
+                return ResourceManager.GetString("Production_must_be_0_characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Production needs a value.
         /// </summary>
         public static string Production_needs_a_value {
@@ -484,25 +502,7 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TO number must be 7 number long.
-        /// </summary>
-        public static string TO_number_must_be_7_number_long {
-            get {
-                return ResourceManager.GetString("TO_number_must_be_7_number_long", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TO number must be 7 number long (e.e 1234567).
-        /// </summary>
-        public static string TO_number_must_be_7_number_long_ee_1234567 {
-            get {
-                return ResourceManager.GetString("TO_number_must_be_7_number_long_ee_1234567", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Production.
+        ///   Looks up a localized string similar to TO number.
         /// </summary>
         public static string ToNumber {
             get {

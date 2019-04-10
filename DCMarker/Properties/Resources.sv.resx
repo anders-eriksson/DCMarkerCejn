@@ -33,6 +33,9 @@
   <data name="Status" xml:space="preserve">
     <value>Status</value>
   </data>
+  <data name="ToNumber" xml:space="preserve">
+    <value>TO-nummer</value>
+  </data>
   <data name="Article_not_defined_in_database_Article0" xml:space="preserve">
     <value>Artikel finns inte definierat i databasen! Artikel = {0}</value>
   </data>
@@ -123,12 +126,6 @@
   <data name="Quantity_must_be_1_or_larger" xml:space="preserve">
     <value>Antal måste vara 1 eller högre</value>
   </data>
-  <data name="TO_number_must_be_7_number_long_ee_1234567" xml:space="preserve">
-    <value>TO-nummer måste vara 7 tecken långt (T ex 1234567)</value>
-  </data>
-  <data name="TO_number_must_be_7_number_long" xml:space="preserve">
-    <value>TO-nummer måste vara 7 tecken</value>
-  </data>
   <data name="ResetZAxisMenuHeader" xml:space="preserve">
     <value>Referenskör Z axel</value>
   </data>
@@ -139,7 +136,7 @@
     <value>Både Artikelnummer och antal måste anges</value>
   </data>
   <data name="TO_Number_must_be_0_characters" xml:space="preserve">
-    <value>TO-nummer måste vara {0} characters</value>
+    <value>TO-nummer måste vara {0} tecken</value>
   </data>
   <data name="No_Connection_with_Z_axis" xml:space="preserve">
     <value>Ingen kontakt med Z-axeln!</value>
@@ -182,5 +179,8 @@
   </data>
   <data name="You_must_enter_Production_number_BEFORE_giving_start_signal_to_the_machine" xml:space="preserve">
     <value>Skanna production nummer innan du startar robotcellen!</value>
+  </data>
+  <data name="Production_must_be_0_characters" xml:space="preserve">
+    <value>Production måste vara {0} tecken</value>
   </data>
 </root>

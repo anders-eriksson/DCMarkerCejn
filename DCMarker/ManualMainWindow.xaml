@@ -124,8 +124,8 @@
             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
         <TextBox
             x:Name="TOnrTextbox"
-            Width="132"
-            Margin="350,76,0,0"
+            Width="118"
+            Margin="392,76,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
