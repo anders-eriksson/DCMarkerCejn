@@ -364,13 +364,28 @@
                     Width="*"
                     MinWidth="50"
                     Binding="{Binding ExternTest, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
-                    Header="Extern Test" />
+                    Header="Extern Test"
+                    IsThreeState="False" />
                 <DataGridCheckBoxColumn
                     x:Name="enableTOColumn"
                     Width="*"
                     MinWidth="50"
                     Binding="{Binding EnableTO, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
-                    Header="EnableTO" />
+                    Header="EnableTO"
+                    IsThreeState="False" />
+                <DataGridCheckBoxColumn
+                    x:Name="CarefulColumn"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding Careful, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
+                    Header="Careful"
+                    IsThreeState="False" />
+                <DataGridTextColumn
+                    x:Name="test"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding Careful, IsAsync=True, TargetNullValue=''}"
+                    Header="TEst" />
                 <DataGridTextColumn
                     x:Name="tOnrColumn"
                     Width="*"

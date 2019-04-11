@@ -182,5 +182,19 @@
   </data>
   <data name="Production_must_be_0_characters" xml:space="preserve">
     <value>Production måste vara {0} tecken</value>
+  <data name="TableSide" xml:space="preserve">
+    <value>Sida</value>
+  </data>
+  <data name="CarefulHeader" xml:space="preserve">
+    <value>Varsam hantering!</value>
+  </data>
+  <data name="TableSideA" xml:space="preserve">
+    <value>Position A</value>
+  </data>
+  <data name="TableSideB" xml:space="preserve">
+    <value>Position B</value>
+  </data>
+  <data name="ItemsDone" xml:space="preserve">
+    <value>Produkter märkta</value>
   </data>
 </root>

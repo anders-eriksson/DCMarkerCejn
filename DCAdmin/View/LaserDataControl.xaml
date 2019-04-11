@@ -269,12 +269,20 @@
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding ExternTest, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
+                        IsThreeState="False"
                         Header="Extern Test" />
                     <DataGridCheckBoxColumn
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding EnableTO, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
+                        IsThreeState="False"
                         Header="EnableTO" />
+                    <DataGridCheckBoxColumn
+                        Width="*"
+                        MinWidth="50"
+                        Binding="{Binding Careful, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
+                        IsThreeState="False"
+                        Header="Careful" />
                     <DataGridTextColumn
                         Width="*"
                         MinWidth="50"

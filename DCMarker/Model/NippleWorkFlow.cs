@@ -69,13 +69,6 @@ namespace DCMarker.Model
             _articleInput.ReadCommand((byte)CommandTypes.OK, _currentEdge, _totalEdges);
         }
 
-        private int edge = 1;
-
-        public void Execute()
-        {
-            _articleInput.ReadCommand((byte)CommandTypes.StartMarking, edge++, _totalEdges);
-        }
-
         public void Execute2()
         {
             _articleInput.ReadCommand((byte)CommandTypes.StartMarking2, _totalEdges, _totalEdges);
@@ -83,6 +76,12 @@ namespace DCMarker.Model
         }
 
 #endif
+        private int edge = 1;
+
+        public void Execute()
+        {
+            _articleInput.ReadCommand((byte)CommandTypes.StartMarking, edge++, _totalEdges);
+        }
 
         public List<Article> GetArticle(string articleNumber)
         {
@@ -128,6 +127,11 @@ namespace DCMarker.Model
             //string commandfile = "COMMANDS1.TXT";
             //_articleInput.Simulate(commandfile);
             ////UpdateLayout();
+        }
+
+        public void SimulateItemInPlace(string articlenumber)
+        {
+            throw new NotImplementedException("Not implemented in Nipple");
         }
 
 #if DEBUG
@@ -869,6 +873,26 @@ namespace DCMarker.Model
         }
 
         #endregion only used by ManualWorkFlow // AME - 2017-05-12
+
+        #region only used in FlexibleWorkFlow // AME - 2018-11-05
+
+        public event EventHandler<ItemDoneArgs> ItemDoneEvent;
+
+        public void ResetCareful()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ResetItemsDone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public event EventHandler<UpdateItemStatusArgs> UpdateItemStatusEvent;
+
+        public event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;
+
+        #endregion only used in FlexibleWorkFlow // AME - 2018-11-05
 
         #region Laser Busy Event
 

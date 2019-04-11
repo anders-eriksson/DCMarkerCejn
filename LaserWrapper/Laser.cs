@@ -1,3 +1,5 @@
+#define FLEXIBLE
+
 using Configuration;
 using Contracts;
 using DCLog;
@@ -6,13 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using GlblRes = global::LaserWrapper.Properties.Resources;
 
 namespace LaserWrapper
 {
-    public class Laser : ILaser, IDigitalIo, Contracts.IAxis
+    public partial class Laser : ILaser, IDigitalIo, Contracts.IAxis
     {
         private static object lockObj = new object();
         private LaserDoc _doc;
@@ -22,7 +25,7 @@ namespace LaserWrapper
         private Axis _laserAxis;
         private DCConfig cfg;
         private IoSignals sig;
-        private int currentBits;
+        private int currentBits=0;
         private string _layoutName;
 
         #region Configurable variables
@@ -48,7 +51,7 @@ namespace LaserWrapper
             _isIoEnabled = cfg.IsIoEnabled;
 
             _layoutName = string.Empty;
-            sig = new IoSignals();
+            sig = IoSignals.Instance;
             UpdateIoMasks();
             IoFix.Init();
             NextToLast = false;
@@ -106,6 +109,12 @@ namespace LaserWrapper
                 return false;
 #endif
                 result = _doc.execute(true, true);
+
+                if (!result)
+                {
+                    Log.Trace("Laser: Execute failed!");
+                    RaiseDeviceErrorEvent("Laser: Execute failed!");
+                }
             }
             catch (NullReferenceException ex)
             {
@@ -189,6 +198,7 @@ namespace LaserWrapper
             }
         }
 
+#if false
         public bool UpdateToNumber(string tonumber)
         {
             bool result = false;
@@ -200,6 +210,7 @@ namespace LaserWrapper
 
             return result;
         }
+#endif
 
         public bool Update(List<LaserObjectData> objectList)
         {
@@ -246,7 +257,7 @@ namespace LaserWrapper
                 }
                 else
                 {
-                    Log.Error(string.Format("Laser: Layout: {0} - Can't find a field for ID: {1}", _layoutName, id));
+                    Log.Info(string.Format("Laser: Layout: {0} - Can't find a field for ID: {1}", _layoutName, id));
                 }
             }
 
@@ -338,7 +349,12 @@ namespace LaserWrapper
                 _laserAxis.sigAxisError += _laserAxis_sigAxisError;
 
                 _laserSystem = _laser.System;
+
+#if !FLEXIBLE
+                // sigQueryStart will only trigger when an External Start signal is recieved. Thus we must use sigLaserStart when debugging...
                 _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
+#endif
+
 #if DEBUG
                 _laserSystem.sigLaserStart += _laserSystem_sigLaserStart;
 #endif
@@ -405,6 +421,7 @@ namespace LaserWrapper
             }
         }
 
+#if !FLEXIBLE
         /// <summary>
         /// Event for External Start Signal!
         /// </summary>
@@ -421,25 +438,40 @@ namespace LaserWrapper
                 SetPort(0, sig.MASK_NEXTTOLAST);
             }
         }
+#endif
 
-#if DEBUG
+#if DEBUG || FLEXIBLE
 
         /// <summary>
         /// Event for Start marking
+        /// NB! This is called everytime _doc.execute() is executed!
+        /// Which is why it can't exist in the Release version!!!
+        /// NB! Flexible doesn't use External Start, it uses a IO to signal start so we use this function 
+        ///     to start the marking even in Release mode. We then need to call _doc.execute
         /// </summary>
-        private void _laserSystem_sigLaserStart()
+        public void _laserSystem_sigLaserStart()
         {
             Log.Trace("Start of marking");
-            InitLanguage();
-            RaiseQueryStartEvent(GlblRes.Marking);
+#if false
+                InitLanguage();
+                RaiseQueryStartEvent(GlblRes.Marking);
+#endif
+            if ("sv-SE" == DCConfig.Instance.GuiLanguage)
+            {
+                RaiseQueryStartEvent("M�rker ...");
+            }
+            else
+            {
+                RaiseQueryStartEvent("Marking...");
+
+            }
             ResetPort(0, sig.MASK_READYTOMARK);
             RaiseLaserBusyEvent(true);
-            _doc.execute(true, true);
         }
 
 #endif
 
-        #region Digital IO
+#region Digital IO
 
         public int GetPort(int port)
         {
@@ -450,13 +482,13 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
-                Log.Debug(string.Format("Reset IO Mask: {0}", mask));
+                Log.Debug(string.Format("Reset IO Mask: {0} - {1}", GetMaskName(mask), mask));
                 IoFix.Delete(mask);
                 return _ioPort.resetPort(port, mask);
             }
             else
             {
-                Log.Debug(string.Format("IO port is null! Mask: {0}", mask));
+                Log.Debug(string.Format("IO port is null! Mask: {0} - {1}", GetMaskName(mask), mask));
             }
 
             return false;
@@ -466,17 +498,29 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
-                Log.Debug(string.Format("Set IO Mask: {0}", mask));
+                Log.Debug(string.Format("Set IO Mask: {0} - {1}", GetMaskName(mask), mask));
                 int currentMask = IoFix.Add(mask);
                 Log.Trace(string.Format("Mask: {0} - CurrentMask: {1}", mask, currentMask));
                 return _ioPort.setPort(port, currentMask);
             }
             else
             {
-                Log.Debug(string.Format("IO port is null! Mask: {0}", mask));
+                Log.Debug(string.Format("IO port is null! Mask: {0} - {1}", GetMaskName(mask), mask));
             }
 
             return false;
+        }
+
+        private string GetMaskName(int mask)
+        {
+            string result = string.Empty;
+
+            bool brc = sig.NameDict.TryGetValue(mask, out result);
+            if (!brc)
+                Log.Debug(string.Format("Mask Name Not Found: {0}", mask));
+
+            return result;
+            throw new NotImplementedException();
         }
 
         public bool SetReady(bool OnOff)
@@ -546,9 +590,9 @@ namespace LaserWrapper
             }
         }
 
-        #endregion LaserEnd Event
+#endregion LaserEnd Event
 
-        #region LaserError Event
+#region LaserError Event
 
         public delegate void LaserErrorHandler(string msg);
 
@@ -573,26 +617,9 @@ namespace LaserWrapper
             public string Text { get; private set; } // readonly
         }
 
-        #endregion LaserError Event
+#endregion LaserError Event
 
-        #region Item in Position Event
-
-        public delegate void ItemInPositionHandler();
-
-        public event ItemInPositionHandler ItemInPositionEvent;
-
-        internal void RaiseItemInPositionEvent()
-        {
-            ItemInPositionHandler handler = ItemInPositionEvent;
-            if (handler != null)
-            {
-                handler();
-            }
-        }
-
-        #endregion Item in Position Event
-
-        #region LaserQueryStart Event
+#region LaserQueryStart Event
 
         public delegate void QueryStartHandler(string msg);
 
@@ -617,9 +644,9 @@ namespace LaserWrapper
             public string Text { get; private set; } // readonly
         }
 
-        #endregion LaserQueryStart Event
+#endregion LaserQueryStart Event
 
-        #region Reset IO Signals Event
+#region Reset IO Signals Event
 
         public delegate void ResetIoHandler();
 
@@ -634,9 +661,9 @@ namespace LaserWrapper
             }
         }
 
-        #endregion Reset IO Signals Event
+#endregion Reset IO Signals Event
 
-        #region Laser Busy Event
+#region Laser Busy Event
 
         public delegate void LaserBusyHandler(bool busy);
 
@@ -661,9 +688,9 @@ namespace LaserWrapper
             public bool Busy { get; private set; } // readonly
         }
 
-        #endregion Laser Busy Event
+#endregion Laser Busy Event
 
-        #region Axis
+#region Axis
 
         private const int X_AXIS = 0;
         private const int Y_AXIS = 1;
@@ -687,7 +714,7 @@ namespace LaserWrapper
             return result;
         }
 
-        #region Zero Reached Event
+#region Zero Reached Event
 
         public delegate void ZeroReachedHandler(string msg);
 
@@ -712,8 +739,8 @@ namespace LaserWrapper
             public string Text { get; private set; } // readonly
         }
 
-        #endregion Zero Reached Event
+#endregion Zero Reached Event
 
-        #endregion Axis
+#endregion Axis
     }
 }

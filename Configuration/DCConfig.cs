@@ -72,6 +72,8 @@ namespace Configuration
                  *  2   Automatic with TO number    e.g. Filip?
                  *  3   Manual with TO number       e.g. Ultraflow
                  *  4   Automatic with ADAM         e.g. Nippel- & flödeskoppling
+                 *  5   Manual with TO number
+                 *      and digital IO              e.g. Flexibel 1 & 2
                  */
 
                 // Machine
@@ -88,12 +90,18 @@ namespace Configuration
                 ExecuteTimeout = _profile.GetValue("Laser", nameof(ExecuteTimeout), 10000);
                 TryAgainTimeout = _profile.GetValue("Laser", nameof(TryAgainTimeout), 200);
                 IsIoEnabled = _profile.GetValue("Laser", nameof(IsIoEnabled), true);
+
+                // Laser IO
                 ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x01);                    // OUTPUT 0
+                ReadyToMarkDelay = _profile.GetValue("Laser", nameof(ReadyToMarkDelay), 200);
                 MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);                    // OUTPUT 1
                 ArticleReady = _profile.GetValue("Laser", nameof(ArticleReady), 0x10);                  // OUTPUT 4
                 NextToLast = _profile.GetValue("Laser", nameof(NextToLast), 0x40);                      // OUTPUT 6
+                LastEdge = _profile.GetValue("Laser", nameof(LastEdge), 0x04);
+                HandleWithCare = _profile.GetValue("Laser", nameof(HandleWithCare), 0x20);
                 Error = _profile.GetValue("Laser", nameof(Error), 0x80);                                // OUTPUT 7
                 ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x02);                    // INPUT 1
+                StartSignal = _profile.GetValue("Laser", nameof(MarkingDone),0x08);                     // INPUT 3
                 EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x10);              // INPUT 4
                 ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x8);                             // INPUT 3
 
@@ -145,10 +153,16 @@ namespace Configuration
                 _profile.SetValue("Laser", nameof(ExecuteTimeout), ExecuteTimeout);
                 _profile.SetValue("Laser", nameof(TryAgainTimeout), TryAgainTimeout);
                 _profile.SetValue("Laser", nameof(IsIoEnabled), IsIoEnabled);
+
+                // Laser IO
                 _profile.SetValue("Laser", nameof(ArticleReady), ArticleReady);
                 _profile.SetValue("Laser", nameof(ReadyToMark), ReadyToMark);
+                _profile.SetValue("Laser", nameof(ReadyToMarkDelay), ReadyToMarkDelay);
+                _profile.SetValue("Laser", nameof(MarkingDone), StartSignal);
                 _profile.SetValue("Laser", nameof(MarkingDone), MarkingDone);
                 _profile.SetValue("Laser", nameof(NextToLast), NextToLast);
+                _profile.SetValue("Laser", nameof(LastEdge), LastEdge);
+                _profile.SetValue("Laser", nameof(HandleWithCare), HandleWithCare);
                 _profile.SetValue("Laser", nameof(Error), Error);
                 _profile.SetValue("Laser", nameof(ItemInPlace), ItemInPlace);
                 _profile.SetValue("Laser", nameof(EmergencyError), EmergencyError);
@@ -202,10 +216,14 @@ namespace Configuration
         public int ExecuteTimeout { get; set; }
         public int TryAgainTimeout { get; set; }
         public bool IsIoEnabled { get; set; }
+        public int StartSignal { get; set; }
         public int ArticleReady { get; set; }
         public int ReadyToMark { get; set; }
+        public int ReadyToMarkDelay { get; set; }
         public int MarkingDone { get; set; }
         public int NextToLast { get; set; }
+        public int LastEdge { get; set; }
+        public int HandleWithCare { get; set; }
         public int Error { get; set; }
         public int ItemInPlace { get; set; }
         public int EmergencyError { get; set; }

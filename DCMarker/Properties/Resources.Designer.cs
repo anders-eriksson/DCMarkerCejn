@@ -178,6 +178,15 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handle with care!.
+        /// </summary>
+        public static string CarefulHeader {
+            get {
+                return ResourceManager.GetString("CarefulHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CreateSerialNumber Exception.
         /// </summary>
         public static string CreateSerialNumber_Exception {
@@ -300,6 +309,15 @@ namespace DCMarker.Properties {
         public static string ItemInPlace_received_before_Article_Number_is_set {
             get {
                 return ResourceManager.GetString("ItemInPlace_received_before_Article_Number_is_set", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Items Done.
+        /// </summary>
+        public static string ItemsDone {
+            get {
+                return ResourceManager.GetString("ItemsDone", resourceCulture);
             }
         }
         
@@ -471,6 +489,33 @@ namespace DCMarker.Properties {
         public static string Status {
             get {
                 return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Side.
+        /// </summary>
+        public static string TableSide {
+            get {
+                return ResourceManager.GetString("TableSide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Position A.
+        /// </summary>
+        public static string TableSideA {
+            get {
+                return ResourceManager.GetString("TableSideA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Position B.
+        /// </summary>
+        public static string TableSideB {
+            get {
+                return ResourceManager.GetString("TableSideB", resourceCulture);
             }
         }
         

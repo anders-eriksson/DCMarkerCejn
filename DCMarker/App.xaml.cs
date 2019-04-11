@@ -35,6 +35,10 @@ namespace DCMarker
                     wnd = new NippleMainWindow();
                     break;
 
+                case 5:
+                    wnd = new FlexibleMainWindow();
+                    break;
+
                 default:
                     wnd = new ErrorMainWindow();
                     break;

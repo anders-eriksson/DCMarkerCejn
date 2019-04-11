@@ -217,7 +217,7 @@ namespace DCAdmin.View
                 LaserDataViewModel laserVM = (LaserDataViewModel)LayoutRoot.DataContext;
                 string key = FilterCombobox.SelectedItem.ToString();
 
-                if (key == "ExternTest" || key == "EnableTO")
+                if (key == "Careful" || key == "ExternTest" || key == "EnableTO")
                 {
                     laserVM.HasFilterType = FilterType.Bool;
                 }

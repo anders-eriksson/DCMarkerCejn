@@ -28,6 +28,7 @@ namespace DCHistory
                     DCLog.Log.Error(ex, "Error converting value to string!");
                 }
             }
+
             return value;
         }
 

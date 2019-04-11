@@ -1,0 +1,412 @@
+﻿<Window
+    x:Class="DCMarker.FlexibleMainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DCMarker"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:p="clr-namespace:DCMarker.Properties"
+    Title="DCMarker"
+    Width="574.609"
+    Height="368.929"
+    Closing="Window_Closing"
+    Icon="dclasersystem.ico"
+    Loaded="Window_Loaded"
+    ResizeMode="CanMinimize"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <local:CheckBoxConverter x:Key="CheckBoxConverter" />
+        <local:KantConverter x:Key="KantConverter" />
+
+        <DataTemplate DataType="{x:Type ValidationError}">
+            <TextBlock
+                Width="159"
+                Height="18"
+                Margin="0"
+                HorizontalAlignment="Left"
+                FontSize="10"
+                FontStyle="Italic"
+                Foreground="Red"
+                Text="{Binding Path=ErrorContent}" />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <DockPanel Height="35" VerticalAlignment="Top">
+            <Menu
+                Height="28"
+                DockPanel.Dock="Top"
+                IsTabStop="False"
+                KeyboardNavigation.IsTabStop="False">
+                <MenuItem
+                    Grid.Column="0"
+                    Header="{x:Static p:Resources.FileMenuHeader}"
+                    IsTabStop="False">
+
+                    <MenuItem
+                        x:Name="Exit"
+                        Click="Exit_Click"
+                        Header="{x:Static p:Resources.ExitMenuHeader}" />
+                </MenuItem>
+                <MenuItem Header="{x:Static p:Resources.ToolsMenuHeader}" IsTabStop="False">
+                    <MenuItem
+                        x:Name="ResetZaxis"
+                        Click="ResetZaxis_Click"
+                        Header="{x:Static p:Resources.ResetZAxisMenuHeader}" />
+                    <MenuItem
+                        x:Name="ResetSignals"
+                        Click="ResetSignals_Click"
+                        Header="{x:Static p:Resources.ResetIOMenuHeader}" />
+                </MenuItem>
+                <MenuItem Header="{x:Static p:Resources.WindowMenuHeader}" IsTabStop="False">
+                    <MenuItem
+                        x:Name="OnTop"
+                        Click="OnTop_Click"
+                        Header="{x:Static p:Resources.OnTopMenuHeader}"
+                        IsCheckable="True" />
+                </MenuItem>
+                <MenuItem Header="{x:Static p:Resources.HelpMenuHeader}" IsTabStop="False">
+                    <MenuItem
+                        x:Name="LogPath"
+                        Click="LogPath_Click"
+                        Header="{x:Static p:Resources.LogfileMenuHeader}" />
+                    <MenuItem
+                        x:Name="About"
+                        Click="About_Click"
+                        Header="{x:Static p:Resources.AboutMenuHeader}" />
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+
+        <TextBlock
+            x:Name="FixtureTextBlock"
+            Width="400"
+            Height="27"
+            MinWidth="400"
+            Margin="146,40,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontSize="20"
+            IsEnabled="{Binding HasFixture}"
+            Text="{Binding Fixture}"
+            TextWrapping="Wrap"
+            Visibility="{Binding Path=HasFixture, Converter={StaticResource BoolToVis}}" />
+        <TextBlock
+            x:Name="Careful"
+            Width="155"
+            Height="27"
+            Margin="34,72,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontSize="20"
+            Foreground="Red"
+            IsEnabled="{Binding HasFixture}"
+            Text="{x:Static p:Resources.CarefulHeader}"
+            TextWrapping="NoWrap"
+            Visibility="{Binding Path=IsCareful, Converter={StaticResource BoolToVis}}" />
+        <TextBlock
+            x:Name="ArticleTextblock"
+            Width="41"
+            Height="17"
+            Margin="42,122,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{x:Static p:Resources.ArticleNumber}"
+            TextWrapping="Wrap" />
+
+        <TextBox
+            x:Name="ArticleTextBox"
+            Grid.Column="2"
+            Width="132"
+            Height="18"
+            Margin="139,120,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            local:FocusAdvancement.AdvancesByEnterKey="True"
+            IsEnabled="{Binding OrderNotStarted}"
+            TabIndex="0"
+            Text="{Binding ArticleNumber, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, Mode=TwoWay}"
+            TextWrapping="Wrap" />
+
+        <TextBlock
+            x:Name="TOnrLabel"
+            Grid.ColumnSpan="2"
+            Width="62"
+            Height="16"
+            Margin="42,153,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="{x:Static p:Resources.ToNumber}"
+            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+
+        <TextBox
+            x:Name="TOnrTextbox"
+            Width="132"
+            Height="18"
+            Margin="139,155,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            local:FocusAdvancement.AdvancesByEnterKey="True"
+            IsEnabled="{Binding OrderNotStarted}"
+            TabIndex="2"
+            Text="{Binding TOnr, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            TextWrapping="Wrap"
+            Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
+        <Border
+            Height="59"
+            Margin="299,89,10,0"
+            VerticalAlignment="Top"
+            Background="{Binding IsActiveA}"
+            BorderBrush="Black"
+            BorderThickness="1">
+            <!--<GroupBox Background="{Binding IsActiveA}" Header="Position A">-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="34*" />
+                    <ColumnDefinition Width="34*" />
+                    <ColumnDefinition Width="54*" />
+                    <ColumnDefinition Width="47*" />
+                    <ColumnDefinition Width="79*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    x:Name="SideA"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="5"
+                    Height="18"
+                    Margin="10,6,10,6"
+                    Text="{x:Static p:Resources.TableSideA}" />
+                <TextBlock
+                    x:Name="KantLabel"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="29"
+                    Height="18"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{x:Static p:Resources.Kant}"
+                    TextWrapping="Wrap" />
+                <!--  Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}"  -->
+
+                <TextBlock
+                    x:Name="KantTextBlock"
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Width="49"
+                    Height="16"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{Binding KantA}"
+                    TextWrapping="Wrap" />
+
+                <TextBlock
+                    x:Name="TotalKantLabel"
+                    Grid.Row="1"
+                    Grid.Column="3"
+                    Width="29"
+                    Height="18"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{x:Static p:Resources.TotalKant}"
+                    TextWrapping="Wrap" />
+                <TextBlock
+                    x:Name="TotalKantTextBlock"
+                    Grid.Row="1"
+                    Grid.Column="4"
+                    Width="49"
+                    Height="16"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{Binding TotalKant}"
+                    TextWrapping="Wrap" />
+            </Grid>
+            <!--</GroupBox>-->
+        </Border>
+        <Border
+            Height="59"
+            Margin="299,164,10,0"
+            VerticalAlignment="Top"
+            Background="{Binding IsActiveB}"
+            BorderBrush="Black"
+            BorderThickness="1">
+            <!--<GroupBox Background="{Binding IsActiveB}" Header="Position B">-->
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="34*" />
+                    <ColumnDefinition Width="34*" />
+                    <ColumnDefinition Width="54*" />
+                    <ColumnDefinition Width="47*" />
+                    <ColumnDefinition Width="79*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    x:Name="SideB"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="5"
+                    Height="18"
+                    Margin="10,6,10,6"
+                    Text="{x:Static p:Resources.TableSideB}" />
+                <TextBlock
+                    x:Name="KantLabel1"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="29"
+                    Height="18"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{x:Static p:Resources.Kant}"
+                    TextWrapping="Wrap" />
+                <!--  Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}"  -->
+
+                <TextBlock
+                    x:Name="KantTextBlock1"
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Width="49"
+                    Height="16"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{Binding KantB}"
+                    TextWrapping="Wrap" />
+
+                <TextBlock
+                    x:Name="TotalKantLabel1"
+                    Grid.Row="1"
+                    Grid.Column="3"
+                    Width="29"
+                    Height="18"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{x:Static p:Resources.TotalKant}"
+                    TextWrapping="Wrap" />
+                <TextBlock
+                    x:Name="TotalKantTextBlock1"
+                    Grid.Row="1"
+                    Grid.Column="4"
+                    Width="49"
+                    Height="16"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Text="{Binding TotalKant}"
+                    TextWrapping="NoWrap" />
+            </Grid>
+            <!--</GroupBox>-->
+        </Border>
+        <StackPanel Margin="299,239,10,74" Orientation="Horizontal">
+            <TextBlock
+                x:Name="ItemsDoneLabel"
+                Width="150"
+                Height="18"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                FontWeight="Bold"
+                Text="{x:Static p:Resources.ItemsDone}"
+                TextWrapping="NoWrap" />
+            <TextBlock
+                x:Name="ItemsDone"
+                Width="100"
+                Height="20"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                FontWeight="Bold"
+                Text="{Binding ItemsDone, FallbackValue=0, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+        <Button
+            x:Name="OkButton"
+            Width="75"
+            Height="20"
+            Margin="125,271,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding OkButtonCommand, Mode=OneWay}"
+            Content="{x:Static p:Resources.OK}"
+            IsEnabled="{Binding OrderNotStarted}"
+            TabIndex="4" />
+        <Button
+            x:Name="CancelButton"
+            Width="75"
+            Height="20"
+            Margin="205,271,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding CancelButtonCommand, Mode=OneWay}"
+            Content="{x:Static p:Resources.Cancel}" />
+        <Button
+            x:Name="LoadButton"
+            Width="75"
+            Height="20"
+            Margin="312,271,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Click="LoadButton_Click"
+            Content="ItemInPos"
+            IsTabStop="False" />
+        <Button
+            x:Name="ExecuteButton"
+            Width="75"
+            Height="20"
+            Margin="392,271,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding ExecuteMarkingCommand}"
+            Content="Execute"
+            IsTabStop="False" />
+        <Ellipse
+            x:Name="InMarking"
+            Width="20"
+            Height="20"
+            Margin="0,0,23,49"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom">
+            <Ellipse.Fill>
+                <SolidColorBrush Color="{Binding ColorStatus, UpdateSourceTrigger=PropertyChanged}" />
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <CheckBox
+            Width="75"
+            Height="15"
+            Margin="139,178,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            local:FocusAdvancement.AdvancesByEnterKey="True"
+            Content="{x:Static p:Resources.TestItem}"
+            IsChecked="{Binding IsTestItemSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            IsEnabled="{Binding OrderNotStarted}"
+            TabIndex="3" />
+        <StackPanel VerticalAlignment="Bottom">
+            <TextBlock
+                x:Name="textBlock"
+                Foreground="Red"
+                Text="{Binding ErrorMessage}"
+                TextWrapping="Wrap" />
+            <StatusBar Margin="0,0,0,0" VerticalAlignment="Bottom">
+                <StatusBarItem VerticalAlignment="Bottom">
+                    <TextBlock Text="{Binding Status}" />
+                </StatusBarItem>
+            </StatusBar>
+        </StackPanel>
+        <TextBlock
+            x:Name="FixtureLabel"
+            Width="70"
+            Height="25"
+            Margin="34,40,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontSize="20"
+            IsEnabled="{Binding HasFixture}"
+            Text="{x:Static p:Resources.Fixture}"
+            TextWrapping="NoWrap"
+            Visibility="{Binding HasFixture, Converter={StaticResource BoolToVis}}" />
+    </Grid>
+</Window>

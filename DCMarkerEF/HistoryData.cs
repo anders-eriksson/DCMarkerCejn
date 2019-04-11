@@ -79,6 +79,8 @@ namespace DCMarkerEF
 
         public bool? EnableTO { get; set; }
 
+        public bool? Careful { get; set; }
+
         [StringLength(50)]
         public string TOnr { get; set; }
 
