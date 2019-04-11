@@ -35,9 +35,7 @@ namespace DCAdmin
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: MachineId
-            //MachineId = MachineIdTextbox.Text.Trim();
-            RowData.MachineId = "AME";
+            RowData.MachineCode = MachineCodeTextbox.Text.Trim();
             RowData.Article = ArticleTextbox.Text.Trim();
             RowData.Kant = KantTextbox.Text.Trim();
             DialogResult = true;
@@ -50,7 +48,7 @@ namespace DCAdmin
                 if (!RowData.RowExists())
                 {
                     // Save values for next time
-                    Properties.Settings.Default.MachineId = RowData.MachineId;
+                    Properties.Settings.Default.MachineCode = RowData.MachineCode;
                     Properties.Settings.Default.Article = RowData.Article;
                     Properties.Settings.Default.Kant = RowData.Kant;
                     e.Cancel = false;

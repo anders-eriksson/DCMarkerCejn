@@ -77,6 +77,7 @@ namespace Configuration
                  */
 
                 // Machine
+                MachineCode = _profile.GetValue("Machine", nameof(MachineCode), "");
                 TypeOfMachine = _profile.GetValue("Machine", nameof(TypeOfMachine), 1);
                 GuiLanguage = _profile.GetValue("Machine", nameof(GuiLanguage), "sv-SE");
                 Debug = _profile.GetValue("Machine", nameof(Debug), false);
@@ -101,7 +102,7 @@ namespace Configuration
                 HandleWithCare = _profile.GetValue("Laser", nameof(HandleWithCare), 0x20);
                 Error = _profile.GetValue("Laser", nameof(Error), 0x80);                                // OUTPUT 7
                 ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x02);                    // INPUT 1
-                StartSignal = _profile.GetValue("Laser", nameof(MarkingDone),0x08);                     // INPUT 3
+                StartSignal = _profile.GetValue("Laser", nameof(MarkingDone), 0x08);                     // INPUT 3
                 EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x10);              // INPUT 4
                 ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x8);                             // INPUT 3
 
@@ -139,6 +140,8 @@ namespace Configuration
             try
             {
                 // Machine
+                _profile.SetValue("Machine", nameof(MachineCode), MachineCode);
+                _profile.SetValue("Machine", nameof(MachineCode), MachineCode);
                 _profile.SetValue("Machine", nameof(TypeOfMachine), TypeOfMachine);
                 _profile.SetValue("Machine", nameof(GuiLanguage), GuiLanguage);
                 _profile.SetValue("Machine", nameof(Debug), Debug);
@@ -199,6 +202,7 @@ namespace Configuration
 
         #region Machine properties
 
+        public String MachineCode { get; set; }
         public int TypeOfMachine { get; set; }
         public bool Debug { get; set; }
         public bool ClearClipboard { get; set; }

@@ -159,7 +159,7 @@ namespace DCAdmin
                         LaserDataGrid.laserDataDataGrid.Focus();
                         if (rc.HasValue && rc.Value)
                         {
-                            object item = laserVM.AddRow(dlg.RowData.MachineId, dlg.RowData.Article, dlg.RowData.Kant);
+                            object item = laserVM.AddRow(dlg.RowData.MachineCode, dlg.RowData.Article, dlg.RowData.Kant);
 
                             laserVM.TriggerSelectedRow();
                         }
@@ -213,7 +213,7 @@ namespace DCAdmin
                         LaserDataGrid.laserDataDataGrid.Focus();
                         if (rc.HasValue && rc.Value)
                         {
-                            object item = laserVM.AddRowFromSelected(dlg.RowData.MachineId, dlg.RowData.Article, dlg.RowData.Kant);
+                            object item = laserVM.AddRowFromSelected(dlg.RowData.MachineCode, dlg.RowData.Article, dlg.RowData.Kant);
 
                             laserVM.TriggerSelectedRow();
                         }
@@ -272,15 +272,11 @@ namespace DCAdmin
                         };
                         var currentItem = laserVM.SelectedLaserDataRow;
 
-                        // TODO: MachineId
-                        string machineId = "AME";
-#if MACHINEID
-            string machineId = currentItem.MachineId;
-#endif
+                        string machineCode = currentItem.MachineCode;
                         string article = currentItem.F1;
                         string kant = currentItem.Kant;
 
-                        dlg.InitValues(machineId, article, kant);
+                        dlg.InitValues(machineCode, article, kant);
 
                         bool? rc = dlg.ShowDialog();
 

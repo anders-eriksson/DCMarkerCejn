@@ -173,25 +173,43 @@ namespace DCMarker.Model
             return result;
         }
 
-        internal List<Article> GetArticle(string articleNumber)
+        internal List<Article> GetArticle(string articleNumber, string machineCode = "")
         {
             List<Article> result = null;
 
             Log.Trace(string.Format("GetArticle({0})", articleNumber));
             using (var context = new DCLasermarkContext())
             {
-                result = context.LaserData
-                    .OrderBy(x => x.F1).ThenBy(x => x.Kant).Where(r => r.F1 == articleNumber)
-                  .Select(x => new Article
-                  {
-                      Id = x.Id,
-                      F1 = x.F1,
-                      Kant = x.Kant,
-                      FixtureId = x.FixtureId,
-                      EnableTO = x.EnableTO,
-                      Careful = x.Careful,
-                      Template = x.Template,
-                  }).ToList();
+                if (string.IsNullOrWhiteSpace(machineCode))
+                {
+                    result = context.LaserData
+                        .OrderBy(x => x.F1).ThenBy(x => x.Kant).Where(r => r.F1 == articleNumber)
+                      .Select(x => new Article
+                      {
+                          Id = x.Id,
+                          F1 = x.F1,
+                          Kant = x.Kant,
+                          FixtureId = x.FixtureId,
+                          EnableTO = x.EnableTO,
+                          Careful = x.Careful,
+                          Template = x.Template,
+                      }).ToList();
+                }
+                else
+                {
+                    result = context.LaserData
+                        .OrderBy(x => x.F1).ThenBy(x => x.Kant).Where(r => r.F1 == articleNumber && r.MachineCode == machineCode)
+                      .Select(x => new Article
+                      {
+                          Id = x.Id,
+                          F1 = x.F1,
+                          Kant = x.Kant,
+                          FixtureId = x.FixtureId,
+                          EnableTO = x.EnableTO,
+                          Careful = x.Careful,
+                          Template = x.Template,
+                      }).ToList();
+                }
             }
             Log.Trace("GetArticle Done");
 

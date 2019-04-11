@@ -14,7 +14,7 @@ namespace DCAdmin.ViewModel
         public AddRowVM()
         {
             ErrorMessage = string.Empty;
-            MachineId = Properties.Settings.Default.MachineId;
+            MachineCode = Properties.Settings.Default.MachineCode;
             Article = string.Empty;
             Kant = string.Empty;
         }
@@ -36,18 +36,19 @@ namespace DCAdmin.ViewModel
 
         public bool RowExists()
         {
-            return DB.Instance.ExistsLaserData(MachineId, Article, Kant);
+            return DB.Instance.ExistsLaserData(MachineCode, Article, Kant);
         }
 
-        public string MachineId
+        public string MachineCode
         {
             get
             {
-                return _machineId;
+                return _machineCode;
             }
             set
             {
-                _machineId = value;
+                _machineCode = value;
+                _machineCode = string.IsNullOrWhiteSpace(_machineCode) ? null : _machineCode;
                 NotifyPropertyChanged();
             }
         }
@@ -79,7 +80,7 @@ namespace DCAdmin.ViewModel
             }
         }
 
-        private string _machineId;
+        private string _machineCode;
         private string _article;
         private string _kant;
 

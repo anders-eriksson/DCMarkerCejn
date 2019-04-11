@@ -123,8 +123,6 @@ namespace DCAdmin
         {
             Fixture d = new Fixture()
             {
-                // TODO: MachineId
-                //MachineId = machineId,
                 FixturId = fixtureId,
             };
             try
@@ -152,8 +150,6 @@ namespace DCAdmin
         {
             Mapper.Initialize(cfg => cfg.CreateMap<Fixture, Fixture>());
             Fixture newRecord = Mapper.Map<Fixture, Fixture>(SelectedFixtureRow);
-            // TODO: MachineId
-            //newRecord.MachineId = machineId,
             newRecord.FixturId = fixtureId;
             DB.Instance.AddNewFixtureRecord(ref newRecord);
             SelectedFixtureRow = newRecord;

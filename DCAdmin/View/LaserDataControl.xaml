@@ -86,7 +86,7 @@
                                 Height="23"
                                 Content="Enable/Disable"
                                 IsChecked="{Binding IsFilterBoolChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                Visibility="{Binding IsFilterBool, Converter={StaticResource BoolToVisConverter},FallbackValue=Hidden}" />
+                                Visibility="{Binding IsFilterBool, Converter={StaticResource BoolToVisConverter}, FallbackValue=Hidden}" />
                         </Grid>
                         <TextBlock
                             Width="10"
@@ -165,6 +165,11 @@
                         MinWidth="50"
                         Binding="{Binding Kant, IsAsync=True}"
                         Header="Kant" />
+                    <DataGridTextColumn
+                        Width="*"
+                        MinWidth="50"
+                        Binding="{Binding MachineCode, IsAsync=True}"
+                        Header="Maskin" />
                     <DataGridTextColumn
                         Width="*"
                         MinWidth="50"
@@ -269,20 +274,20 @@
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding ExternTest, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
-                        IsThreeState="False"
-                        Header="Extern Test" />
+                        Header="Extern Test"
+                        IsThreeState="False" />
                     <DataGridCheckBoxColumn
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding EnableTO, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
-                        IsThreeState="False"
-                        Header="EnableTO" />
+                        Header="EnableTO"
+                        IsThreeState="False" />
                     <DataGridCheckBoxColumn
                         Width="*"
                         MinWidth="50"
                         Binding="{Binding Careful, IsAsync=True, Converter={StaticResource CheckBoxConverter}}"
-                        IsThreeState="False"
-                        Header="Careful" />
+                        Header="Careful"
+                        IsThreeState="False" />
                     <DataGridTextColumn
                         Width="*"
                         MinWidth="50"
