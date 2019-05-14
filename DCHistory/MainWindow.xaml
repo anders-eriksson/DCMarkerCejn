@@ -246,6 +246,12 @@
                     Binding="{Binding Kant, IsAsync=True, TargetNullValue=''}"
                     Header="Kant" />
                 <DataGridTextColumn
+                    x:Name="maskinIDColumn"
+                    Width="*"
+                    MinWidth="50"
+                    Binding="{Binding MaskinID, IsAsync=True, TargetNullValue=''}"
+                    Header="MaskinID" />
+                <DataGridTextColumn
                     x:Name="f2Column"
                     Width="*"
                     MinWidth="50"

@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
 using System.Windows.Threading;
+using GlblRes = global::DCHistory.Properties.Resources;
 
 namespace DCHistory
 {
@@ -107,7 +108,7 @@ namespace DCHistory
             }
             else
             {
-                SearchError.Text = "Can't find Article number";
+                SearchError.Text = GlblRes.Cant_find_Serial_number;
             }
         }
 
@@ -127,7 +128,7 @@ namespace DCHistory
             }
             else
             {
-                SearchError.Text = "Can't find Article number!";
+                SearchError.Text = GlblRes.Cant_find_Serial_number;
             }
         }
 
@@ -228,7 +229,7 @@ namespace DCHistory
                     else
                     {
                         tmp.IsChecked = false;
-                        mainVM.ErrorMessage = "You must select a column to filter on!";
+                        mainVM.ErrorMessage = GlblRes.You_must_select_a_column_to_filter_on;
                         return;
                     }
                 }
@@ -243,7 +244,7 @@ namespace DCHistory
                     if (start > end)
                     {
                         tmp.IsChecked = false;
-                        mainVM.ErrorMessage = "End date must be later than or equal to start date";
+                        mainVM.ErrorMessage = GlblRes.End_date_must_be_later_than_or_equal_to_start_date;
                         return;
                     }
                     if (start.HasValue && end.HasValue)
@@ -263,7 +264,7 @@ namespace DCHistory
                     else
                     {
                         tmp.IsChecked = false;
-                        mainVM.ErrorMessage = "You must enter a date!";
+                        mainVM.ErrorMessage = GlblRes.You_must_enter_a_date;
                         return;
                     }
                 }

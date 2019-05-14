@@ -123,14 +123,23 @@
   <data name="ArticleNumber" xml:space="preserve">
     <value>Article Number (F1)</value>
   </data>
+  <data name="Cant_find_Serial_number" xml:space="preserve">
+    <value>Can't find Serial number</value>
+  </data>
   <data name="ClearFilterButtonHeader" xml:space="preserve">
     <value>Clear</value>
+  </data>
+  <data name="Database_Error_0" xml:space="preserve">
+    <value>Database Error: {0}</value>
   </data>
   <data name="DeleteMenuHeader" xml:space="preserve">
     <value>_Delete</value>
   </data>
   <data name="DeleteToolTip" xml:space="preserve">
     <value>Delete selected article number</value>
+  </data>
+  <data name="End_date_must_be_later_than_or_equal_to_start_date" xml:space="preserve">
+    <value>End date must be later than, or equal to, Start date</value>
   </data>
   <data name="ExitMenuHeader" xml:space="preserve">
     <value>_Exit</value>
@@ -162,6 +171,9 @@
   <data name="OnTopMenuHeader" xml:space="preserve">
     <value>_OnTop</value>
   </data>
+  <data name="Out_of_memory_Please_use_a_filter_to_make_selection_smaller" xml:space="preserve">
+    <value>Out of memory! Please use a filter to make selections smaller!</value>
+  </data>
   <data name="RefreshMenuHeader" xml:space="preserve">
     <value>_Refresh</value>
   </data>
@@ -174,7 +186,16 @@
   <data name="SaveToolTip" xml:space="preserve">
     <value>Save Changes to database</value>
   </data>
+  <data name="Serial_number_not_found" xml:space="preserve">
+    <value>Serial number not found</value>
+  </data>
   <data name="WindowMenuHeader" xml:space="preserve">
     <value>_Window</value>
+  </data>
+  <data name="You_must_enter_a_date" xml:space="preserve">
+    <value>You must enter a date!</value>
+  </data>
+  <data name="You_must_select_a_column_to_filter_on" xml:space="preserve">
+    <value>You must select a column to filter on</value>
   </data>
 </root>

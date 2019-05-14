@@ -39,7 +39,6 @@ namespace DCMarker.Flexible
 
         public bool FirstMarkingResetZ { get; set; }
 
-        
         public FlexibleWorkFlow()
         {
             try
@@ -65,6 +64,7 @@ namespace DCMarker.Flexible
         {
             ResetAllIoSignals();
             _laser.Release();
+            _ReadyToMarkTimer.Dispose();
         }
 
         private void CreateTimer()
@@ -131,6 +131,7 @@ namespace DCMarker.Flexible
         {
             throw new NotImplementedException();
         }
+
 #endif
 
         public void Execute()
@@ -148,7 +149,19 @@ namespace DCMarker.Flexible
 
         public List<Article> GetArticle(string articleNumber)
         {
-            return _db.GetArticle(articleNumber);
+            List<Article> result;
+            var maskinID = DCConfig.Instance.MaskinID;
+
+            if (string.IsNullOrWhiteSpace(maskinID))
+            {
+                result = _db.GetArticle(articleNumber);
+            }
+            else
+            {
+                result = _db.GetArticle(articleNumber, maskinID);
+            }
+
+            return result;
         }
 
         public bool Initialize()
@@ -241,7 +254,6 @@ namespace DCMarker.Flexible
                 RaiseUpdateItemStatusEvent(_items, _currentItem);
                 UpdateLayout();
                 //_currentItem = IncrementCurrentItem(_currentItem);
-              
             }
 #else
             digitalIO.ResetLastEdge();
@@ -413,7 +425,6 @@ namespace DCMarker.Flexible
             _laser.ZeroReachedEvent += _laser_ZeroReachedEvent;
         }
 
-        
         private void _laser_ZeroReachedEvent(string msg)
         {
             digitalIO.ResetLastEdge();
@@ -506,6 +517,9 @@ namespace DCMarker.Flexible
             Article article = GetItemArticle(_currentItem);
             if (article != null)
             {
+                if (article.EnableTO.HasValue && article.EnableTO.Value)
+                    article.TOnumber = TOnumber;
+
                 Log.Debug("Article found");
                 var item = _items[_currentItem];
                 if (item.NumberOfEdges > 1 && item.CurrentEdge > 1)
@@ -516,6 +530,7 @@ namespace DCMarker.Flexible
                 ArticleData data = new ArticleData();
                 data.ArticleNumber = article.F1;
                 data.IsNewArticleNumber = false;
+                data.TOnr = TOnumber;
                 data.TestItem = _testItem;
                 data.CurrentItem = _currentItem;
                 ArticleArgs e = new ArticleArgs(data);
@@ -620,12 +635,20 @@ namespace DCMarker.Flexible
         public void UpdateWorkflow(Article article)
         {
             _articleNumber = article.F1;
-            _articles = _db.GetArticle(_articleNumber);
-            if (_articles != null)
+            var maskinID = DCConfig.Instance.MaskinID;
+            if (string.IsNullOrWhiteSpace(maskinID))
+            {
+                _articles = _db.GetArticle(_articleNumber);
+            }
+            else
+            {
+                _articles = _db.GetArticle(_articleNumber, maskinID);
+            }
+
+            if (_articles != null && _articles.Count > 0)
             {
                 if (TemplateExists(_articles[0].Template))
                 {
-
                     FinishUpdateWorkflow(_articles[0]);
                 }
                 else

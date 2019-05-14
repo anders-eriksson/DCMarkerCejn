@@ -72,7 +72,7 @@
             VerticalAlignment="Bottom"
             Content="{x:Static p:Resources.Machine_id_label}" />
         <TextBlock
-            x:Name="MachineCodeTextblock"
+            x:Name="MaskinIDTextblock"
             Grid.Row="3"
             Grid.Column="1"
             Width="110"

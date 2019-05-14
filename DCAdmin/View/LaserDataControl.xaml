@@ -168,7 +168,7 @@
                     <DataGridTextColumn
                         Width="*"
                         MinWidth="50"
-                        Binding="{Binding MachineCode, IsAsync=True}"
+                        Binding="{Binding MaskinID, IsAsync=True}"
                         Header="Maskin" />
                     <DataGridTextColumn
                         Width="*"

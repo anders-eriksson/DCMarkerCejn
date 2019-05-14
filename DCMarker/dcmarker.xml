@@ -27,9 +27,10 @@
   <section name="Machine">
     <entry name="TypeOfMachine">3</entry>
     <entry name="GuiLanguage">sv-SE</entry>
-    <entry name="Debug">False</entry>
+    <entry name="Debug">True</entry>
     <entry name="ClearClipboard">True</entry>
     <entry name="CommunicationModule">1</entry>
+    <entry name="MaskinID">1</entry>
   </section>
   <section name="GUI">
     <entry name="ResetInputValues">False</entry>

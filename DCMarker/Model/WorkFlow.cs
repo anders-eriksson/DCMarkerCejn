@@ -81,7 +81,19 @@ namespace DCMarker.Model
 
         public List<Article> GetArticle(string articleNumber)
         {
-            return _db.GetArticle(articleNumber);
+            List<Article> result;
+            var maskinID = DCConfig.Instance.MaskinID;
+
+            if (string.IsNullOrWhiteSpace(maskinID))
+            {
+                result = _db.GetArticle(articleNumber);
+            }
+            else
+            {
+                result = _db.GetArticle(articleNumber, maskinID);
+            }
+
+            return result;
         }
 
         public bool Initialize()
@@ -122,7 +134,15 @@ namespace DCMarker.Model
             _articleNumber = e.Data.ArticleNumber;
             RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
 
-            _articles = _db.GetArticle(_articleNumber);
+            var maskinID = DCConfig.Instance.MaskinID;
+            if (string.IsNullOrWhiteSpace(maskinID))
+            {
+                _articles = _db.GetArticle(_articleNumber);
+            }
+            else
+            {
+                _articles = _db.GetArticle(_articleNumber, maskinID);
+            }
 
             if (_articles != null && _articles.Count > 0)
             {
@@ -308,6 +328,7 @@ namespace DCMarker.Model
                         if (historyData != null)
                         {
                             List<LaserObjectData> historyObjectData = ConvertToLaserObjectData(historyData);
+                            historyData.MaskinID = DCConfig.Instance.MaskinID;
                             brc = _laser.Update(historyObjectData);
                             if (brc)
                             {
@@ -386,6 +407,7 @@ namespace DCMarker.Model
                 data.HasKant = true;
                 data.Kant = articles.Count.ToString();
             }
+            data.MaskinID = article.MaskinID;
             data.Fixture = article.FixtureId;
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
             data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;

@@ -77,7 +77,7 @@ namespace Configuration
                  */
 
                 // Machine
-                MachineCode = _profile.GetValue("Machine", nameof(MachineCode), "");
+                MaskinID = _profile.GetValue("Machine", nameof(MaskinID), "");
                 TypeOfMachine = _profile.GetValue("Machine", nameof(TypeOfMachine), 1);
                 GuiLanguage = _profile.GetValue("Machine", nameof(GuiLanguage), "sv-SE");
                 Debug = _profile.GetValue("Machine", nameof(Debug), false);
@@ -140,8 +140,7 @@ namespace Configuration
             try
             {
                 // Machine
-                _profile.SetValue("Machine", nameof(MachineCode), MachineCode);
-                _profile.SetValue("Machine", nameof(MachineCode), MachineCode);
+                _profile.SetValue("Machine", nameof(MaskinID), MaskinID);
                 _profile.SetValue("Machine", nameof(TypeOfMachine), TypeOfMachine);
                 _profile.SetValue("Machine", nameof(GuiLanguage), GuiLanguage);
                 _profile.SetValue("Machine", nameof(Debug), Debug);
@@ -202,7 +201,7 @@ namespace Configuration
 
         #region Machine properties
 
-        public String MachineCode { get; set; }
+        public String MaskinID { get; set; }
         public int TypeOfMachine { get; set; }
         public bool Debug { get; set; }
         public bool ClearClipboard { get; set; }

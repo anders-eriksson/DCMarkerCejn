@@ -130,14 +130,14 @@
             VerticalAlignment="Bottom"
             Content="Maskinkod" />
         <TextBox
-            x:Name="MachineCodeTextbox"
+            x:Name="MaskinIDTextbox"
             Grid.Row="5"
             Grid.Column="1"
             Height="23"
             Margin="0,0,-27,0"
             VerticalAlignment="Bottom"
             MaxLength="50"
-            Text="{Binding MachineCode, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+            Text="{Binding MaskinID, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
 
         <Button
             x:Name="OkButton"

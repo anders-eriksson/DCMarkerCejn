@@ -645,6 +645,21 @@ namespace DCMarker
             }
         }
 
+        private string _MaskinID;
+
+        public string MaskinID
+        {
+            get
+            {
+                return _MaskinID;
+            }
+            set
+            {
+                _MaskinID = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         public string Status
         {
             get

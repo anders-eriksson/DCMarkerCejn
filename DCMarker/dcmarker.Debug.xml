@@ -3,17 +3,18 @@
 <profile xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
   <section name="Laser">
     <entry name="DeviceAddress" xdt:Transform="Replace" xdt:Locator="Match(name)">192.168.1.5</entry>
-    <entry name="ImagePath=" xdt:Transform="Replace" xdt:Locator="Match(name)">C:\DCMarkerCejn\Images</entry>
+    <entry name="ImagePath" xdt:Transform="Replace" xdt:Locator="Match(name)">C:\DCMarkerCejn\Images</entry>
     <entry name="LayoutPath" xdt:Transform="Replace" xdt:Locator="Match(name)">C:\DCMarkerCejn\Mallar 86206</entry>
   </section>
   <section name="Machine">
     <entry name="Debug"  xdt:Transform="Replace" xdt:Locator="Match(name)">True</entry>
+    <entry name="MaskinID"  xdt:Transform="Replace" xdt:Locator="Match(name)"></entry>
   </section>
   <section name="Adam">
     <entry name="AdamIpAddress" xdt:Transform="Replace" xdt:Locator="Match(name)">192.168.1.100</entry>
     <entry name="AdamErrorTimeout" xdt:Transform="Replace" xdt:Locator="Match(name)">1200000</entry>
     <entry name="IsAdamErrorTimeoutActive" xdt:Transform="Replace" xdt:Locator="Match(name)">False</entry>
-    <entry name="AdamLogTelegrams" xdt:Transform="Replace" xdt:Locator="Match(name)">False"</entry>
+    <entry name="AdamLogTelegrams" xdt:Transform="Replace" xdt:Locator="Match(name)">False</entry>
     <entry name="Debug" xdt:Transform="Replace" xdt:Locator="Match(name)">True</entry>
   </section>
   <section>

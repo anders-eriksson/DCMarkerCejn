@@ -123,6 +123,7 @@
                     Content="{x:Static p:Resources.OK}"
                     IsEnabled="{Binding HasKant}"
                     Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
+
                 <Button
                     x:Name="CancelButton"
                     Width="75"
@@ -132,7 +133,6 @@
                     Content="{x:Static p:Resources.Cancel}"
                     IsEnabled="{Binding HasKant}"
                     Visibility="{Binding Path=HasKant, Converter={StaticResource BoolToVis}}" />
-
                 <Button
                     x:Name="TestButton"
                     Width="75"
@@ -165,7 +165,7 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     IsEnabled="{Binding HasTOnr}"
-                    Text="{Binding TOnr}"
+                    Text="{Binding TOnr, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     TextWrapping="Wrap"
                     Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
             </Grid>

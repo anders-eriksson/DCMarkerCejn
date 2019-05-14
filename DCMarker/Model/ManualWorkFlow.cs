@@ -107,7 +107,18 @@ namespace DCMarker.Model
 
         public List<Article> GetArticle(string articleNumber)
         {
-            return _db.GetArticle(articleNumber);
+            List<Article> result;
+            var maskinID = DCConfig.Instance.MaskinID;
+            if (string.IsNullOrWhiteSpace(maskinID))
+            {
+                result = _db.GetArticle(articleNumber);
+            }
+            else
+            {
+                result = _db.GetArticle(articleNumber, maskinID);
+            }
+
+            return result;
         }
 
         public bool Initialize()
@@ -483,8 +494,18 @@ namespace DCMarker.Model
         public void UpdateWorkflow(Article article)
         {
             _articleNumber = article.F1;
-            _articles = _db.GetArticle(_articleNumber);
-            if (_articles != null)
+
+            var maskinID = DCConfig.Instance.MaskinID;
+            if (string.IsNullOrWhiteSpace(maskinID))
+            {
+                _articles = _db.GetArticle(_articleNumber);
+            }
+            else
+            {
+                _articles = _db.GetArticle(_articleNumber, maskinID);
+            }
+
+            if (_articles != null && _articles.Count > 0)
             {
                 FinishUpdateWorkflow(article);
             }

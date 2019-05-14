@@ -23,7 +23,7 @@ namespace DCMarkerEF
         public string Kant { get; set; }
 
         [StringLength(50)]
-        public string MachineCode { get; set; }
+        public string MaskinID { get; set; }
 
         [StringLength(100)]
         public string Avdelning { get; set; }

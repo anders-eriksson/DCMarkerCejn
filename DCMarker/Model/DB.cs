@@ -173,22 +173,24 @@ namespace DCMarker.Model
             return result;
         }
 
-        internal List<Article> GetArticle(string articleNumber, string machineCode = "")
+        internal List<Article> GetArticle(string articleNumber, string maskinID = "")
         {
             List<Article> result = null;
 
             Log.Trace(string.Format("GetArticle({0})", articleNumber));
             using (var context = new DCLasermarkContext())
             {
-                if (string.IsNullOrWhiteSpace(machineCode))
+                context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
+                if (string.IsNullOrWhiteSpace(maskinID))
                 {
                     result = context.LaserData
-                        .OrderBy(x => x.F1).ThenBy(x => x.Kant).Where(r => r.F1 == articleNumber)
+                        .OrderBy(x => x.F1).ThenBy(x => x.Kant).Where(r => r.F1 == articleNumber && (r.MaskinID == null || r.MaskinID == ""))
                       .Select(x => new Article
                       {
                           Id = x.Id,
                           F1 = x.F1,
                           Kant = x.Kant,
+                          MaskinID = x.MaskinID,
                           FixtureId = x.FixtureId,
                           EnableTO = x.EnableTO,
                           Careful = x.Careful,
@@ -198,12 +200,13 @@ namespace DCMarker.Model
                 else
                 {
                     result = context.LaserData
-                        .OrderBy(x => x.F1).ThenBy(x => x.Kant).Where(r => r.F1 == articleNumber && r.MachineCode == machineCode)
+                        .OrderBy(x => x.F1).ThenBy(x => x.Kant).Where(r => r.F1 == articleNumber && r.MaskinID == maskinID)
                       .Select(x => new Article
                       {
                           Id = x.Id,
                           F1 = x.F1,
                           Kant = x.Kant,
+                          MaskinID = x.MaskinID,
                           FixtureId = x.FixtureId,
                           EnableTO = x.EnableTO,
                           Careful = x.Careful,

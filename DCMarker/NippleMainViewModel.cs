@@ -10,6 +10,7 @@ using System.Timers;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading;
+using DCLog;
 
 namespace DCMarker
 {
@@ -208,6 +209,7 @@ namespace DCMarker
 
         private void _wf_StatusEvent(object sender, StatusArgs e)
         {
+            Log.Trace(string.Format("_wf_StatusEvent: {0}", e.Text));
             Status = e.Text;
         }
 

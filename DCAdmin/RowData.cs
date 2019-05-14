@@ -13,20 +13,20 @@ namespace DCAdmin
     {
         public RowData()
         {
-            MachineCode = Properties.Settings.Default.MachineCode;
+            MaskinID = Properties.Settings.Default.MaskinID;
             Article = string.Empty;
             Kant = string.Empty;
         }
 
-        public string MachineCode
+        public string MaskinID
         {
             get
             {
-                return _machineCode;
+                return _maskinID;
             }
             set
             {
-                _machineCode = value;
+                _maskinID = value;
                 NotifyPropertyChanged();
             }
         }
@@ -57,9 +57,9 @@ namespace DCAdmin
             }
         }
 
-        public bool Exists(string machineCode, string article, string kant)
+        public bool Exists(string maskinID, string article, string kant)
         {
-            return DB.Instance.ExistsLaserData(machineCode, article, kant);
+            return DB.Instance.ExistsLaserData(maskinID, article, kant);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -72,7 +72,7 @@ namespace DCAdmin
             }
         }
 
-        private string _machineCode;
+        private string _maskinID;
         private string _article;
         private string _kant;
     }

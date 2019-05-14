@@ -60,6 +60,7 @@ namespace DCMarker
                 {
                     F1 = ArticleNumber,
                     //Kant = Kant,
+                    MaskinID = DCConfig.Instance.MaskinID,
                     FixtureId = Fixture,
                     EnableTO = HasTOnr,
                     TOnumber = TOnr,
@@ -166,6 +167,7 @@ namespace DCMarker
             if (!string.IsNullOrWhiteSpace(ArticleNumber))
             {
                 List<Article> dbResult = _wf.GetArticle(ArticleNumber);
+
                 if (dbResult.Count > 0)
                 {
                     Fixture = dbResult[0].FixtureId;

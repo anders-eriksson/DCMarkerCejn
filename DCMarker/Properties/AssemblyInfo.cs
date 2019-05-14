@@ -8,7 +8,7 @@ using System.Windows;
 // associated with an assembly.
 [assembly: AssemblyTitle("DCMarker")]
 [assembly: AssemblyDescription("Laser Marking")]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyConfiguration("MaskinID")]
 [assembly: AssemblyCompany("DC Lasersystem AB")]
 [assembly: AssemblyProduct("DCMarker")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]

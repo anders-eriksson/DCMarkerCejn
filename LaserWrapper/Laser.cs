@@ -1,4 +1,4 @@
-#define FLEXIBLE
+// #define FLEXIBLE
 
 using Configuration;
 using Contracts;
@@ -105,10 +105,25 @@ namespace LaserWrapper
                     Log.Trace("Laser: isLaserBusy returned true, We will wait and try again");
                     Thread.Sleep(100);
                 }
-#if DEBUG
+#if DEBUGx
                 return false;
 #endif
+
+                if ("sv-SE" == DCConfig.Instance.GuiLanguage)
+                {
+                    Log.Trace("Laser: Märker...");
+                    RaiseQueryStartEvent("Märker ...");
+                }
+                else
+                {
+                    Log.Trace("Laser: Marking...");
+                    RaiseQueryStartEvent("Marking...");
+                }
+
+                Log.Trace("Laser: _doc.execute Start");
+
                 result = _doc.execute(true, true);
+                Log.Trace(string.Format("Laser: _doc.execute end. result: {0}", result));
 
                 if (!result)
                 {
@@ -350,6 +365,7 @@ namespace LaserWrapper
 
                 _laserSystem = _laser.System;
 
+                // TODO need to be able to check this in runtime!
 #if !FLEXIBLE
                 // sigQueryStart will only trigger when an External Start signal is recieved. Thus we must use sigLaserStart when debugging...
                 _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
@@ -458,7 +474,7 @@ namespace LaserWrapper
 #endif
             if ("sv-SE" == DCConfig.Instance.GuiLanguage)
             {
-                RaiseQueryStartEvent("M�rker ...");
+                RaiseQueryStartEvent("Märker ...");
             }
             else
             {

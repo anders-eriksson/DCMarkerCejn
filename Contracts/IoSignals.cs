@@ -15,6 +15,7 @@ namespace Contracts
         /// </summary>
         private IoSignals()
         {
+            // TODO Restructure this so that different machines doesn't collide....
             DCConfig cfg = DCConfig.Instance;
             MASK_ARTICLEREADY = cfg.ArticleReady;
             NameDict.Add(MASK_ARTICLEREADY, "MASK_ARTICLEREADY");
@@ -24,16 +25,18 @@ namespace Contracts
 
             MASK_MARKINGDONE = cfg.MarkingDone;
             NameDict.Add(MASK_MARKINGDONE, "MASK_MARKINGDONE");
-
-            MASK_NEXTTOLAST = cfg.NextToLast;
-            NameDict.Add(MASK_NEXTTOLAST, "MASK_NEXTTOLAST");
-
+            if (DCConfig.Instance.TypeOfMachine != 1)
+            {
+                MASK_NEXTTOLAST = cfg.NextToLast;
+                NameDict.Add(MASK_NEXTTOLAST, "MASK_NEXTTOLAST");
+            }
             MASK_LASTEDGE = cfg.LastEdge;
             NameDict.Add(MASK_LASTEDGE, "MASK_LASTEDGE ");
-
-            MASK_HANDLEWITHCARE = cfg.HandleWithCare;
-            NameDict.Add(MASK_HANDLEWITHCARE, "MASK_HANDLEWITHCARE");
-
+            if (DCConfig.Instance.TypeOfMachine != 3)
+            {
+                MASK_HANDLEWITHCARE = cfg.HandleWithCare;
+                NameDict.Add(MASK_HANDLEWITHCARE, "MASK_HANDLEWITHCARE");
+            }
             MASK_ERROR = cfg.Error;
             NameDict.Add(MASK_ERROR, "MASK_ERROR");
 

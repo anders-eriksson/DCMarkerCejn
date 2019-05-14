@@ -305,11 +305,11 @@ namespace DCAdmin.ViewModel
             }
         }
 
-        internal object AddRow(string machineCode, string article, string kant)
+        internal object AddRow(string maskinID, string article, string kant)
         {
             LaserData d = new LaserData()
             {
-                MachineCode = machineCode,
+                MaskinID = maskinID,
                 F1 = article,
                 Kant = kant
             };
@@ -334,14 +334,14 @@ namespace DCAdmin.ViewModel
             return d;
         }
 
-        internal object AddRowFromSelected(string machineCode, string article, string kant)
+        internal object AddRowFromSelected(string maskinID, string article, string kant)
         {
             Mapper.Initialize(cfg => cfg.CreateMap<LaserData, LaserData>());
             LaserData newRecord = Mapper.Map<LaserData, LaserData>(SelectedLaserDataRow);
-            newRecord.MachineCode = machineCode;
+            newRecord.MaskinID = maskinID;
             newRecord.F1 = article;
             newRecord.Kant = string.IsNullOrWhiteSpace(kant) ? null : kant;
-            newRecord.MachineCode = string.IsNullOrWhiteSpace(machineCode) ? null : machineCode;
+            newRecord.MaskinID = string.IsNullOrWhiteSpace(maskinID) ? null : maskinID;
             newRecord.Id = 0;
             DB.Instance.AddLaserData(ref newRecord);
             SelectedLaserDataRow = newRecord;

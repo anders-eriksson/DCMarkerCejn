@@ -72,4 +72,25 @@
   <data name="LogDirectoryMenuHeader" xml:space="preserve">
     <value>_Öppna logfilskatalog...</value>
   </data>
+  <data name="Out_of_memory_Please_use_a_filter_to_make_selection_smaller" xml:space="preserve">
+    <value>Minnet är fullt! Ange ett filter för att skapa ett mindre urval!</value>
+  </data>
+  <data name="You_must_enter_a_date" xml:space="preserve">
+    <value>Du måste ange ett datum!</value>
+  </data>
+  <data name="Cant_find_Serial_number" xml:space="preserve">
+    <value>Kan inte hitta serienumret!</value>
+  </data>
+  <data name="Database_Error_0" xml:space="preserve">
+    <value>Databasfel: {0}</value>
+  </data>
+  <data name="End_date_must_be_later_than_or_equal_to_start_date" xml:space="preserve">
+    <value>Avslutande datum måste vara senare, eller lika med, Startdatum</value>
+  </data>
+  <data name="Serial_number_not_found" xml:space="preserve">
+    <value>Serienumret hittas ej!</value>
+  </data>
+  <data name="You_must_select_a_column_to_filter_on" xml:space="preserve">
+    <value>Du måste ange en kolumn att filtrera på</value>
+  </data>
 </root>

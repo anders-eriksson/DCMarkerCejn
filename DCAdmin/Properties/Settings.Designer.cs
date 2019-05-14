@@ -26,12 +26,12 @@ namespace DCAdmin.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string MachineCode {
+        public string MaskinID {
             get {
-                return ((string)(this["MachineCode"]));
+                return ((string)(this["MaskinID"]));
             }
             set {
-                this["MachineCode"] = value;
+                this["MaskinID"] = value;
             }
         }
         
