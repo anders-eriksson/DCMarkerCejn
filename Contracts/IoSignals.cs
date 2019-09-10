@@ -18,27 +18,32 @@ namespace Contracts
             // TODO Restructure this so that different machines doesn't collide....
             DCConfig cfg = DCConfig.Instance;
             MASK_ARTICLEREADY = cfg.ArticleReady;
-            NameDict.Add(MASK_ARTICLEREADY, "MASK_ARTICLEREADY");
+            if (MASK_ARTICLEREADY != 0)
+                NameDict.Add(MASK_ARTICLEREADY, "MASK_ARTICLEREADY");
 
             MASK_READYTOMARK = cfg.ReadyToMark;
-            NameDict.Add(MASK_READYTOMARK, "MASK_READYTOMARK");
+            if (MASK_READYTOMARK != 0)
+                NameDict.Add(MASK_READYTOMARK, "MASK_READYTOMARK");
 
             MASK_MARKINGDONE = cfg.MarkingDone;
-            NameDict.Add(MASK_MARKINGDONE, "MASK_MARKINGDONE");
-            if (DCConfig.Instance.TypeOfMachine != 1)
-            {
-                MASK_NEXTTOLAST = cfg.NextToLast;
+            if (MASK_MARKINGDONE != 0)
+                NameDict.Add(MASK_MARKINGDONE, "MASK_MARKINGDONE");
+
+            MASK_NEXTTOLAST = cfg.NextToLast;
+            if (MASK_NEXTTOLAST != 0)
                 NameDict.Add(MASK_NEXTTOLAST, "MASK_NEXTTOLAST");
-            }
+
             MASK_LASTEDGE = cfg.LastEdge;
-            NameDict.Add(MASK_LASTEDGE, "MASK_LASTEDGE ");
-            if (DCConfig.Instance.TypeOfMachine != 3)
-            {
-                MASK_HANDLEWITHCARE = cfg.HandleWithCare;
+            if (MASK_LASTEDGE != 0)
+                NameDict.Add(MASK_LASTEDGE, "MASK_LASTEDGE ");
+
+            MASK_HANDLEWITHCARE = cfg.HandleWithCare;
+            if (MASK_HANDLEWITHCARE != 0)
                 NameDict.Add(MASK_HANDLEWITHCARE, "MASK_HANDLEWITHCARE");
-            }
+
             MASK_ERROR = cfg.Error;
-            NameDict.Add(MASK_ERROR, "MASK_ERROR");
+            if (MASK_ERROR != 0)
+                NameDict.Add(MASK_ERROR, "MASK_ERROR");
 
             MASK_ALL = 0Xffff;
         }
@@ -70,21 +75,21 @@ namespace Contracts
 
         // Out signals
 
-        public int MASK_READYTOMARK = 0x01;
-        public int MASK_MARKINGDONE = 0x02;
-        public int MASK_ARTICLEREADY = 0x10;
-        public int MASK_NEXTTOLAST = 0x40;
-        public int MASK_LASTEDGE = 0x04;
-        public int MASK_HANDLEWITHCARE = 0x20;
-        public int MASK_ERROR = 0x80;
+        public int MASK_READYTOMARK = 0x0;
+        public int MASK_MARKINGDONE = 0x0;
+        public int MASK_ARTICLEREADY = 0x0;
+        public int MASK_NEXTTOLAST = 0x0;
+        public int MASK_LASTEDGE = 0x0;
+        public int MASK_HANDLEWITHCARE = 0x0;
+        public int MASK_ERROR = 0x0;
         public int MASK_ALL = 0Xffff;
 
         // In signals
 
-        public int MASK_ITEMINPLACE=0x02;
-        public int MASK_EMERGENCY=0x10 ;
+        public int MASK_ITEMINPLACE = 0x0;
+        public int MASK_EMERGENCY = 0x0;
 
-        public int MASK_RESET=0x80;
+        public int MASK_RESET = 0x0;
 
         #endregion Laser IO
     }

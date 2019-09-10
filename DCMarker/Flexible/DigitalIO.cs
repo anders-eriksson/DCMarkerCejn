@@ -25,7 +25,6 @@ namespace DCMarker.Flexible
                 //RaiseErrorEvent("Config file is not found! dcmarker.xml in program directory");
             }
             sig = IoSignals.Instance;
-            //UpdateIoMasks();
         }
 
         public bool SetArticleReady()
@@ -91,28 +90,6 @@ namespace DCMarker.Flexible
         public bool ResetError()
         {
             return _laserWrapper.ResetPort(0, sig.MASK_ERROR);
-        }
-
-        
-
-
-        private void UpdateIoMasks()
-        {
-            // Out
-
-            sig.MASK_READYTOMARK = cfg.ReadyToMark;
-            sig.MASK_NEXTTOLAST = cfg.NextToLast;
-            sig.MASK_ARTICLEREADY = cfg.ArticleReady;
-            sig.MASK_MARKINGDONE = cfg.MarkingDone;
-            sig.MASK_LASTEDGE = cfg.LastEdge;
-            sig.MASK_HANDLEWITHCARE = cfg.HandleWithCare;
-            sig.MASK_ERROR = cfg.Error;
-            sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_LASTEDGE | sig.MASK_HANDLEWITHCARE | sig.MASK_ERROR;
-
-            // In
-            sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
-            sig.MASK_EMERGENCY = cfg.EmergencyError;
-            sig.MASK_RESET = cfg.ResetIo;
         }
     }
 }
