@@ -107,7 +107,7 @@ namespace Configuration
                 ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x0);
                 StartSignal = _profile.GetValue("Laser", nameof(MarkingDone), 0x0);
                 EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x0);
-                ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x);
+                ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x0);
 
                 // TCP Server
                 TcpPort = _profile.GetValue("TcpServer", nameof(TcpPort), 50000);
