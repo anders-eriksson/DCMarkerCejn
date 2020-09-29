@@ -18,29 +18,31 @@ namespace LaserWrapper
         {
             Log.Trace(string.Format("Bit: {0}", p_nBits));
             // Item In Place
-            if ((p_nBits & sig.MASK_ITEMINPLACE) == sig.MASK_ITEMINPLACE)
+            if (sig.MASK_ITEMINPLACE != 0)
             {
-                Log.Debug("MASK_ITEMINPLACE");
-                // bit is set
-                Log.Trace(string.Format("(currentBits & MASK_ITEMINPLACE): {0}", (currentBits & sig.MASK_ITEMINPLACE)));
-                if ((currentBits & sig.MASK_ITEMINPLACE) != sig.MASK_ITEMINPLACE)
+                if ((p_nBits & sig.MASK_ITEMINPLACE) == sig.MASK_ITEMINPLACE)
                 {
-                    Log.Trace("Set ITEMINPLACE ");
-                    currentBits |= sig.MASK_ITEMINPLACE;
-                    RaiseItemInPositionEvent();
+                    Log.Debug("MASK_ITEMINPLACE");
+                    // bit is set
+                    Log.Trace(string.Format("(currentBits & MASK_ITEMINPLACE): {0}", (currentBits & sig.MASK_ITEMINPLACE)));
+                    if ((currentBits & sig.MASK_ITEMINPLACE) != sig.MASK_ITEMINPLACE)
+                    {
+                        Log.Trace("Set ITEMINPLACE ");
+                        currentBits |= sig.MASK_ITEMINPLACE;
+                        RaiseItemInPositionEvent();
+                    }
+                    else
+                    {
+                        Log.Trace(string.Format("Already in currentBits {0}", currentBits));
+                    }
                 }
                 else
                 {
-                    Log.Trace(string.Format("Already in currentBits {0}",currentBits));
+                    Log.Trace("Reset ITEMINPLACE ");
+                    currentBits &= ~sig.MASK_ITEMINPLACE;
                 }
             }
-            else
-            {
-                Log.Trace("Reset ITEMINPLACE ");
-                currentBits &= ~sig.MASK_ITEMINPLACE;
-            }
 
-            
 #if false
             // Reset IO
             if ((p_nBits & sig.MASK_RESET) == sig.MASK_RESET)
@@ -76,7 +78,5 @@ namespace LaserWrapper
         }
 
         #endregion Item in Position Event
-
-     
     }
 }

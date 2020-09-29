@@ -97,6 +97,12 @@ namespace LaserWrapper
         {
             Log.Debug("Laser: Execute");
             bool result = false;
+            if(_doc==null)
+            {
+                Log.Trace("Laser: No document is loaded!");
+                RaiseDeviceErrorEvent("Laser: Execute started before loading of document!");
+                return false;
+            }
 
             try
             {
@@ -204,6 +210,18 @@ namespace LaserWrapper
         {
             try
             {
+                Log.Trace("Unregister event handlers");
+                _laserAxis.sigZeroReached -= _laserAxis_sigZeroReached;
+                _laserAxis.sigAxisError -= _laserAxis_sigAxisError;
+                _laserSystem.sigQueryStart -= _laserSystem_sigQueryStart;
+                _laserSystem.sigLaserStart -= _laserSystem_sigLaserStart;
+                _laserSystem.sigLaserEnd -= _laserSystem_sigLaserEnd;
+                _laserSystem.sigLaserError -= _laserSystem_sigLaserError;
+                _ioPort.sigInputChange -= _ioPort_sigInputChange;
+                _laserSystem.sigDeviceConnected -= _laserSystem_sigDeviceConnected;
+                _laserSystem.sigDeviceError -= _laserSystem_sigDeviceError;
+                _laserSystem.sigDeviceDisconnected -= _laserSystem_sigDeviceDisconnected;
+
                 Log.Trace("Laser: Releasing Laser");
                 _laser.release();
             }
@@ -438,6 +456,7 @@ namespace LaserWrapper
         }
 
 #if !FLEXIBLE
+
         /// <summary>
         /// Event for External Start Signal!
         /// </summary>
@@ -454,6 +473,7 @@ namespace LaserWrapper
                 SetPort(0, sig.MASK_NEXTTOLAST);
             }
         }
+
 #endif
 
 #if DEBUG || FLEXIBLE

@@ -15,7 +15,6 @@ namespace Contracts
         /// </summary>
         private IoSignals()
         {
-            // TODO Restructure this so that different machines doesn't collide....
             DCConfig cfg = DCConfig.Instance;
             MASK_ARTICLEREADY = cfg.ArticleReady;
             if (MASK_ARTICLEREADY != 0)

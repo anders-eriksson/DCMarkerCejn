@@ -112,15 +112,21 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Flexible\FlexibleMainViewModel.cs" />
     <Compile Include="KantConverter.cs" />
+    <Compile Include="Co208MainViewModel.cs" />
     <Compile Include="ManualMainViewModel.cs" />
     <Compile Include="FlexibleMainWindow.xaml.cs">
       <DependentUpon>FlexibleMainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Co208MainWindow.xaml.cs">
+      <DependentUpon>Co208MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ManualMainWindow.xaml.cs">
       <DependentUpon>ManualMainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Flexible\FlexibleWorkFlow.cs" />
     <Compile Include="Flexible\FlexibleArticleInput.cs" />
+    <Compile Include="Model\Co208ArticleInput.cs" />
+    <Compile Include="Model\Co208WorkFlow.cs" />
     <Compile Include="Model\NippleWorkFlow.cs" />
     <Compile Include="Model\AdamArticleInput.cs" />
     <Compile Include="Model\TcpArticleInputWithTOnr.cs" />
@@ -155,6 +161,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="FlexibleMainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Co208MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -222,10 +232,12 @@
     <None Include="dcmarker.Debug.xml">
       <DependentUpon>dcmarker.xml</DependentUpon>
       <IsTransformFile>true</IsTransformFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="dcmarker.Release.xml">
       <DependentUpon>dcmarker.xml</DependentUpon>
       <IsTransformFile>true</IsTransformFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Resource Include="MachineType.txt" />
     <Content Include="NLog.config">
@@ -297,6 +309,7 @@
     <None Include="dcmarker.xml">
       <SubType>Designer</SubType>
       <TransformOnBuild>true</TransformOnBuild>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Resource Include="LoadingDatabase.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
