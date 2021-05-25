@@ -80,7 +80,7 @@ namespace DCMarker
         {
             if (_wf != null)
             {
-                Log.Trace("ManuaMainViewModel: _wf.Execute");
+                Log.Trace("C0208MainViewModel: _wf.Execute");
                 _wf.Execute();
             }
         }
@@ -135,7 +135,13 @@ namespace DCMarker
                 _wf.StatusEvent += _wf_StatusEvent;
                 _wf.ErrorMsgEvent += _wf_ErrorMsgEvent;
                 _wf.LaserBusyEvent += _wf_LaserBusyEvent;
+                _wf.UpdateSerialNumberEvent += _wf_UpdateSerialNumberEvent;
             }
+        }
+
+        private void _wf_UpdateSerialNumberEvent(object sender, UpdateSerialNumberArgs e)
+        {
+            SerialNumber = e.Text;
         }
 
         private void _wf_LaserBusyEvent(object sender, LaserBusyEventArgs e)
@@ -387,7 +393,7 @@ namespace DCMarker
                 {
                     F1 = ArticleNumber,
                     Kant = Kant,
-                    MaskinID = DCConfig.Instance.MaskinID,
+                    MaskinID = DCConfig.Instance.MaskinId,
                     FixtureId = Fixture,
                     EnableTO = HasTOnr,
                     TOnumber = TOnr,
@@ -402,7 +408,29 @@ namespace DCMarker
                 _wf.UpdateTOnumber(TOnr);
                 _wf.FirstMarkingResetZ = false;
 
-                Status = GlblRes.Waiting_for_product;
+                ///
+#if !DEBUG
+                if (_wf.FirstMarkingResetZ)
+                {
+                    _wf.FirstMarkingResetZ = false;
+                    bool brc = ResetZAxis();
+                    if (!brc)
+                    {
+                        ErrorMessage = GlblRes.No_Connection_with_Z_axis;
+                        return;
+                    }
+
+                    // We will return in _laser_ZeroReachedEvent
+                }
+                else
+                {
+                    _wf.UpdateLayout();
+                }
+#else
+                _wf.UpdateLayout();
+#endif
+                ///
+                //Status = GlblRes.Waiting_for_product;
             }
             else
             {
@@ -681,6 +709,30 @@ namespace DCMarker
             set
             {
                 _status = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _SerialNumber;
+
+        public string SerialNumber
+        {
+            get { return _SerialNumber; }
+            set
+            {
+                _SerialNumber = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _DateCodes;
+
+        public string DateCodes
+        {
+            get { return _DateCodes; }
+            set
+            {
+                _DateCodes = value;
                 NotifyPropertyChanged();
             }
         }

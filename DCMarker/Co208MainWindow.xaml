@@ -7,8 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:p="clr-namespace:DCMarker.Properties"
     Title="DCMarker"
-    Width="566.349"
-    Height="303.402"
+    Width="670"
+    Height="310"
     Closed="Window_Closed"
     Closing="Window_Closing"
     Icon="dclasersystem.ico"
@@ -113,20 +113,20 @@
 
         <TextBlock
             x:Name="TOnrLabel"
-            Margin="301,76,0,0"
+            Margin="325,72,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.ToNumber}"
             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
         <ContentPresenter
-            Height="20"
-            Margin="350,103,10,148"
+            Height="25"
+            Margin="374,95,10,154"
             Content="{Binding ElementName=TOnrTextbox, Path=(Validation.Errors)/ErrorContent}"
             Visibility="{Binding Path=HasTOnr, Converter={StaticResource BoolToVis}}" />
         <TextBox
             x:Name="TOnrTextbox"
             Width="118"
-            Margin="392,76,0,0"
+            Margin="416,72,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             local:FocusAdvancement.AdvancesByEnterKey="True"
@@ -144,7 +144,8 @@
             Text="{x:Static p:Resources.BatchSize}" />
         <ContentPresenter
             Height="20"
-            Margin="139,143,264,108"
+            Margin="139,144,344,0"
+            VerticalAlignment="Top"
             Content="{Binding ElementName=BatchSizeTextbox, Path=(Validation.Errors)/ErrorContent}" />
         <TextBox
             x:Name="BatchSizeTextbox"
@@ -160,7 +161,7 @@
 
         <TextBlock
             x:Name="KantLabel"
-            Margin="301,124,0,0"
+            Margin="325,120,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasKant}"
@@ -170,7 +171,7 @@
         <TextBlock
             x:Name="KantTextBlock"
             Width="143"
-            Margin="350,124,0,0"
+            Margin="374,120,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             IsEnabled="{Binding HasKant}"
@@ -180,14 +181,14 @@
 
         <TextBlock
             x:Name="BatchDoneLabel"
-            Margin="301,147,0,0"
+            Margin="325,143,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{x:Static p:Resources.BatchDone}" />
         <TextBlock
             x:Name="BatchDone"
             Width="143"
-            Margin="350,147,0,0"
+            Margin="374,143,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Text="{Binding BatchesDone}" />
@@ -218,11 +219,12 @@
             VerticalAlignment="Top"
             Click="LoadButton_Click"
             Content="Load"
-            IsTabStop="False" />
+            IsTabStop="False"
+            Visibility="Hidden" />
         <Button
             x:Name="ExecuteButton"
             Width="75"
-            Margin="392,210,0,0"
+            Margin="416,206,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Click="ExecuteButton_Click"
@@ -245,10 +247,18 @@
                 Foreground="Red"
                 Text="{Binding ErrorMessage}"
                 TextWrapping="Wrap" />
-            <StatusBar Margin="0,0,0,0" VerticalAlignment="Bottom">
-                <StatusBarItem>
-                    <TextBlock Text="{Binding Status}" />
-                </StatusBarItem>
+            <StatusBar VerticalAlignment="Bottom">
+                <StackPanel Orientation="Horizontal">
+                    <StatusBarItem Width="462" HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding Status}" />
+                    </StatusBarItem>
+                    <StatusBarItem Width="100">
+                        <TextBlock Text="{Binding SerialNumber}" />
+                    </StatusBarItem>
+                    <StatusBarItem Width="100">
+                        <TextBlock Text="{Binding DateCodes}" />
+                    </StatusBarItem>
+                </StackPanel>
             </StatusBar>
         </StackPanel>
         <CheckBox

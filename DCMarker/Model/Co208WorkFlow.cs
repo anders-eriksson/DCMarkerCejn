@@ -22,9 +22,11 @@ namespace DCMarker.Model
         private DB _db;
         private bool _hasEdges;
         private Laser _laser;
-        private volatile bool ArticleHasToNumber = false;
+
+        //private volatile bool ArticleHasToNumber = false;
         private volatile string TOnumber;
-        private volatile bool IsTOnumberUpdated = false;
+
+        //private volatile bool IsTOnumberUpdated = false;
 
         public bool FirstMarkingResetZ { get; set; }
 
@@ -100,7 +102,8 @@ namespace DCMarker.Model
             if (_laser != null)
             {
                 Log.Trace("_laser.Execute");
-                _laser.Execute();
+                //_laser.Execute();
+                _laser._laserSystem_sigQueryStart();
             }
             else
             {
@@ -111,7 +114,7 @@ namespace DCMarker.Model
         public List<Article> GetArticle(string articleNumber)
         {
             List<Article> result;
-            var maskinID = DCConfig.Instance.MaskinID;
+            var maskinID = DCConfig.Instance.MaskinId;
             if (string.IsNullOrWhiteSpace(maskinID))
             {
                 result = _db.GetArticle(articleNumber);
@@ -315,6 +318,8 @@ namespace DCMarker.Model
         {
             _db = new DB();
             _db.IsConnectionOK();
+
+            // TODO: Add Date Codes. Change of database must take place first!
         }
 
         private void InitializeLaser()
@@ -447,6 +452,7 @@ namespace DCMarker.Model
                             brc = _laser.Update(historyObjectData);
                             if (brc)
                             {
+                                RaiseUpdateSerialNumberEvent(historyData.Snr);
                                 // update HistoryData table
                                 HistoryData status = new HistoryData();
 
@@ -498,7 +504,7 @@ namespace DCMarker.Model
         {
             _articleNumber = article.F1;
 
-            var maskinID = DCConfig.Instance.MaskinID;
+            var maskinID = DCConfig.Instance.MaskinId;
             if (string.IsNullOrWhiteSpace(maskinID))
             {
                 _articles = _db.GetArticle(_articleNumber);
@@ -563,7 +569,7 @@ namespace DCMarker.Model
         public void UpdateTOnumber(string tonr)
         {
             TOnumber = tonr;
-            IsTOnumberUpdated = false;
+            //IsTOnumberUpdated = false;
         }
 
         public bool ResetZAxis()
@@ -732,5 +738,23 @@ namespace DCMarker.Model
         }
 
         #endregion Laser Busy Event
+
+        #region Update ViewModel with Serial Number Event
+
+        public delegate void UpdateSerialNumberHandler(string msg);
+
+        public event EventHandler<UpdateSerialNumberArgs> UpdateSerialNumberEvent;
+
+        internal void RaiseUpdateSerialNumberEvent(string msg)
+        {
+            var handler = UpdateSerialNumberEvent;
+            if (handler != null)
+            {
+                var arg = new UpdateSerialNumberArgs(msg);
+                handler(null, arg);
+            }
+        }
+
+        #endregion Update ViewModel with Serial Number Event
     }
 }

@@ -28,7 +28,7 @@ namespace DCMarker
 
             if (!DCConfig.Instance.Debug)
             {
-                LoadButton.Visibility = Visibility.Hidden;
+                //LoadButton.Visibility = Visibility.Hidden;
                 ExecuteButton.Visibility = Visibility.Hidden;
             }
             mainViewModel = new Co208MainViewModel();
