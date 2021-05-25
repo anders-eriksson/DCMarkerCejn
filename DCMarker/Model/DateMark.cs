@@ -1,5 +1,6 @@
 using DCMarkerEF;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace DCMarker.Model
@@ -23,8 +24,10 @@ namespace DCMarker.Model
 
             using (var context = new DCLasermarkContext())
             {
+                context.Database.Log = s => Debug.WriteLine(s);
                 var weekcode = context.WeekCode.Find(weekno).Code;
                 var qcode = context.QuarterCode.Find(_issued.Year.ToString());
+                //var qcode = context.QuarterCode.Find(_issued.Year);
                 string quartercode;
                 switch (quarter)
                 {

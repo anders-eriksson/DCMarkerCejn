@@ -82,7 +82,7 @@ namespace DCMarker.Model
         public List<Article> GetArticle(string articleNumber)
         {
             List<Article> result;
-            var maskinID = DCConfig.Instance.MaskinID;
+            var maskinID = DCConfig.Instance.MaskinId;
 
             if (string.IsNullOrWhiteSpace(maskinID))
             {
@@ -134,7 +134,7 @@ namespace DCMarker.Model
             _articleNumber = e.Data.ArticleNumber;
             RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
 
-            var maskinID = DCConfig.Instance.MaskinID;
+            var maskinID = DCConfig.Instance.MaskinId;
             if (string.IsNullOrWhiteSpace(maskinID))
             {
                 _articles = _db.GetArticle(_articleNumber);
@@ -328,7 +328,7 @@ namespace DCMarker.Model
                         if (historyData != null)
                         {
                             List<LaserObjectData> historyObjectData = ConvertToLaserObjectData(historyData);
-                            historyData.MaskinID = DCConfig.Instance.MaskinID;
+                            historyData.MaskinID = DCConfig.Instance.MaskinId;
                             brc = _laser.Update(historyObjectData);
                             if (brc)
                             {
@@ -523,6 +523,12 @@ namespace DCMarker.Model
         public event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;
 
         #endregion only used in FlexibleWorkFlow // AME - 2018-11-05
+
+        #region only used by CO208
+
+        public event EventHandler<UpdateSerialNumberArgs> UpdateSerialNumberEvent;
+
+        #endregion only used by CO208
 
         #region Laser Busy Event
 

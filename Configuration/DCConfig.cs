@@ -74,10 +74,12 @@ namespace Configuration
                  *  4   Automatic with ADAM         e.g. Nippel- & flödeskoppling
                  *  5   Manual with TO number
                  *      and digital IO              e.g. Flexibel 1 & 2
+                 *  6
+                 *  7   208/210
                  */
 
                 // Machine
-                MaskinID = _profile.GetValue("Machine", nameof(MaskinID), "");
+                MaskinId = _profile.GetValue("Machine", nameof(MaskinId), "");
                 TypeOfMachine = _profile.GetValue("Machine", nameof(TypeOfMachine), 1);
                 GuiLanguage = _profile.GetValue("Machine", nameof(GuiLanguage), "sv-SE");
                 Debug = _profile.GetValue("Machine", nameof(Debug), false);
@@ -143,7 +145,7 @@ namespace Configuration
             try
             {
                 // Machine
-                _profile.SetValue("Machine", nameof(MaskinID), MaskinID);
+                _profile.SetValue("Machine", nameof(MaskinId), MaskinId);
                 _profile.SetValue("Machine", nameof(TypeOfMachine), TypeOfMachine);
                 _profile.SetValue("Machine", nameof(GuiLanguage), GuiLanguage);
                 _profile.SetValue("Machine", nameof(Debug), Debug);
@@ -204,7 +206,7 @@ namespace Configuration
 
         #region Machine properties
 
-        public String MaskinID { get; set; }
+        public string MaskinId { get; set; }
         public int TypeOfMachine { get; set; }
         public bool Debug { get; set; }
         public bool ClearClipboard { get; set; }

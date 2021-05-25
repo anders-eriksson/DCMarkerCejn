@@ -1,4 +1,5 @@
 // #define FLEXIBLE
+#define CO208
 
 using Configuration;
 using Contracts;
@@ -96,8 +97,11 @@ namespace LaserWrapper
         public bool Execute()
         {
             Log.Debug("Laser: Execute");
+
+            RaiseItemInPositionEvent();
+
             bool result = false;
-            if(_doc==null)
+            if (_doc == null)
             {
                 Log.Trace("Laser: No document is loaded!");
                 RaiseDeviceErrorEvent("Laser: Execute started before loading of document!");
@@ -135,6 +139,10 @@ namespace LaserWrapper
                 {
                     Log.Trace("Laser: Execute failed!");
                     RaiseDeviceErrorEvent("Laser: Execute failed!");
+                }
+                else if (NextToLast)
+                {
+                    SetPort(0, sig.MASK_NEXTTOLAST);
                 }
             }
             catch (NullReferenceException ex)
@@ -460,9 +468,18 @@ namespace LaserWrapper
         /// <summary>
         /// Event for External Start Signal!
         /// </summary>
+
+#if DEBUG
+
+        public void _laserSystem_sigQueryStart()
+#else
         private void _laserSystem_sigQueryStart()
+#endif
         {
             Log.Trace("Query Start");
+#if CO208
+            Execute();
+#else
             InitLanguage();
             RaiseQueryStartEvent(GlblRes.Marking);
             ResetPort(0, sig.MASK_READYTOMARK);
@@ -472,6 +489,7 @@ namespace LaserWrapper
             {
                 SetPort(0, sig.MASK_NEXTTOLAST);
             }
+#endif
         }
 
 #endif
@@ -488,10 +506,7 @@ namespace LaserWrapper
         public void _laserSystem_sigLaserStart()
         {
             Log.Trace("Start of marking");
-#if false
-                InitLanguage();
-                RaiseQueryStartEvent(GlblRes.Marking);
-#endif
+
             if ("sv-SE" == DCConfig.Instance.GuiLanguage)
             {
                 RaiseQueryStartEvent("Märker ...");
@@ -517,6 +532,12 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
+                if (mask == 0)
+                {
+                    // this IO is disabled!
+                    Log.Debug($"IO is disabled! {GetMaskName(mask)} - {mask}");
+                    return true;
+                }
                 Log.Debug(string.Format("Reset IO Mask: {0} - {1}", GetMaskName(mask), mask));
                 IoFix.Delete(mask);
                 return _ioPort.resetPort(port, mask);
@@ -533,6 +554,13 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
+                if (mask == 0)
+                {
+                    // this IO is disabled!
+                    Log.Debug($"IO is disabled! {GetMaskName(mask)} - {mask}");
+                    return true;
+                }
+
                 Log.Debug(string.Format("Set IO Mask: {0} - {1}", GetMaskName(mask), mask));
                 int currentMask = IoFix.Add(mask);
                 Log.Trace(string.Format("Mask: {0} - CurrentMask: {1}", mask, currentMask));

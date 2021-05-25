@@ -113,6 +113,10 @@
     <Compile Include="Flexible\FlexibleMainViewModel.cs" />
     <Compile Include="KantConverter.cs" />
     <Compile Include="Co208MainViewModel.cs" />
+    <Compile Include="LargeFlexible\LargeFlexibleMainViewModel.cs" />
+    <Compile Include="LargeFlexible\LargeFlexibleMainWindow.xaml.cs">
+      <DependentUpon>LargeFlexibleMainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ManualMainViewModel.cs" />
     <Compile Include="FlexibleMainWindow.xaml.cs">
       <DependentUpon>FlexibleMainWindow.xaml</DependentUpon>
@@ -127,6 +131,8 @@
     <Compile Include="Flexible\FlexibleArticleInput.cs" />
     <Compile Include="Model\Co208ArticleInput.cs" />
     <Compile Include="Model\Co208WorkFlow.cs" />
+    <Compile Include="Model\LargeFlexibleArticleInput.cs" />
+    <Compile Include="Model\LargeFlexibleWorkFlow.cs" />
     <Compile Include="Model\NippleWorkFlow.cs" />
     <Compile Include="Model\AdamArticleInput.cs" />
     <Compile Include="Model\TcpArticleInputWithTOnr.cs" />
@@ -146,6 +152,10 @@
     <Page Include="ErrorMainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LargeFlexible\LargeFlexibleMainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -206,6 +216,14 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="LargeFlexible\dclasersystem.ico" />
+    <Content Include="TypeOfMachine.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="XMLFile1.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -232,12 +250,12 @@
     <None Include="dcmarker.Debug.xml">
       <DependentUpon>dcmarker.xml</DependentUpon>
       <IsTransformFile>true</IsTransformFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dcmarker.Release.xml">
       <DependentUpon>dcmarker.xml</DependentUpon>
       <IsTransformFile>true</IsTransformFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Resource Include="MachineType.txt" />
     <Content Include="NLog.config">
@@ -309,7 +327,7 @@
     <None Include="dcmarker.xml">
       <SubType>Designer</SubType>
       <TransformOnBuild>true</TransformOnBuild>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Resource Include="LoadingDatabase.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

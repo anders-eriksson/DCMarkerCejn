@@ -134,6 +134,23 @@ namespace DCMarker.Model
             }
         }
 
+        /// <summary>
+        /// Get short / long date codes
+        /// <note type="note">The data tables used are missing in the current database! They were omitted when converting from dBase to SQL
+        /// Så this function is not used!
+        /// </note>
+        /// </summary>
+        /// <returns>string with short/long codes</returns>
+        public string GetDateCodes()
+        {
+            string result = string.Empty;
+
+            // _app.cCejnDateCodeL = _app.cAssemblyUnitCode + _app.cKvartalsKod + _app.cWeekCode
+            // _app.cCejnDateCodeS = _app.cAssemblyUnitCode + _app.cKvartalsKod
+
+            return result;
+        }
+
         public LaserData GetLaserData(string articleNumber, string kant)
         {
             LaserData result = null;

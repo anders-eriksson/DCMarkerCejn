@@ -108,7 +108,7 @@ namespace DCMarker.Model
         public List<Article> GetArticle(string articleNumber)
         {
             List<Article> result;
-            var maskinID = DCConfig.Instance.MaskinID;
+            var maskinID = DCConfig.Instance.MaskinId;
             if (string.IsNullOrWhiteSpace(maskinID))
             {
                 result = _db.GetArticle(articleNumber);
@@ -495,7 +495,7 @@ namespace DCMarker.Model
         {
             _articleNumber = article.F1;
 
-            var maskinID = DCConfig.Instance.MaskinID;
+            var maskinID = DCConfig.Instance.MaskinId;
             if (string.IsNullOrWhiteSpace(maskinID))
             {
                 _articles = _db.GetArticle(_articleNumber);
@@ -636,6 +636,12 @@ namespace DCMarker.Model
         }
 
         #endregion only used in FlexibleWorkFlow // AME - 2018-11-05
+
+        #region only used by CO208
+
+        public event EventHandler<UpdateSerialNumberArgs> UpdateSerialNumberEvent;
+
+        #endregion only used by CO208
 
         #region Error Event
 

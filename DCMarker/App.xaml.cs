@@ -39,6 +39,10 @@ namespace DCMarker
                     wnd = new FlexibleMainWindow();
                     break;
 
+                case 6:
+                    wnd = new LargeFlexibleMainWindow();
+                    break;
+
                 case 7:
                     wnd = new Co208MainWindow();
                     break;

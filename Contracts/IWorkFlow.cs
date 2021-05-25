@@ -14,6 +14,8 @@ namespace Contracts
 
         event EventHandler<UpdateMainViewModelArgs> UpdateMainViewModelEvent;
 
+        event EventHandler<UpdateSerialNumberArgs> UpdateSerialNumberEvent;
+
         event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;
 
         event EventHandler<StatusArgs> ErrorMsgEvent;

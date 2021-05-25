@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<profile>
+  <section name="Machine">
+    <entry name="TypeOfMachine">7</entry>
+    <entry name="MaskinID">1</entry>
+  </section>
+</profile>

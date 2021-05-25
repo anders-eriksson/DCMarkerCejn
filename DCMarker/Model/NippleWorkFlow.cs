@@ -912,6 +912,12 @@ namespace DCMarker.Model
 
         #endregion only used in FlexibleWorkFlow // AME - 2018-11-05
 
+        #region only used by CO208
+
+        public event EventHandler<UpdateSerialNumberArgs> UpdateSerialNumberEvent;
+
+        #endregion only used by CO208
+
         #region Laser Busy Event
 
         // only used by ManualWorkFlow // AME - 2017-05-12
