@@ -148,7 +148,19 @@ namespace DCMarker.Flexible
 
         public List<Article> GetArticle(string articleNumber)
         {
-            return _db.GetArticle(articleNumber);
+            List<Article> result;
+            var maskinID = DCConfig.Instance.MaskinId;
+
+            if (string.IsNullOrWhiteSpace(maskinID))
+            {
+                result = _db.GetArticle(articleNumber);
+            }
+            else
+            {
+                result = _db.GetArticle(articleNumber, maskinID);
+            }
+
+            return result;
         }
 
         public bool Initialize()
@@ -620,8 +632,17 @@ namespace DCMarker.Flexible
         public void UpdateWorkflow(Article article)
         {
             _articleNumber = article.F1;
-            _articles = _db.GetArticle(_articleNumber);
-            if (_articles != null)
+            var maskinID = DCConfig.Instance.MaskinId;
+            if (string.IsNullOrWhiteSpace(maskinID))
+            {
+                _articles = _db.GetArticle(_articleNumber);
+            }
+            else
+            {
+                _articles = _db.GetArticle(_articleNumber, maskinID);
+            }
+
+            if (_articles != null && _articles.Count > 0)
             {
                 if (TemplateExists(_articles[0].Template))
                 {
@@ -828,6 +849,12 @@ namespace DCMarker.Flexible
         #endregion Article has TO-number Event
 
         #endregion only used by NippleWorkFlow // AME - 2018-05-12
+
+        #region only used by CO208
+
+        public event EventHandler<UpdateSerialNumberArgs> UpdateSerialNumberEvent;
+
+        #endregion only used by CO208
 
         #region Error Event
 

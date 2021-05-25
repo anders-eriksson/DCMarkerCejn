@@ -60,6 +60,7 @@ namespace DCMarker
                 {
                     F1 = ArticleNumber,
                     //Kant = Kant,
+                    MaskinID = DCConfig.Instance.MaskinId,
                     FixtureId = Fixture,
                     EnableTO = HasTOnr,
                     TOnumber = TOnr,
