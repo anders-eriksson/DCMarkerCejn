@@ -85,7 +85,24 @@ namespace DCMarker.Model
 
         public List<Article> GetArticle(string articleNumber)
         {
+#if false
+            // TODO Add MaskinID as soon as the customer orders it!
+            List<Article> result;
+            var maskinID = DCConfig.Instance.MaskinID;
+
+            if (string.IsNullOrWhiteSpace(maskinID))
+            {
+                result = _db.GetArticle(articleNumber);
+            }
+            else
+            {
+                result = _db.GetArticle(articleNumber, maskinID);
+            }
+
+            return result;
+#else
             return _db.GetArticle(articleNumber);
+#endif
         }
 
         public bool Initialize()
@@ -172,6 +189,7 @@ namespace DCMarker.Model
 
         private void _laser_QueryStartEvent(string msg)
         {
+            Log.Trace(string.Format("_laser_QueryStartEvent: {0}", msg));
             RaiseStatusEvent(msg);
         }
 
@@ -893,6 +911,12 @@ namespace DCMarker.Model
         public event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;
 
         #endregion only used in FlexibleWorkFlow // AME - 2018-11-05
+
+        #region only used by CO208
+
+        public event EventHandler<UpdateSerialNumberArgs> UpdateSerialNumberEvent;
+
+        #endregion only used by CO208
 
         #region Laser Busy Event
 

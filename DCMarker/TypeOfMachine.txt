@@ -1,0 +1,10 @@
+﻿TypeOfMachine is used for selecting the specific machine that the program should run on.
+
+TypeOfMachine		Machine
+1					ABB Machine
+2					Automatisk (samma som ABB)
+3					Ultraflow
+4					Nippelflöde - Kopplingsflöde
+5					Flexibel 1 - Flexibel 2
+6					Stor Flexibel 1 - Stor Flexibel 2
+7					208 - 210

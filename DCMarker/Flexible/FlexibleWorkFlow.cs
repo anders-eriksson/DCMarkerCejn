@@ -39,7 +39,6 @@ namespace DCMarker.Flexible
 
         public bool FirstMarkingResetZ { get; set; }
 
-        
         public FlexibleWorkFlow()
         {
             try
@@ -65,6 +64,7 @@ namespace DCMarker.Flexible
         {
             ResetAllIoSignals();
             _laser.Release();
+            _ReadyToMarkTimer.Dispose();
         }
 
         private void CreateTimer()
@@ -131,6 +131,7 @@ namespace DCMarker.Flexible
         {
             throw new NotImplementedException();
         }
+
 #endif
 
         public void Execute()
@@ -253,7 +254,6 @@ namespace DCMarker.Flexible
                 RaiseUpdateItemStatusEvent(_items, _currentItem);
                 UpdateLayout();
                 //_currentItem = IncrementCurrentItem(_currentItem);
-              
             }
 #else
             digitalIO.ResetLastEdge();
@@ -425,7 +425,6 @@ namespace DCMarker.Flexible
             _laser.ZeroReachedEvent += _laser_ZeroReachedEvent;
         }
 
-        
         private void _laser_ZeroReachedEvent(string msg)
         {
             digitalIO.ResetLastEdge();
@@ -518,6 +517,9 @@ namespace DCMarker.Flexible
             Article article = GetItemArticle(_currentItem);
             if (article != null)
             {
+                if (article.EnableTO.HasValue && article.EnableTO.Value)
+                    article.TOnumber = TOnumber;
+
                 Log.Debug("Article found");
                 var item = _items[_currentItem];
                 if (item.NumberOfEdges > 1 && item.CurrentEdge > 1)
@@ -528,6 +530,7 @@ namespace DCMarker.Flexible
                 ArticleData data = new ArticleData();
                 data.ArticleNumber = article.F1;
                 data.IsNewArticleNumber = false;
+                data.TOnr = TOnumber;
                 data.TestItem = _testItem;
                 data.CurrentItem = _currentItem;
                 ArticleArgs e = new ArticleArgs(data);
@@ -646,7 +649,6 @@ namespace DCMarker.Flexible
             {
                 if (TemplateExists(_articles[0].Template))
                 {
-
                     FinishUpdateWorkflow(_articles[0]);
                 }
                 else

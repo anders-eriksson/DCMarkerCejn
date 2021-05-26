@@ -113,8 +113,6 @@ namespace DCAdmin
         {
             Mapper.Initialize(cfg => cfg.CreateMap<QuarterCode, QuarterCode>());
             QuarterCode newRecord = Mapper.Map<QuarterCode, QuarterCode>(SelectedQuarterCodeRow);
-            // TODO: MachineId
-            //newRecord.MachineId = machineId,
             newRecord.QYear = string.Empty;
             DB.Instance.AddNewQuartalCodeRecord(ref newRecord);
             SelectedQuarterCodeRow = newRecord;

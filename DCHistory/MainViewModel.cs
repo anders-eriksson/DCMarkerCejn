@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using GlblRes = global::DCHistory.Properties.Resources;
 
 namespace DCHistory
 {
@@ -250,12 +251,12 @@ namespace DCHistory
             }
             catch (OutOfMemoryException)
             {
-                ErrorMessage = "Out of memory! Please use a filter to make selection smaller!";
+                ErrorMessage = GlblRes.Out_of_memory_Please_use_a_filter_to_make_selection_smaller;
             }
             catch (SqlException ex)
             {
                 Log.Fatal(ex, ex.Message);
-                ErrorMessage = string.Format("Database Error: {0}", ex.Message);
+                ErrorMessage = string.Format(GlblRes.Database_Error_0, ex.Message);
             }
             catch (Exception ex)
             {
@@ -285,7 +286,7 @@ namespace DCHistory
             var entity = FindSerialNumber(searchText);
             if (entity == null)
             {
-                ErrorMessage = "Serial number not found";
+                ErrorMessage = GlblRes.Serial_number_not_found;
             }
             else
             {

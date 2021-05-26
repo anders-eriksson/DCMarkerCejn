@@ -8,10 +8,10 @@ using System.Windows;
 // associated with an assembly.
 [assembly: AssemblyTitle("DCAdmin")]
 [assembly: AssemblyDescription("Administration of database")]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyConfiguration("MaskinID")]
 [assembly: AssemblyCompany("DC Lasersystem AB")]
 [assembly: AssemblyProduct("DCAdmin")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -76,6 +76,7 @@
     <Compile Include="StatusArgs.cs" />
     <Compile Include="UpdateItemStatusArgs.cs" />
     <Compile Include="UpdateMainViewModelArgs.cs" />
+    <Compile Include="UpdateSerialNumberArgs.cs" />
     <Compile Include="UpdateViewModelData.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -86,6 +86,34 @@
           <source>_Open log files directory...</source>
           <target state="translated">_Öppna logfilskatalog...</target>
         </trans-unit>
+        <trans-unit id="Out_of_memory_Please_use_a_filter_to_make_selection_smaller" translate="yes" xml:space="preserve">
+          <source>Out of memory! Please use a filter to make selections smaller!</source>
+          <target state="translated">Minnet är fullt! Ange ett filter för att skapa ett mindre urval!</target>
+        </trans-unit>
+        <trans-unit id="You_must_enter_a_date" translate="yes" xml:space="preserve">
+          <source>You must enter a date!</source>
+          <target state="translated">Du måste ange ett datum!</target>
+        </trans-unit>
+        <trans-unit id="Cant_find_Serial_number" translate="yes" xml:space="preserve">
+          <source>Can't find Serial number</source>
+          <target state="translated">Kan inte hitta serienumret!</target>
+        </trans-unit>
+        <trans-unit id="Database_Error_0" translate="yes" xml:space="preserve">
+          <source>Database Error: {0}</source>
+          <target state="translated">Databasfel: {0}</target>
+        </trans-unit>
+        <trans-unit id="End_date_must_be_later_than_or_equal_to_start_date" translate="yes" xml:space="preserve">
+          <source>End date must be later than, or equal to, Start date</source>
+          <target state="translated">Avslutande datum måste vara senare, eller lika med, Startdatum</target>
+        </trans-unit>
+        <trans-unit id="Serial_number_not_found" translate="yes" xml:space="preserve">
+          <source>Serial number not found</source>
+          <target state="translated">Serienumret hittas ej!</target>
+        </trans-unit>
+        <trans-unit id="You_must_select_a_column_to_filter_on" translate="yes" xml:space="preserve">
+          <source>You must select a column to filter on</source>
+          <target state="translated">Du måste ange en kolumn att filtrera på</target>
+        </trans-unit>
       </group>
     </body>
   </file>

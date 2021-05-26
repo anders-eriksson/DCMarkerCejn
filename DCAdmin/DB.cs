@@ -69,10 +69,10 @@ namespace DCAdmin
             }
         }
 
-        public bool ExistsLaserData(string machineId, string article, string kant)
+        public bool ExistsLaserData(string maskinID, string article, string kant)
         {
             bool result = false;
-            var found = _context.LaserData.FirstOrDefault(p => p.F1 == article && p.Kant == kant);
+            var found = _context.LaserData.FirstOrDefault(p => p.F1 == article && p.Kant == kant && p.MaskinID == maskinID);
             if (found != null)
             {
                 result = true;

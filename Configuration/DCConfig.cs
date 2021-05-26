@@ -74,9 +74,12 @@ namespace Configuration
                  *  4   Automatic with ADAM         e.g. Nippel- & flödeskoppling
                  *  5   Manual with TO number
                  *      and digital IO              e.g. Flexibel 1 & 2
+                 *  6   Stor flexible
+                 *  7   208/210
                  */
 
                 // Machine
+                MaskinId = _profile.GetValue("Machine", nameof(MaskinId), "");
                 TypeOfMachine = _profile.GetValue("Machine", nameof(TypeOfMachine), 1);
                 GuiLanguage = _profile.GetValue("Machine", nameof(GuiLanguage), "sv-SE");
                 Debug = _profile.GetValue("Machine", nameof(Debug), false);
@@ -91,19 +94,24 @@ namespace Configuration
                 TryAgainTimeout = _profile.GetValue("Laser", nameof(TryAgainTimeout), 200);
                 IsIoEnabled = _profile.GetValue("Laser", nameof(IsIoEnabled), true);
 
-                // Laser IO
-                ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x01);                    // OUTPUT 0
+                // Change all default values to 0! This means that we MUST specify the IO that is used for each installation!!!
+                // Laser IO Output
+                ReadyToMark = _profile.GetValue("Laser", nameof(ReadyToMark), 0x0);
                 ReadyToMarkDelay = _profile.GetValue("Laser", nameof(ReadyToMarkDelay), 200);
-                MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x02);                    // OUTPUT 1
-                ArticleReady = _profile.GetValue("Laser", nameof(ArticleReady), 0x10);                  // OUTPUT 4
-                NextToLast = _profile.GetValue("Laser", nameof(NextToLast), 0x40);                      // OUTPUT 6
-                LastEdge = _profile.GetValue("Laser", nameof(LastEdge), 0x04);
-                HandleWithCare = _profile.GetValue("Laser", nameof(HandleWithCare), 0x20);
-                Error = _profile.GetValue("Laser", nameof(Error), 0x80);                                // OUTPUT 7
-                ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x02);                    // INPUT 1
-                StartSignal = _profile.GetValue("Laser", nameof(MarkingDone),0x08);                     // INPUT 3
-                EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x10);              // INPUT 4
-                ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x8);                             // INPUT 3
+                MarkingDone = _profile.GetValue("Laser", nameof(MarkingDone), 0x0);
+                ArticleReady = _profile.GetValue("Laser", nameof(ArticleReady), 0x0);
+                NextToLast = _profile.GetValue("Laser", nameof(NextToLast), 0x0);
+                LastEdge = _profile.GetValue("Laser", nameof(LastEdge), 0x0);
+                HandleWithCare = _profile.GetValue("Laser", nameof(HandleWithCare), 0x0);
+                Error = _profile.GetValue("Laser", nameof(Error), 0x0);
+                ExternTest = _profile.GetValue("Laser", nameof(ExternTest), 0x0);
+
+                // Laser IO Input
+                ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x0);
+                StartSignal = _profile.GetValue("Laser", nameof(MarkingDone), 0x0);
+                EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x0);
+                ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x0);
+                ExternTestResult = _profile.GetValue("Laser", nameof(ExternTestResult), 0x0);
 
                 // TCP Server
                 TcpPort = _profile.GetValue("TcpServer", nameof(TcpPort), 50000);
@@ -134,11 +142,14 @@ namespace Configuration
             }
         }
 
+#if false
+
         public void WriteConfig()
         {
             try
             {
                 // Machine
+                _profile.SetValue("Machine", nameof(MaskinId), MaskinId);
                 _profile.SetValue("Machine", nameof(TypeOfMachine), TypeOfMachine);
                 _profile.SetValue("Machine", nameof(GuiLanguage), GuiLanguage);
                 _profile.SetValue("Machine", nameof(Debug), Debug);
@@ -196,9 +207,11 @@ namespace Configuration
                 throw;
             }
         }
+#endif
 
         #region Machine properties
 
+        public string MaskinId { get; set; }
         public int TypeOfMachine { get; set; }
         public bool Debug { get; set; }
         public bool ClearClipboard { get; set; }
@@ -225,9 +238,14 @@ namespace Configuration
         public int LastEdge { get; set; }
         public int HandleWithCare { get; set; }
         public int Error { get; set; }
+
+        // IO Input
         public int ItemInPlace { get; set; }
+
         public int EmergencyError { get; set; }
         public int ResetIo { get; set; }
+        public int ExternTest { get; set; }
+        public int ExternTestResult { get; set; }
 
         #endregion Laser properties
 

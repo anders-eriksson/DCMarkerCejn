@@ -16,28 +16,62 @@ namespace Contracts
         private IoSignals()
         {
             DCConfig cfg = DCConfig.Instance;
+            MASK_ALL = 0;
+
             MASK_ARTICLEREADY = cfg.ArticleReady;
-            NameDict.Add(MASK_ARTICLEREADY, "MASK_ARTICLEREADY");
+            if (MASK_ARTICLEREADY != 0)
+            {
+                MASK_ALL |= MASK_ARTICLEREADY;
+                NameDict.Add(MASK_ARTICLEREADY, "MASK_ARTICLEREADY");
+            }
 
             MASK_READYTOMARK = cfg.ReadyToMark;
-            NameDict.Add(MASK_READYTOMARK, "MASK_READYTOMARK");
+            if (MASK_READYTOMARK != 0)
+            {
+                MASK_ALL |= MASK_READYTOMARK;
+                NameDict.Add(MASK_READYTOMARK, "MASK_READYTOMARK");
+            }
 
             MASK_MARKINGDONE = cfg.MarkingDone;
-            NameDict.Add(MASK_MARKINGDONE, "MASK_MARKINGDONE");
+            if (MASK_MARKINGDONE != 0)
+            {
+                MASK_ALL |= MASK_MARKINGDONE;
+                NameDict.Add(MASK_MARKINGDONE, "MASK_MARKINGDONE");
+            }
 
             MASK_NEXTTOLAST = cfg.NextToLast;
-            NameDict.Add(MASK_NEXTTOLAST, "MASK_NEXTTOLAST");
+            if (MASK_NEXTTOLAST != 0)
+            {
+                MASK_ALL |= MASK_NEXTTOLAST;
+                NameDict.Add(MASK_NEXTTOLAST, "MASK_NEXTTOLAST");
+            }
 
             MASK_LASTEDGE = cfg.LastEdge;
-            NameDict.Add(MASK_LASTEDGE, "MASK_LASTEDGE ");
+            if (MASK_LASTEDGE != 0)
+            {
+                MASK_ALL |= MASK_LASTEDGE;
+                NameDict.Add(MASK_LASTEDGE, "MASK_LASTEDGE ");
+            }
 
             MASK_HANDLEWITHCARE = cfg.HandleWithCare;
-            NameDict.Add(MASK_HANDLEWITHCARE, "MASK_HANDLEWITHCARE");
+            if (MASK_HANDLEWITHCARE != 0)
+            {
+                MASK_ALL |= MASK_HANDLEWITHCARE;
+                NameDict.Add(MASK_HANDLEWITHCARE, "MASK_HANDLEWITHCARE");
+            }
+            MASK_EXTERNTEST = cfg.ExternTest;
+            if (MASK_EXTERNTEST != 0)
+            {
+                MASK_ALL |= MASK_EXTERNTEST;
+                NameDict.Add(MASK_EXTERNTEST, "MASK_EXTERNTEST");
+            }
 
             MASK_ERROR = cfg.Error;
-            NameDict.Add(MASK_ERROR, "MASK_ERROR");
-
-            MASK_ALL = 0Xffff;
+            if (MASK_ERROR != 0)
+            {
+                MASK_ALL |= MASK_ERROR;
+                NameDict.Add(MASK_ERROR, "MASK_ERROR");
+            }
         }
 
         /// <summary>
@@ -67,21 +101,23 @@ namespace Contracts
 
         // Out signals
 
-        public int MASK_READYTOMARK = 0x01;
-        public int MASK_MARKINGDONE = 0x02;
-        public int MASK_ARTICLEREADY = 0x10;
-        public int MASK_NEXTTOLAST = 0x40;
-        public int MASK_LASTEDGE = 0x04;
-        public int MASK_HANDLEWITHCARE = 0x20;
-        public int MASK_ERROR = 0x80;
+        public int MASK_READYTOMARK = 0x0;
+        public int MASK_MARKINGDONE = 0x0;
+        public int MASK_ARTICLEREADY = 0x0;
+        public int MASK_NEXTTOLAST = 0x0;
+        public int MASK_LASTEDGE = 0x0;
+        public int MASK_HANDLEWITHCARE = 0x0;
+        public int MASK_ERROR = 0x0;
+        public int MASK_EXTERNTEST = 0x0;
         public int MASK_ALL = 0Xffff;
 
         // In signals
 
-        public int MASK_ITEMINPLACE=0x02;
-        public int MASK_EMERGENCY=0x10 ;
+        public int MASK_ITEMINPLACE = 0x0;
+        public int MASK_EXTERNTESTRESULT = 0x0;
+        public int MASK_EMERGENCY = 0x0;
 
-        public int MASK_RESET=0x80;
+        public int MASK_RESET = 0x0;
 
         #endregion Laser IO
     }

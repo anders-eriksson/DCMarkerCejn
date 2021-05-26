@@ -5,11 +5,11 @@
     xmlns:common="clr-namespace:ValidationToolkit;assembly=ValidationToolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:DCAdmin"
-    xmlns:p="clr-namespace:DCAdmin.Properties"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:p="clr-namespace:DCAdmin.Properties"
     Title="Add"
     Width="300"
-    Height="253.651"
+    Height="319.55"
     Closing="Window_Closing"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
@@ -30,6 +30,9 @@
             <RowDefinition Height="33" />
             <RowDefinition Height="33" />
             <!--  kant  -->
+            <RowDefinition Height="33" />
+            <RowDefinition Height="33" />
+            <!--  machine id  -->
             <RowDefinition Height="33" />
             <RowDefinition Height="33" />
             <!--  buttons  -->
@@ -117,9 +120,28 @@
             Grid.Column="1"
             Margin="0,0,-57,0"
             Content="{Binding ElementName=KantTextbox, Path=(Validation.Errors).CurrentItem}" />
+        <Label
+            x:Name="label3"
+            Grid.Row="5"
+            Grid.Column="0"
+            Width="91"
+            Height="23"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Content="Maskinkod" />
+        <TextBox
+            x:Name="MaskinIDTextbox"
+            Grid.Row="5"
+            Grid.Column="1"
+            Height="23"
+            Margin="0,0,-27,0"
+            VerticalAlignment="Bottom"
+            MaxLength="50"
+            Text="{Binding MaskinID, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+
         <Button
             x:Name="OkButton"
-            Grid.Row="5"
+            Grid.Row="7"
             Grid.ColumnSpan="2"
             Width="75"
             Height="23"
@@ -131,7 +153,7 @@
             IsDefault="True" />
         <Button
             x:Name="CancelButton"
-            Grid.Row="5"
+            Grid.Row="7"
             Grid.Column="1"
             Width="75"
             Height="23"
@@ -141,7 +163,7 @@
             Content="Cancel"
             IsCancel="True" />
         <TextBlock
-            Grid.Row="6"
+            Grid.Row="8"
             Grid.Column="1"
             Foreground="red"
             Text="{Binding ErrorMessage}" />

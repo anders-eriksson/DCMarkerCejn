@@ -19,7 +19,7 @@ namespace DCHistory.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -79,11 +79,29 @@ namespace DCHistory.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t find Serial number.
+        /// </summary>
+        public static string Cant_find_Serial_number {
+            get {
+                return ResourceManager.GetString("Cant_find_Serial_number", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clear.
         /// </summary>
         public static string ClearFilterButtonHeader {
             get {
                 return ResourceManager.GetString("ClearFilterButtonHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database Error: {0}.
+        /// </summary>
+        public static string Database_Error_0 {
+            get {
+                return ResourceManager.GetString("Database_Error_0", resourceCulture);
             }
         }
         
@@ -102,6 +120,15 @@ namespace DCHistory.Properties {
         public static string DeleteToolTip {
             get {
                 return ResourceManager.GetString("DeleteToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End date must be later than, or equal to, Start date.
+        /// </summary>
+        public static string End_date_must_be_later_than_or_equal_to_start_date {
+            get {
+                return ResourceManager.GetString("End_date_must_be_later_than_or_equal_to_start_date", resourceCulture);
             }
         }
         
@@ -196,6 +223,15 @@ namespace DCHistory.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Out of memory! Please use a filter to make selections smaller!.
+        /// </summary>
+        public static string Out_of_memory_Please_use_a_filter_to_make_selection_smaller {
+            get {
+                return ResourceManager.GetString("Out_of_memory_Please_use_a_filter_to_make_selection_smaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Refresh.
         /// </summary>
         public static string RefreshMenuHeader {
@@ -232,11 +268,38 @@ namespace DCHistory.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Serial number not found.
+        /// </summary>
+        public static string Serial_number_not_found {
+            get {
+                return ResourceManager.GetString("Serial_number_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Window.
         /// </summary>
         public static string WindowMenuHeader {
             get {
                 return ResourceManager.GetString("WindowMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must enter a date!.
+        /// </summary>
+        public static string You_must_enter_a_date {
+            get {
+                return ResourceManager.GetString("You_must_enter_a_date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must select a column to filter on.
+        /// </summary>
+        public static string You_must_select_a_column_to_filter_on {
+            get {
+                return ResourceManager.GetString("You_must_select_a_column_to_filter_on", resourceCulture);
             }
         }
     }

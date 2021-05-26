@@ -253,6 +253,26 @@
           <source>Production must be {0} characters</source>
           <target state="translated">Production måste vara {0} tecken</target>
         </trans-unit>
+        <trans-unit id="TableSide" translate="yes" xml:space="preserve">
+          <source>Side</source>
+          <target state="translated">Sida</target>
+        </trans-unit>
+        <trans-unit id="CarefulHeader" translate="yes" xml:space="preserve">
+          <source>Careful Handling!</source>
+          <target state="translated">Varsam hantering</target>
+        </trans-unit>
+        <trans-unit id="TableSideA" translate="no" xml:space="preserve">
+          <source>Position A</source>
+          <target state="final">Position A</target>
+        </trans-unit>
+        <trans-unit id="TableSideB" translate="no" xml:space="preserve">
+          <source>Position B</source>
+          <target state="final">Position B</target>
+        </trans-unit>
+        <trans-unit id="ItemsDone" translate="yes" xml:space="preserve">
+          <source>Items marked</source>
+          <target state="translated">Produkter markerade</target>
+        </trans-unit>
       </group>
     </body>
   </file>

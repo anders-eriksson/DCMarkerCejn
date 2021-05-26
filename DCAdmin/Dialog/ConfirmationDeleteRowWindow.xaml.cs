@@ -19,7 +19,7 @@ namespace DCAdmin
     /// </summary>
     public partial class ConfirmationDeleteRowWindow : Window
     {
-        private string _machineId;
+        private string _maskinID;
         private string _article;
         private string _kant;
 
@@ -28,14 +28,13 @@ namespace DCAdmin
             InitializeComponent();
         }
 
-        public void InitValues(string machineId, string article, string kant)
+        public void InitValues(string maskinID, string article, string kant)
         {
-            _machineId = machineId;
+            _maskinID = maskinID;
             _article = article;
             _kant = kant;
 
-            // TODO: MachineId
-            //MachineIdTextblock.Text = machineId;
+            MaskinIDTextblock.Text = maskinID;
             ArticleTextblock.Text = article;
             KantTextblock.Text = kant;
         }

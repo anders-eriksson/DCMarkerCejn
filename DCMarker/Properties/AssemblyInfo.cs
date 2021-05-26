@@ -8,7 +8,7 @@ using System.Windows;
 // associated with an assembly.
 [assembly: AssemblyTitle("DCMarker")]
 [assembly: AssemblyDescription("Laser Marking")]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyConfiguration("MaskinID")]
 [assembly: AssemblyCompany("DC Lasersystem AB")]
 [assembly: AssemblyProduct("DCMarker")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
@@ -47,5 +47,6 @@ using System.Windows;
 //
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.5.*")]
+// minor version is set to the highest TypeOfMachine that the program supports!
+[assembly: AssemblyVersion("1.7.*")]
 [assembly: NeutralResourcesLanguage("en-US")]

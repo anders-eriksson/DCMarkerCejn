@@ -75,6 +75,7 @@ namespace DCMarker
         }
 
 #if DEBUG
+
         internal void Execute()
         {
             if (_wf != null)
@@ -83,6 +84,7 @@ namespace DCMarker
                 _wf.Execute();
             }
         }
+
 #endif
 
         private void InitializeMachine()
@@ -384,6 +386,7 @@ namespace DCMarker
                 {
                     F1 = ArticleNumber,
                     Kant = Kant,
+                    MaskinID = DCConfig.Instance.MaskinId,
                     FixtureId = Fixture,
                     EnableTO = HasTOnr,
                     TOnumber = TOnr,
@@ -648,6 +651,21 @@ namespace DCMarker
             set
             {
                 _kant = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _MaskinID;
+
+        public string MaskinID
+        {
+            get
+            {
+                return _MaskinID;
+            }
+            set
+            {
+                _MaskinID = value;
                 NotifyPropertyChanged();
             }
         }

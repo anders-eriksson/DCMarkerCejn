@@ -178,7 +178,7 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Handle with care!.
+        ///   Looks up a localized string similar to Careful Handling!.
         /// </summary>
         public static string CarefulHeader {
             get {
@@ -219,6 +219,15 @@ namespace DCMarker.Properties {
         public static string Error_Creating_MainWindow_Aborting {
             get {
                 return ResourceManager.GetString("Error_Creating_MainWindow_Aborting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error during Marking.
+        /// </summary>
+        public static string Error_during_Marking {
+            get {
+                return ResourceManager.GetString("Error_during_Marking", resourceCulture);
             }
         }
         
@@ -547,7 +556,16 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TO number.
+        ///   Looks up a localized string similar to TO number must be 7 number long.
+        /// </summary>
+        public static string TO_number_must_be_7_number_long {
+            get {
+                return ResourceManager.GetString("TO_number_must_be_7_number_long", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TO Number.
         /// </summary>
         public static string ToNumber {
             get {

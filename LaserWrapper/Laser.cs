@@ -1,4 +1,5 @@
-#define FLEXIBLE
+// #define FLEXIBLE
+#define CO208
 
 using Configuration;
 using Contracts;
@@ -25,7 +26,7 @@ namespace LaserWrapper
         private Axis _laserAxis;
         private DCConfig cfg;
         private IoSignals sig;
-        private int currentBits=0;
+        private int currentBits = 0;
         private string _layoutName;
 
         #region Configurable variables
@@ -96,7 +97,16 @@ namespace LaserWrapper
         public bool Execute()
         {
             Log.Debug("Laser: Execute");
+
+            RaiseItemInPositionEvent();
+
             bool result = false;
+            if (_doc == null)
+            {
+                Log.Trace("Laser: No document is loaded!");
+                RaiseDeviceErrorEvent("Laser: Execute started before loading of document!");
+                return false;
+            }
 
             try
             {
@@ -105,15 +115,34 @@ namespace LaserWrapper
                     Log.Trace("Laser: isLaserBusy returned true, We will wait and try again");
                     Thread.Sleep(100);
                 }
-#if DEBUG
+#if DEBUGx
                 return false;
 #endif
+
+                if ("sv-SE" == DCConfig.Instance.GuiLanguage)
+                {
+                    Log.Trace("Laser: Märker...");
+                    RaiseQueryStartEvent("Märker ...");
+                }
+                else
+                {
+                    Log.Trace("Laser: Marking...");
+                    RaiseQueryStartEvent("Marking...");
+                }
+
+                Log.Trace("Laser: _doc.execute Start");
+
                 result = _doc.execute(true, true);
+                Log.Trace(string.Format("Laser: _doc.execute end. result: {0}", result));
 
                 if (!result)
                 {
                     Log.Trace("Laser: Execute failed!");
                     RaiseDeviceErrorEvent("Laser: Execute failed!");
+                }
+                else if (NextToLast)
+                {
+                    SetPort(0, sig.MASK_NEXTTOLAST);
                 }
             }
             catch (NullReferenceException ex)
@@ -189,6 +218,18 @@ namespace LaserWrapper
         {
             try
             {
+                Log.Trace("Unregister event handlers");
+                _laserAxis.sigZeroReached -= _laserAxis_sigZeroReached;
+                _laserAxis.sigAxisError -= _laserAxis_sigAxisError;
+                _laserSystem.sigQueryStart -= _laserSystem_sigQueryStart;
+                _laserSystem.sigLaserStart -= _laserSystem_sigLaserStart;
+                _laserSystem.sigLaserEnd -= _laserSystem_sigLaserEnd;
+                _laserSystem.sigLaserError -= _laserSystem_sigLaserError;
+                _ioPort.sigInputChange -= _ioPort_sigInputChange;
+                _laserSystem.sigDeviceConnected -= _laserSystem_sigDeviceConnected;
+                _laserSystem.sigDeviceError -= _laserSystem_sigDeviceError;
+                _laserSystem.sigDeviceDisconnected -= _laserSystem_sigDeviceDisconnected;
+
                 Log.Trace("Laser: Releasing Laser");
                 _laser.release();
             }
@@ -350,6 +391,7 @@ namespace LaserWrapper
 
                 _laserSystem = _laser.System;
 
+                // TODO need to be able to check this in runtime!
 #if !FLEXIBLE
                 // sigQueryStart will only trigger when an External Start signal is recieved. Thus we must use sigLaserStart when debugging...
                 _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
@@ -422,12 +464,22 @@ namespace LaserWrapper
         }
 
 #if !FLEXIBLE
+
         /// <summary>
         /// Event for External Start Signal!
         /// </summary>
+
+#if DEBUG
+
+        public void _laserSystem_sigQueryStart()
+#else
         private void _laserSystem_sigQueryStart()
+#endif
         {
             Log.Trace("Query Start");
+#if CO208
+            Execute();
+#else
             InitLanguage();
             RaiseQueryStartEvent(GlblRes.Marking);
             ResetPort(0, sig.MASK_READYTOMARK);
@@ -437,7 +489,9 @@ namespace LaserWrapper
             {
                 SetPort(0, sig.MASK_NEXTTOLAST);
             }
+#endif
         }
+
 #endif
 
 #if DEBUG || FLEXIBLE
@@ -446,24 +500,20 @@ namespace LaserWrapper
         /// Event for Start marking
         /// NB! This is called everytime _doc.execute() is executed!
         /// Which is why it can't exist in the Release version!!!
-        /// NB! Flexible doesn't use External Start, it uses a IO to signal start so we use this function 
+        /// NB! Flexible doesn't use External Start, it uses a IO to signal start so we use this function
         ///     to start the marking even in Release mode. We then need to call _doc.execute
         /// </summary>
         public void _laserSystem_sigLaserStart()
         {
             Log.Trace("Start of marking");
-#if false
-                InitLanguage();
-                RaiseQueryStartEvent(GlblRes.Marking);
-#endif
+
             if ("sv-SE" == DCConfig.Instance.GuiLanguage)
             {
-                RaiseQueryStartEvent("M�rker ...");
+                RaiseQueryStartEvent("Märker ...");
             }
             else
             {
                 RaiseQueryStartEvent("Marking...");
-
             }
             ResetPort(0, sig.MASK_READYTOMARK);
             RaiseLaserBusyEvent(true);
@@ -471,7 +521,7 @@ namespace LaserWrapper
 
 #endif
 
-#region Digital IO
+        #region Digital IO
 
         public int GetPort(int port)
         {
@@ -482,6 +532,12 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
+                if (mask == 0)
+                {
+                    // this IO is disabled!
+                    Log.Debug($"IO is disabled! {GetMaskName(mask)} - {mask}");
+                    return true;
+                }
                 Log.Debug(string.Format("Reset IO Mask: {0} - {1}", GetMaskName(mask), mask));
                 IoFix.Delete(mask);
                 return _ioPort.resetPort(port, mask);
@@ -498,6 +554,13 @@ namespace LaserWrapper
         {
             if (_ioPort != null)
             {
+                if (mask == 0)
+                {
+                    // this IO is disabled!
+                    Log.Debug($"IO is disabled! {GetMaskName(mask)} - {mask}");
+                    return true;
+                }
+
                 Log.Debug(string.Format("Set IO Mask: {0} - {1}", GetMaskName(mask), mask));
                 int currentMask = IoFix.Add(mask);
                 Log.Trace(string.Format("Mask: {0} - CurrentMask: {1}", mask, currentMask));
@@ -537,41 +600,41 @@ namespace LaserWrapper
             return false;
         }
 
-        private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
-        {
-            Log.Trace(string.Format("Port: {0} - Bit: {1}", p_nPort, p_nBits));
-            // Item In Place
-            if ((p_nBits & sig.MASK_ITEMINPLACE) == sig.MASK_ITEMINPLACE)
-            {
-                Log.Debug("MASK_ITEMINPLACE");
-                // bit is set
-                if ((currentBits & sig.MASK_ITEMINPLACE) != sig.MASK_ITEMINPLACE)
-                {
-                    currentBits |= sig.MASK_ITEMINPLACE;
-                    RaiseItemInPositionEvent();
-                }
-            }
-            else
-            {
-                currentBits &= ~sig.MASK_ITEMINPLACE;
-            }
+        //private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
+        //{
+        //    Log.Trace(string.Format("Port: {0} - Bit: {1}", p_nPort, p_nBits));
+        //    // Item In Place
+        //    if ((p_nBits & sig.MASK_ITEMINPLACE) == sig.MASK_ITEMINPLACE)
+        //    {
+        //        Log.Debug("MASK_ITEMINPLACE");
+        //        // bit is set
+        //        if ((currentBits & sig.MASK_ITEMINPLACE) != sig.MASK_ITEMINPLACE)
+        //        {
+        //            currentBits |= sig.MASK_ITEMINPLACE;
+        //            RaiseItemInPositionEvent();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        currentBits &= ~sig.MASK_ITEMINPLACE;
+        //    }
 
-            // Reset IO
-            if ((p_nBits & sig.MASK_RESET) == sig.MASK_RESET)
-            {
-                Log.Debug("MASK_RESET");
-                // bit is set
-                if ((currentBits & sig.MASK_RESET) != sig.MASK_RESET)
-                {
-                    currentBits |= sig.MASK_RESET;
-                    RaiseResetIoEvent();
-                }
-            }
-            else
-            {
-                currentBits &= ~sig.MASK_RESET;
-            }
-        }
+        //    // Reset IO
+        //    if ((p_nBits & sig.MASK_RESET) == sig.MASK_RESET)
+        //    {
+        //        Log.Debug("MASK_RESET");
+        //        // bit is set
+        //        if ((currentBits & sig.MASK_RESET) != sig.MASK_RESET)
+        //        {
+        //            currentBits |= sig.MASK_RESET;
+        //            RaiseResetIoEvent();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        currentBits &= ~sig.MASK_RESET;
+        //    }
+        //}
 
         #endregion Digital IO
 
@@ -590,9 +653,9 @@ namespace LaserWrapper
             }
         }
 
-#endregion LaserEnd Event
+        #endregion LaserEnd Event
 
-#region LaserError Event
+        #region LaserError Event
 
         public delegate void LaserErrorHandler(string msg);
 
@@ -617,9 +680,9 @@ namespace LaserWrapper
             public string Text { get; private set; } // readonly
         }
 
-#endregion LaserError Event
+        #endregion LaserError Event
 
-#region LaserQueryStart Event
+        #region LaserQueryStart Event
 
         public delegate void QueryStartHandler(string msg);
 
@@ -644,9 +707,9 @@ namespace LaserWrapper
             public string Text { get; private set; } // readonly
         }
 
-#endregion LaserQueryStart Event
+        #endregion LaserQueryStart Event
 
-#region Reset IO Signals Event
+        #region Reset IO Signals Event
 
         public delegate void ResetIoHandler();
 
@@ -661,9 +724,9 @@ namespace LaserWrapper
             }
         }
 
-#endregion Reset IO Signals Event
+        #endregion Reset IO Signals Event
 
-#region Laser Busy Event
+        #region Laser Busy Event
 
         public delegate void LaserBusyHandler(bool busy);
 
@@ -688,9 +751,9 @@ namespace LaserWrapper
             public bool Busy { get; private set; } // readonly
         }
 
-#endregion Laser Busy Event
+        #endregion Laser Busy Event
 
-#region Axis
+        #region Axis
 
         private const int X_AXIS = 0;
         private const int Y_AXIS = 1;
@@ -714,7 +777,7 @@ namespace LaserWrapper
             return result;
         }
 
-#region Zero Reached Event
+        #region Zero Reached Event
 
         public delegate void ZeroReachedHandler(string msg);
 
@@ -739,8 +802,8 @@ namespace LaserWrapper
             public string Text { get; private set; } // readonly
         }
 
-#endregion Zero Reached Event
+        #endregion Zero Reached Event
 
-#endregion Axis
+        #endregion Axis
     }
 }

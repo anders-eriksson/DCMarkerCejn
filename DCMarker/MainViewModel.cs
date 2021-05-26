@@ -45,6 +45,7 @@ namespace DCMarker
         }
 
 #if DEBUG
+
         internal void Test()
         {
             if (_wf != null)
@@ -60,6 +61,7 @@ namespace DCMarker
                 _wf.Execute();
             }
         }
+
 #endif
 
         private void InitializeMachine()
@@ -135,8 +137,11 @@ namespace DCMarker
             HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
             ArticleNumber = e.Data.ArticleNumber;
             Kant = e.Data.Kant;
+            MaskinID = e.Data.MaskinID;
             HasKant = string.IsNullOrWhiteSpace(Kant) ? false : true;
             HasTOnr = e.Data.HasTOnr;
+
+            
             HasBatchSize = e.Data.HasBatchSize;
             NeedUserInput = e.Data.NeedUserInput;
             Status = e.Data.Status;
@@ -298,6 +303,21 @@ namespace DCMarker
             set
             {
                 _kant = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _MaskinID;
+
+        public string MaskinID
+        {
+            get
+            {
+                return _MaskinID;
+            }
+            set
+            {
+                _MaskinID = value;
                 NotifyPropertyChanged();
             }
         }

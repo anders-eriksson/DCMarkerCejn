@@ -8,7 +8,7 @@ using System.Windows;
 // associated with an assembly.
 [assembly: AssemblyTitle("DCHistory")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyConfiguration("MaskinID")]
 [assembly: AssemblyCompany("DC Lasersystem AB")]
 [assembly: AssemblyProduct("DCHistory")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]

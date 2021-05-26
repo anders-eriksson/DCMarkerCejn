@@ -16,6 +16,9 @@ namespace DCHistory.Model
         public string Kant { get; set; }
 
         [StringLength(50)]
+        public string MaskinID { get; set; }
+
+        [StringLength(50)]
         public string Avdelning { get; set; }
 
         [StringLength(50)]

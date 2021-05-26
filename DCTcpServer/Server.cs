@@ -1,4 +1,5 @@
 //#define TEST
+#define TESTTCPSERVER
 
 using System;
 using System.Linq;
@@ -138,6 +139,7 @@ namespace DCTcpServer
         {
             int count = buffer.Count(bt => bt != 0); // find the first null
             string articleNumber = System.Text.Encoding.ASCII.GetString(buffer, 0, count);
+
 #if TESTTCPSERVER
             RaiseNewArticleNumberEvent(string.Format("Raw:\t\t{0}", articleNumber));
             articleNumber = RemoveNonPrintableChars(articleNumber);
