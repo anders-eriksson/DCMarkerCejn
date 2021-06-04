@@ -212,6 +212,7 @@ namespace DCMarker.Model
                           EnableTO = x.EnableTO,
                           Careful = x.Careful,
                           Template = x.Template,
+                          ExternTest = x.ExternTest,
                       }).ToList();
                 }
                 else
@@ -228,6 +229,7 @@ namespace DCMarker.Model
                           EnableTO = x.EnableTO,
                           Careful = x.Careful,
                           Template = x.Template,
+                          ExternTest = x.ExternTest,
                       }).ToList();
                 }
             }

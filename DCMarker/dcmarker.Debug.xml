@@ -2,7 +2,7 @@
 <!--For more information on using transformations see the web.config examples at http://go.microsoft.com/fwlink/?LinkId=214134. -->
 <profile xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
   <section name="Laser">
-    <entry name="DeviceAddress" xdt:Transform="Replace" xdt:Locator="Match(name)">192.168.1.5</entry>
+    <entry name="DeviceAddress" xdt:Transform="Replace" xdt:Locator="Match(name)">192.168.1.6</entry>
     <entry name="ImagePath" xdt:Transform="Replace" xdt:Locator="Match(name)">C:\DCMarkerCejn\Images</entry>
     <entry name="LayoutPath" xdt:Transform="Replace" xdt:Locator="Match(name)">C:\DCMarkerCejn\Mallar 86206</entry>
   </section>

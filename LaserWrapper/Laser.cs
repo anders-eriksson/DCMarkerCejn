@@ -1,5 +1,5 @@
-// #define FLEXIBLE
-#define CO208
+#define FLEXIBLE
+//#define CO208
 
 using Configuration;
 using Contracts;
@@ -98,7 +98,7 @@ namespace LaserWrapper
         {
             Log.Debug("Laser: Execute");
 
-            RaiseItemInPositionEvent();
+            //RaiseItemInPositionEvent();
 
             bool result = false;
             if (_doc == null)
@@ -221,8 +221,12 @@ namespace LaserWrapper
                 Log.Trace("Unregister event handlers");
                 _laserAxis.sigZeroReached -= _laserAxis_sigZeroReached;
                 _laserAxis.sigAxisError -= _laserAxis_sigAxisError;
-                _laserSystem.sigQueryStart -= _laserSystem_sigQueryStart;
+#if DEBUG || FLEXIBLE
                 _laserSystem.sigLaserStart -= _laserSystem_sigLaserStart;
+#else
+                _laserSystem.sigQueryStart -= _laserSystem_sigQueryStart;
+
+#endif
                 _laserSystem.sigLaserEnd -= _laserSystem_sigLaserEnd;
                 _laserSystem.sigLaserError -= _laserSystem_sigLaserError;
                 _ioPort.sigInputChange -= _ioPort_sigInputChange;
@@ -397,7 +401,7 @@ namespace LaserWrapper
                 _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
 #endif
 
-#if DEBUG
+#if DEBUG || FLEXIBLE
                 _laserSystem.sigLaserStart += _laserSystem_sigLaserStart;
 #endif
                 _laserSystem.sigLaserEnd += _laserSystem_sigLaserEnd;
@@ -473,6 +477,7 @@ namespace LaserWrapper
 
         public void _laserSystem_sigQueryStart()
 #else
+
         private void _laserSystem_sigQueryStart()
 #endif
         {

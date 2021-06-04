@@ -217,7 +217,6 @@ namespace DCMarker.Flexible
                 emptyList.Add(empty);
                 UpdateViewModel(emptyList);
                 digitalIO.SetError();
-                //_laser.SetPort(0, sig.MASK_ERROR);
                 // Can't find article in database.
 
                 RaiseErrorEvent(string.Format(GlblRes.Article_not_defined_in_database_Article0, _articleNumber));
@@ -326,7 +325,6 @@ namespace DCMarker.Flexible
                 if (!string.IsNullOrWhiteSpace(msg))
                 {
                     digitalIO.SetError();
-                    //_laser.SetPort(0, sig.MASK_ERROR);
                 }
             }
             else
@@ -580,14 +578,12 @@ namespace DCMarker.Flexible
                                 {
                                     RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
                                     digitalIO.SetError();
-                                    //_laser.SetPort(0, sig.MASK_ERROR);
                                 }
                             }
                             else
                             {
                                 RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
                                 digitalIO.SetError();
-                                //_laser.SetPort(0, sig.MASK_ERROR);
                             }
                         }
                     }
@@ -595,14 +591,12 @@ namespace DCMarker.Flexible
                     {
                         RaiseErrorEvent(string.Format(GlblRes.Error_loading_layout_0, layoutname));
                         digitalIO.SetError();
-                        //_laser.SetPort(0, sig.MASK_ERROR);
                     }
                 }
                 else
                 {
                     RaiseErrorEvent(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
                     digitalIO.SetError();
-                    //_laser.SetPort(0, sig.MASK_ERROR);
                 }
             }
             else

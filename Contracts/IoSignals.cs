@@ -114,7 +114,6 @@ namespace Contracts
         // In signals
 
         public int MASK_ITEMINPLACE = 0x0;
-        public int MASK_EXTERNTESTRESULT = 0x0;
         public int MASK_EMERGENCY = 0x0;
 
         public int MASK_RESET = 0x0;

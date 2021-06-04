@@ -17,6 +17,7 @@ namespace LaserWrapper
         private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
         {
             Log.Trace(string.Format("Bit: {0}", p_nBits));
+
             // Item In Place
             if (sig.MASK_ITEMINPLACE != 0)
             {
@@ -43,32 +44,6 @@ namespace LaserWrapper
                 }
             }
 
-            // Item In Place
-            if (sig.MASK_EXTERNTESTRESULT != 0)
-            {
-                if ((p_nBits & sig.MASK_EXTERNTESTRESULT) == sig.MASK_EXTERNTESTRESULT)
-                {
-                    Log.Debug("MASK_EXTERNTESTRESULT");
-                    // bit is set
-                    Log.Trace(string.Format("(currentBits & MASK_EXTERNTESTRESULT): {0}", (currentBits & sig.MASK_EXTERNTESTRESULT)));
-                    if ((currentBits & sig.MASK_EXTERNTESTRESULT) != sig.MASK_EXTERNTESTRESULT)
-                    {
-                        Log.Trace("Set EXTERNTESTRESULT ");
-                        currentBits |= sig.MASK_EXTERNTESTRESULT;
-                        RaiseExternTestEvent(true);
-                    }
-                    else
-                    {
-                        Log.Trace(string.Format("Already in currentBits {0}", currentBits));
-                    }
-                }
-                else
-                {
-                    Log.Trace("Reset MASK_EXTERNTESTRESULT ");
-                    currentBits &= ~sig.MASK_EXTERNTESTRESULT;
-                    RaiseExternTestEvent(false);
-                }
-            }
 #if false
             // Reset IO
             if ((p_nBits & sig.MASK_RESET) == sig.MASK_RESET)

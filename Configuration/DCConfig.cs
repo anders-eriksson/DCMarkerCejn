@@ -111,7 +111,6 @@ namespace Configuration
                 StartSignal = _profile.GetValue("Laser", nameof(MarkingDone), 0x0);
                 EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x0);
                 ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x0);
-                ExternTestResult = _profile.GetValue("Laser", nameof(ExternTestResult), 0x0);
 
                 // TCP Server
                 TcpPort = _profile.GetValue("TcpServer", nameof(TcpPort), 50000);
@@ -245,7 +244,6 @@ namespace Configuration
         public int EmergencyError { get; set; }
         public int ResetIo { get; set; }
         public int ExternTest { get; set; }
-        public int ExternTestResult { get; set; }
 
         #endregion Laser properties
 

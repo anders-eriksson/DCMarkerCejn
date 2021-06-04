@@ -7,30 +7,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DCLog;
-
 using GlblRes = global::DCMarker.Properties.Resources;
+using System.Threading;
+using DCMarker.LargeFlexible;
+using DCMarker.Model;
 
-namespace DCMarker.Model
+namespace DCMarker.LargeFlexible
 {
-    public partial class Co208WorkFlow : IWorkFlow, IWorkFlowDebug
+    public partial class LargeFlexibleWorkFlow : IWorkFlow
     {
         private readonly DCConfig cfg;
         private readonly IoSignals sig;
+        private DigitalIO digitalIO;
         private string _articleNumber;
         private List<Article> _articles;
         private int _currentEdge;
         private DB _db;
         private bool _hasEdges;
         private Laser _laser;
-
-        //private volatile bool ArticleHasToNumber = false;
-        private volatile string TOnumber;
-
-        //private volatile bool IsTOnumberUpdated = false;
-
+        private volatile bool ExternTest = false;
         public bool FirstMarkingResetZ { get; set; }
 
-        public Co208WorkFlow()
+        public LargeFlexibleWorkFlow()
         {
             try
             {
@@ -43,6 +41,8 @@ namespace DCMarker.Model
                 //UpdateIoMasks();
                 FirstMarkingResetZ = false;
                 Initialize();
+                digitalIO = new DigitalIO(_laser);
+                digitalIO.SetReady(true);
             }
             catch (Exception)
             {
@@ -53,6 +53,7 @@ namespace DCMarker.Model
         public void Close()
         {
             ResetAllIoSignals();
+            digitalIO.SetReady(false);
             _laser.Release();
         }
 
@@ -70,7 +71,7 @@ namespace DCMarker.Model
         {
             if (_laser != null)
             {
-                _laser.ResetPort(0, sig.MASK_ARTICLEREADY);
+                digitalIO.ResetArticleReady();//_laser.ResetPort(0, sig.MASK_ARTICLEREADY);
             }
             else
             {
@@ -97,30 +98,18 @@ namespace DCMarker.Model
 
 #endif
 
-#if DEBUG
-
         public void Execute()
         {
             if (_laser != null)
             {
                 Log.Trace("_laser.Execute");
-                //_laser.Execute();
-                _laser._laserSystem_sigQueryStart();
+                _laser.Execute();
             }
             else
             {
                 Log.Debug("_laser == null");
             }
         }
-
-#else
-
-        public void Execute()
-        {
-            throw new NotImplementedException();
-        }
-
-#endif
 
         public List<Article> GetArticle(string articleNumber)
         {
@@ -129,10 +118,24 @@ namespace DCMarker.Model
             if (string.IsNullOrWhiteSpace(maskinID))
             {
                 result = _db.GetArticle(articleNumber);
+                if (result?.Count() > 0)
+                {
+                    ExternTest = result[0].ExternTest ?? false;
+                    if (ExternTest)
+                        digitalIO.SetExternTest();
+                    else
+                        digitalIO.ResetExternTest();
+                }
             }
             else
             {
                 result = _db.GetArticle(articleNumber, maskinID);
+                if (result?.Count() > 0)
+                    ExternTest = result[0].ExternTest ?? false;
+                if (ExternTest)
+                    digitalIO.SetExternTest();
+                else
+                    digitalIO.ResetExternTest();
             }
 
             return result;
@@ -162,13 +165,13 @@ namespace DCMarker.Model
 
         public void SimulateItemInPlace(string articlenumber)
         {
-            throw new NotImplementedException("Not implemented in Manual");
+            throw new NotImplementedException("Not implemented in LargeFlexibel");
         }
 
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
         {
             RaiseErrorEvent(string.Empty);
-            _laser.ResetPort(0, sig.MASK_READYTOMARK);
+            digitalIO.ResetReadyToMark();// _laser.ResetPort(0, sig.MASK_READYTOMARK);
             _articleNumber = e.Data.ArticleNumber;
             RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
 
@@ -184,7 +187,7 @@ namespace DCMarker.Model
                 List<Article> emptyList = new List<Article>();
                 emptyList.Add(empty);
                 UpdateViewModel(emptyList);
-                _laser.SetPort(0, sig.MASK_ERROR);
+                digitalIO.SetError();
                 // Can't find article in database.
 
                 RaiseErrorEvent(string.Format(GlblRes.Article_not_defined_in_database_Article0, _articleNumber));
@@ -226,7 +229,7 @@ namespace DCMarker.Model
             if (_laser != null)
             {
                 FirstMarkingResetZ = false;
-                _laser.SetPort(0, sig.MASK_MARKINGDONE);
+                digitalIO.SetMarkingDone();
             }
             else
             {
@@ -244,7 +247,7 @@ namespace DCMarker.Model
             {
                 if (!string.IsNullOrWhiteSpace(msg))
                 {
-                    _laser.SetPort(0, sig.MASK_ERROR);
+                    digitalIO.SetError();
                 }
             }
             else
@@ -264,7 +267,7 @@ namespace DCMarker.Model
         {
             if (_laser != null)
             {
-                _laser.ResetPort(0, sig.MASK_ALL);
+                digitalIO.ResetAll();
             }
             else
             {
@@ -293,7 +296,7 @@ namespace DCMarker.Model
             if (_laser != null)
             {
                 _laser.NextToLast = false;
-                _laser.ResetPort(0, sig.MASK_NEXTTOLAST);
+                digitalIO.ResetNextToLast();
             }
             else
             {
@@ -329,8 +332,6 @@ namespace DCMarker.Model
         {
             _db = new DB();
             _db.IsConnectionOK();
-
-            // TODO: Add Date Codes. Change of database must take place first!
         }
 
         private void InitializeLaser()
@@ -392,27 +393,11 @@ namespace DCMarker.Model
         {
             if (_laser != null)
             {
-                _laser.ResetPort(0, sig.MASK_ALL);
-                _laser.SetReady(false);
+                digitalIO.ResetAll();
+                digitalIO.SetReady(false);
                 RaiseLaserBusyEvent(false);
             }
         }
-
-        //private void UpdateIoMasks()
-        //{
-        //    // Out
-        //    sig.MASK_ARTICLEREADY = cfg.ArticleReady;
-        //    sig.MASK_READYTOMARK = cfg.ReadyToMark;
-        //    sig.MASK_NEXTTOLAST = cfg.NextToLast;
-        //    sig.MASK_MARKINGDONE = cfg.MarkingDone;
-        //    sig.MASK_ERROR = cfg.Error;
-        //    sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
-
-        //    // In
-        //    sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
-        //    sig.MASK_EMERGENCY = cfg.EmergencyError;
-        //    sig.MASK_RESET = cfg.ResetIo;
-        //}
 
         /// <summary>
         /// Loads and updates the Layout when we have gotten an ItemInPlace signal from PLC
@@ -463,7 +448,6 @@ namespace DCMarker.Model
                             brc = _laser.Update(historyObjectData);
                             if (brc)
                             {
-                                RaiseUpdateSerialNumberEvent(historyData.Snr);
                                 // update HistoryData table
                                 HistoryData status = new HistoryData();
 
@@ -477,32 +461,32 @@ namespace DCMarker.Model
                                 {
                                     // we are ready to mark...
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
-                                    _laser.ResetPort(0, sig.MASK_MARKINGDONE);
-                                    _laser.SetPort(0, sig.MASK_READYTOMARK);
+                                    digitalIO.ResetMarkingDone();
+                                    digitalIO.SetReadyToMark();
                                 }
                                 else
                                 {
                                     RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
-                                    _laser.SetPort(0, sig.MASK_ERROR);
+                                    digitalIO.SetError();
                                 }
                             }
                             else
                             {
                                 RaiseErrorEvent(string.Format(GlblRes.Update_didnt_work_on_this_article_and_layout_Article0_Layout1, _articleNumber, layoutname));
-                                _laser.SetPort(0, sig.MASK_ERROR);
+                                digitalIO.SetError();
                             }
                         }
                     }
                     else
                     {
                         RaiseErrorEvent(string.Format(GlblRes.Error_loading_layout_0, layoutname));
-                        _laser.SetPort(0, sig.MASK_ERROR);
+                        digitalIO.SetError();
                     }
                 }
                 else
                 {
                     RaiseErrorEvent(string.Format(GlblRes.Layout_not_defined_for_this_article_Article0, _articleNumber));
-                    _laser.SetPort(0, sig.MASK_ERROR);
+                    digitalIO.SetError();
                 }
             }
             else
@@ -538,7 +522,7 @@ namespace DCMarker.Model
 
         private void FinishUpdateWorkflow(Article article)
         {
-            _laser.SetPort(0, sig.MASK_ARTICLEREADY);
+            digitalIO.SetArticleReady();
 
             // reverse IsTestItemSelected to make it easier for the if statement!
             for (int i = 0; i < _articles.Count; i++)
@@ -577,11 +561,8 @@ namespace DCMarker.Model
             return data;
         }
 
-        public void UpdateTOnumber(string tonr)
-        {
-            TOnumber = tonr;
-            //IsTOnumberUpdated = false;
-        }
+        public void UpdateTOnumber(string onr)
+        { }
 
         public bool ResetZAxis()
         {
@@ -659,6 +640,12 @@ namespace DCMarker.Model
         }
 
         #endregion only used in FlexibleWorkFlow // AME - 2018-11-05
+
+        #region only used by CO208
+
+        public event EventHandler<UpdateSerialNumberArgs> UpdateSerialNumberEvent;
+
+        #endregion only used by CO208
 
         #region Error Event
 
@@ -749,23 +736,5 @@ namespace DCMarker.Model
         }
 
         #endregion Laser Busy Event
-
-        #region Update ViewModel with Serial Number Event
-
-        public delegate void UpdateSerialNumberHandler(string msg);
-
-        public event EventHandler<UpdateSerialNumberArgs> UpdateSerialNumberEvent;
-
-        internal void RaiseUpdateSerialNumberEvent(string msg)
-        {
-            var handler = UpdateSerialNumberEvent;
-            if (handler != null)
-            {
-                var arg = new UpdateSerialNumberArgs(msg);
-                handler(null, arg);
-            }
-        }
-
-        #endregion Update ViewModel with Serial Number Event
     }
 }
