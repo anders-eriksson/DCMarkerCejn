@@ -66,16 +66,15 @@ namespace DCMarker
         internal void Test()
         {
             //MarkingIsInProgress = !MarkingIsInProgress;
-#if DEBUG
-            if (_wf != null)
+            if (cfg.Debug)
             {
-                _wf._laser_ItemInPositionEvent();
-                //_wf.SimulateItemInPlace();
+                if (_wf != null)
+                {
+                    _wf._laser_ItemInPositionEvent();
+                    //_wf.SimulateItemInPlace();
+                }
             }
-#endif
         }
-
-#if DEBUG
 
         internal void Execute()
         {
@@ -85,8 +84,6 @@ namespace DCMarker
                 _wf.Execute();
             }
         }
-
-#endif
 
         private void InitializeMachine()
         {
@@ -152,13 +149,16 @@ namespace DCMarker
                     if (BatchesDone >= Convert.ToInt32(Quantity))
                     {
                         // we are done with the order/batch.
-                        _wf.ResetArticleReady();
+                        // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+                        _wf.SetArticleReady();    // Hög
                         _wf.ResetNextToLast();
                         ResetInputValues();
                         Log.Debug(GlblRes.OrderBatch_is_done);
                         OrderNotStarted = true;
                         OrderInProgress = true;
                         Status = GlblRes.Order_is_done;
+                        if (cfg.EnableOrderKlarPrompt)
+                            RaiseDisplayMsgEvent(GlblRes.Order_is_done);
                     }
                 }
             }
@@ -288,7 +288,7 @@ namespace DCMarker
                 else
                 {
                     // the article doesn't exists show an error!!!
-                    ErrorMessage = GlblRes.Article_does_not_exist_in_database;
+                    ErrorMessage = string.Format(GlblRes.Article_does_not_exist_in_database, DCConfig.Instance.MaskinId);
                     result = ErrorMessage;
 
                     HasTOnr = false;
@@ -360,6 +360,7 @@ namespace DCMarker
         {
             ErrorMessage = string.Empty;
 
+            // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
             _wf.ResetArticleReady();
             _wf.ResetNextToLast();
             ResetInputValues();
@@ -394,8 +395,10 @@ namespace DCMarker
                 OrderNotStarted = false;
 
                 _wf.UpdateWorkflow(article);
-                _wf.FirstMarkingResetZ = true;
-
+                if (cfg.FirstMarkingResetZ)
+                    _wf.FirstMarkingResetZ = true;
+                else
+                    _wf.FirstMarkingResetZ = false;
                 Status = GlblRes.Waiting_for_product;
             }
             else
@@ -878,5 +881,33 @@ namespace DCMarker
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        #region Display Message Event
+
+        public delegate void DisplayMsgHandler(string msg);
+
+        public event EventHandler<DisplayMsgArgs> DisplayMsgEvent;
+
+        internal void RaiseDisplayMsgEvent(string msg)
+        {
+            var handler = DisplayMsgEvent;
+            if (handler != null)
+            {
+                var arg = new DisplayMsgArgs(msg);
+                handler(null, arg);
+            }
+        }
+
+        public class DisplayMsgArgs : EventArgs
+        {
+            public DisplayMsgArgs(string msg)
+            {
+                Text = msg;
+            }
+
+            public string Text { get; private set; }
+        }
+
+        #endregion Display Message Event
     }
 }

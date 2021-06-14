@@ -40,6 +40,7 @@ namespace Contracts
 
         void ResetArticleData();
 
+
         void ResetCareful();
 
         void ResetItemsDone();
@@ -55,6 +56,7 @@ namespace Contracts
         bool ResetZAxis();
 
         void ResetArticleReady();
+        void SetArticleReady();
 
         bool StartPoll(int pollInterval, int errorTimeout);
 
@@ -70,9 +72,9 @@ namespace Contracts
 
         void Execute();
 
-#if DEBUG
-
         void _laser_ItemInPositionEvent();
+
+#if DEBUG
 
         void ArtNo(string artno);
 

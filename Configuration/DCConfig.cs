@@ -93,6 +93,8 @@ namespace Configuration
                 ExecuteTimeout = _profile.GetValue("Laser", nameof(ExecuteTimeout), 10000);
                 TryAgainTimeout = _profile.GetValue("Laser", nameof(TryAgainTimeout), 200);
                 IsIoEnabled = _profile.GetValue("Laser", nameof(IsIoEnabled), true);
+                DefaultfixturID = _profile.GetValue("Laser", nameof(DefaultfixturID), "");
+                FirstMarkingResetZ = _profile.GetValue("Laser", nameof(FirstMarkingResetZ), false);
 
                 // Change all default values to 0! This means that we MUST specify the IO that is used for each installation!!!
                 // Laser IO Output
@@ -109,6 +111,7 @@ namespace Configuration
                 // Laser IO Input
                 ItemInPlace = _profile.GetValue("Laser", nameof(ItemInPlace), 0x0);
                 StartSignal = _profile.GetValue("Laser", nameof(MarkingDone), 0x0);
+                ExternalStart = _profile.GetValue("Laser", nameof(ExternalStart), 0x0);
                 EmergencyError = _profile.GetValue("Laser", nameof(EmergencyError), 0x0);
                 ResetIo = _profile.GetValue("Laser", nameof(ResetIo), 0x0);
 
@@ -133,6 +136,7 @@ namespace Configuration
                 // GUI
                 ResetInputValues = _profile.GetValue("GUI", nameof(ResetInputValues), true);
                 KeepQuantity = _profile.GetValue("GUI", nameof(KeepQuantity), false);
+                EnableOrderKlarPrompt = _profile.GetValue("GUI", nameof(EnableOrderKlarPrompt), false);
             }
             catch (Exception ex)
             {
@@ -221,6 +225,7 @@ namespace Configuration
 
         #region Laser properties
 
+        public bool FirstMarkingResetZ { get; set; }
         public string DeviceAddress { get; set; }
         public int DeviceTimeout { get; set; }
         public string ImagePath { get; set; }
@@ -238,8 +243,12 @@ namespace Configuration
         public int HandleWithCare { get; set; }
         public int Error { get; set; }
 
+        public string DefaultfixturID { get; set; }
+
         // IO Input
         public int ItemInPlace { get; set; }
+
+        public int ExternalStart { get; set; }
 
         public int EmergencyError { get; set; }
         public int ResetIo { get; set; }
@@ -309,6 +318,7 @@ namespace Configuration
 
         public bool ResetInputValues { get; set; }
         public bool KeepQuantity { get; set; }
+        public bool EnableOrderKlarPrompt { get; set; }
 
         #endregion GUI
     }

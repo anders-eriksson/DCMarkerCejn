@@ -120,4 +120,7 @@
   <data name="Marking" xml:space="preserve">
     <value>Marking...</value>
   </data>
+  <data name="No_Connection_with_Z_axis" xml:space="preserve">
+    <value>No connection with Z axis</value>
+  </data>
 </root>

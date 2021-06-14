@@ -14,7 +14,7 @@ namespace LaserWrapper
 {
     public partial class Laser : ILaser, IDigitalIo, Contracts.IAxis
     {
-        private void _ioPort_sigInputChange(int p_nPort, int p_nBits)
+        public void _ioPort_sigInputChange(int p_nPort, int p_nBits)
         {
             Log.Trace(string.Format("Bit: {0}", p_nBits));
 
@@ -41,6 +41,33 @@ namespace LaserWrapper
                 {
                     Log.Trace("Reset ITEMINPLACE ");
                     currentBits &= ~sig.MASK_ITEMINPLACE;
+                }
+            }
+
+            // EWxternal Start
+            if (sig.MASK_EXTERNALSTART != 0)
+            {
+                if ((p_nBits & sig.MASK_EXTERNALSTART) == sig.MASK_EXTERNALSTART)
+                {
+                    Log.Debug("MASK_EXTERNALSTART");
+                    // bit is set
+                    Log.Trace(string.Format("(currentBits & MASK_EXTERNALSTART): {0}", (currentBits & sig.MASK_EXTERNALSTART)));
+                    if ((currentBits & sig.MASK_EXTERNALSTART) != sig.MASK_EXTERNALSTART)
+                    {
+                        Log.Trace("Set EXTERNALSTART ");
+                        currentBits |= sig.MASK_EXTERNALSTART;
+                        //RaiseExternalStartEvent();
+                        _laserSystem_sigQueryStart();
+                    }
+                    else
+                    {
+                        Log.Trace(string.Format("Already in currentBits {0}", currentBits));
+                    }
+                }
+                else
+                {
+                    Log.Trace("Reset MASK_EXTERNALSTART ");
+                    currentBits &= ~sig.MASK_EXTERNALSTART;
                 }
             }
 
@@ -80,32 +107,34 @@ namespace LaserWrapper
 
         #endregion Item in Position Event
 
-        #region Extern Test Event
+        #region External Start Event
 
-        public delegate void ExternTestHandler(bool result);
+        public delegate void ExternalStartHandler();
 
-        public event EventHandler<ExternTestArgs> ExternTestEvent;
+        public event ExternalStartHandler ExternalStartEvent;
 
-        internal void RaiseExternTestEvent(bool result)
+        internal void RaiseExternalStartEvent()
         {
-            var handler = ExternTestEvent;
+            var handler = ExternalStartEvent;
             if (handler != null)
             {
-                var arg = new ExternTestArgs(result);
-                handler(null, arg);
+                handler();
             }
         }
 
-        public class ExternTestArgs : EventArgs
+
+        public class ExternalStartArgs : EventArgs
         {
-            public ExternTestArgs(bool result)
+            public ExternalStartArgs(string msg)
             {
-                Result = result;
+                Text = msg;
             }
 
-            public bool Result { get; private set; }
+            public string Text { get; private set; }
         }
 
-        #endregion Extern Test Event
+        #endregion External Start Event
+
+
     }
 }

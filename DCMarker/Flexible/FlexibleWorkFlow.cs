@@ -50,7 +50,10 @@ namespace DCMarker.Flexible
                 }
                 sig = IoSignals.Instance;
                 //UpdateIoMasks();
-                FirstMarkingResetZ = false;
+                if (cfg.FirstMarkingResetZ)
+                    FirstMarkingResetZ = true;
+                else
+                    FirstMarkingResetZ = false;
                 _currentItem = 0;
                 Initialize();
             }
@@ -108,6 +111,11 @@ namespace DCMarker.Flexible
         public void ResetArticleReady()
         {
             digitalIO.ResetArticleReady();
+        }
+
+        public void SetArticleReady()
+        {
+            digitalIO.SetArticleReady();
         }
 
         public void ResetCareful()
@@ -223,13 +231,7 @@ namespace DCMarker.Flexible
             }
         }
 
-#if DEBUG
-
         public void _laser_ItemInPositionEvent()
-#else
-
-        private void _laser_ItemInPositionEvent()
-#endif
         {
 #if !DEBUG
             if (FirstMarkingResetZ)
@@ -570,7 +572,6 @@ namespace DCMarker.Flexible
                                     // this is moved to FinishUpdateWorkflow and _laser_LaserEndEvent
                                     //// digitalIO.SetReadyToMark();
                                     ///
-
                                     Log.Trace("Calling sigLaserStart");
                                     Execute();
                                 }

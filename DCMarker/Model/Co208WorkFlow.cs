@@ -77,7 +77,17 @@ namespace DCMarker.Model
                 Log.Debug("_laser == null");
             }
         }
-
+        public void SetArticleReady()
+        {
+            if (_laser != null)
+            {
+                _laser.SetPort(0, sig.MASK_ARTICLEREADY);
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
+        }
 #if DEBUG
 
         public void ArtNo(string artno)
@@ -191,13 +201,7 @@ namespace DCMarker.Model
             }
         }
 
-#if DEBUG
-
         public void _laser_ItemInPositionEvent()
-#else
-
-        private void _laser_ItemInPositionEvent()
-#endif
         {
 #if !DEBUG
             if (FirstMarkingResetZ)

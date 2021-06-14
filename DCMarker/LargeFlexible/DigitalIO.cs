@@ -29,17 +29,27 @@ namespace DCMarker.LargeFlexible
 
         public bool SetArticleReady()
         {
+            // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+            // Vi switchar så att SetArticleReady sätter signalen låg
             bool result = false;
             if (sig.MASK_ARTICLEREADY > 0)
-                result = _laserWrapper.SetPort(0, sig.MASK_ARTICLEREADY);
+            {
+                DCLog.Log.Debug("Article Ready/OrderEjFärdig sätts Hög");
+                result = _laserWrapper.ResetPort(0, sig.MASK_ARTICLEREADY);
+            }
             return result;
         }
 
         public bool ResetArticleReady()
         {
+            // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+            // Vi switchar så att ResetArticleReady sätter signalen hög
             bool result = false;
-            if (sig.MASK_ARTICLEREADY > 0)
-                result = _laserWrapper.ResetPort(0, sig.MASK_ARTICLEREADY);
+                if (sig.MASK_ARTICLEREADY > 0)
+                {
+                    DCLog.Log.Debug("Article Ready/OrderEjFärdig sätts Låg");
+                    result = _laserWrapper.SetPort(0, sig.MASK_ARTICLEREADY);
+                }
             return result;
         }
 

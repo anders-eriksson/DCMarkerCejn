@@ -1,8 +1,11 @@
 using Configuration;
 using DCLog;
+using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker
@@ -13,6 +16,7 @@ namespace DCMarker
     public partial class LargeFlexibleMainWindow : Window
     {
         private LargeFlexibleMainViewModel mainViewModel;
+        private bool IsClosed;
 
         public LargeFlexibleMainWindow()
         {
@@ -33,6 +37,18 @@ namespace DCMarker
             }
             mainViewModel = new LargeFlexibleMainViewModel();
             DataContext = mainViewModel;
+
+            mainViewModel.DisplayMsgEvent += MainViewModel_DisplayMsgEvent;
+        }
+
+        private void MainViewModel_DisplayMsgEvent(object sender, LargeFlexibleMainViewModel.DisplayMsgArgs e)
+        {
+            Application.Current.Dispatcher.BeginInvoke(
+                DispatcherPriority.Background,
+                new Action(() =>
+                {
+                    MessageBox.Show(GlblRes.Order_is_done, GlblRes.Order_is_done, MessageBoxButton.OK, MessageBoxImage.Information); // runs on UI thread
+                }));
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -78,21 +94,11 @@ namespace DCMarker
             mainViewModel.Test();
         }
 
-#if DEBUG
-
         private void ExecuteButton_Click(object sender, RoutedEventArgs e)
         {
             Log.Trace("ExecuteButton_Click");
             mainViewModel.Execute();
         }
-
-#else
-
-        private void ExecuteButton_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
-#endif
 
         private void ResetZaxis_Click(object sender, RoutedEventArgs e)
         {
@@ -101,6 +107,13 @@ namespace DCMarker
             {
                 MessageBox.Show(GlblRes.No_Connection_with_Z_axis, GlblRes.ERROR, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void Logpath_Click(object sender, RoutedEventArgs e)
+        {
+            string logfile = Log.GetLogFileName("dclogfile");
+
+            Process.Start(System.IO.Path.GetDirectoryName(logfile));
         }
     }
 }

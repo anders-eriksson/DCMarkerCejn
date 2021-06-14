@@ -11,6 +11,7 @@ using GlblRes = global::DCMarker.Properties.Resources;
 using System.Threading;
 using DCMarker.LargeFlexible;
 using DCMarker.Model;
+using System.Diagnostics;
 
 namespace DCMarker.LargeFlexible
 {
@@ -26,7 +27,17 @@ namespace DCMarker.LargeFlexible
         private bool _hasEdges;
         private Laser _laser;
         private volatile bool ExternTest = false;
-        public bool FirstMarkingResetZ { get; set; }
+        private bool _FirstMarkingResetZ;
+
+        public bool FirstMarkingResetZ
+        {
+            get { return _FirstMarkingResetZ; }
+            set
+            {
+                _FirstMarkingResetZ = value;
+                _laser.FirstMarkingResetZ = _FirstMarkingResetZ;
+            }
+        }
 
         public LargeFlexibleWorkFlow()
         {
@@ -39,7 +50,7 @@ namespace DCMarker.LargeFlexible
                 }
                 sig = IoSignals.Instance;
                 //UpdateIoMasks();
-                FirstMarkingResetZ = false;
+
                 Initialize();
                 digitalIO = new DigitalIO(_laser);
                 digitalIO.SetReady(true);
@@ -71,7 +82,21 @@ namespace DCMarker.LargeFlexible
         {
             if (_laser != null)
             {
-                digitalIO.ResetArticleReady();//_laser.ResetPort(0, sig.MASK_ARTICLEREADY);
+                // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+                digitalIO.ResetArticleReady();
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
+        }
+
+        public void SetArticleReady()
+        {
+            if (_laser != null)
+            {
+                // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+                digitalIO.SetArticleReady();
             }
             else
             {
@@ -103,7 +128,11 @@ namespace DCMarker.LargeFlexible
             if (_laser != null)
             {
                 Log.Trace("_laser.Execute");
+#if  DEBUG
                 _laser.Execute();
+#else
+                _laser._laserSystem_sigQueryStart();
+#endif
             }
             else
             {
@@ -171,7 +200,7 @@ namespace DCMarker.LargeFlexible
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
         {
             RaiseErrorEvent(string.Empty);
-            digitalIO.ResetReadyToMark();// _laser.ResetPort(0, sig.MASK_READYTOMARK);
+            digitalIO.ResetReadyToMark();
             _articleNumber = e.Data.ArticleNumber;
             RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
 
@@ -194,30 +223,25 @@ namespace DCMarker.LargeFlexible
             }
         }
 
-#if DEBUG
-
         public void _laser_ItemInPositionEvent()
-#else
-
-        private void _laser_ItemInPositionEvent()
-#endif
         {
 #if !DEBUG
-            if (FirstMarkingResetZ)
-            {
-                FirstMarkingResetZ = false;
-                bool brc = ResetZAxis();
-                if (!brc)
-                {
-                    RaiseErrorEvent(GlblRes.No_Connection_with_Z_axis);
-                    return;
-                }
+            //if (FirstMarkingResetZ)
+            //{
+            //    FirstMarkingResetZ = false;
+            //    bool brc = ResetZAxis();
+            //    if (!brc)
+            //    {
+            //        RaiseErrorEvent(GlblRes.No_Connection_with_Z_axis);
+            //        return;
+            //    }
 
-                // We will return in _laser_ZeroReachedEvent
-            }
-            else
+            //    // We will return in _laser_ZeroReachedEvent
+            //}
+            //else
             {
                 UpdateLayout();
+                digitalIO.ResetReadyToMark();
             }
 #else
             UpdateLayout();
@@ -228,8 +252,9 @@ namespace DCMarker.LargeFlexible
         {
             if (_laser != null)
             {
-                FirstMarkingResetZ = false;
+                _laser.FirstMarkingResetZ = false;
                 digitalIO.SetMarkingDone();
+                digitalIO.SetReadyToMark();
             }
             else
             {
@@ -341,14 +366,38 @@ namespace DCMarker.LargeFlexible
             _laser.LaserEndEvent += _laser_LaserEndEvent;
             _laser.DeviceErrorEvent += _laser_LaserErrorEvent;
             _laser.ItemInPositionEvent += _laser_ItemInPositionEvent;
+            _laser.ExternalStartEvent += _laser_ExternalStartEvent;
             _laser.ResetIoEvent += _laser_ResetIoEvent;
             _laser.LaserBusyEvent += _laser_LaserBusyEvent;
             _laser.ZeroReachedEvent += _laser_ZeroReachedEvent;
+            SetFirstMarkingResetZ();
+        }
+
+        private void SetFirstMarkingResetZ()
+        {
+            if (cfg.FirstMarkingResetZ)
+            {
+                FirstMarkingResetZ = true;
+                _laser.FirstMarkingResetZ = true;
+            }
+            else
+            {
+                FirstMarkingResetZ = false;
+                _laser.FirstMarkingResetZ = false;
+            }
+        }
+
+        private void _laser_ExternalStartEvent()
+        {
+            _laser._laserSystem_sigQueryStart();
         }
 
         private void _laser_ZeroReachedEvent(string msg)
         {
-            UpdateLayout();
+            if (FirstMarkingResetZ)
+            {
+                FirstMarkingResetZ = false;
+            }
         }
 
         private void _laser_LaserBusyEvent(bool busy)
@@ -394,6 +443,7 @@ namespace DCMarker.LargeFlexible
             if (_laser != null)
             {
                 digitalIO.ResetAll();
+                digitalIO.ResetArticleReady();
                 digitalIO.SetReady(false);
                 RaiseLaserBusyEvent(false);
             }
@@ -404,6 +454,10 @@ namespace DCMarker.LargeFlexible
         /// </summary>
         public void UpdateLayout()
         {
+            Log.Trace("UpdateLayout");
+            Stopwatch stopwatch = new Stopwatch();
+
+            stopwatch.Start();
             RaiseErrorEvent(string.Empty);
 
             Article article = null;
@@ -462,7 +516,7 @@ namespace DCMarker.LargeFlexible
                                     // we are ready to mark...
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
                                     digitalIO.ResetMarkingDone();
-                                    digitalIO.SetReadyToMark();
+                                    //digitalIO.SetReadyToMark();
                                 }
                                 else
                                 {
@@ -493,6 +547,8 @@ namespace DCMarker.LargeFlexible
             {
                 RaiseErrorEvent(GlblRes.ItemInPlace_received_before_Article_Number_is_set);
             }
+            stopwatch.Stop();
+            Log.Debug($"UpdateLayout took {stopwatch.Elapsed}");
         }
 
         public void UpdateWorkflow(Article article)
@@ -522,8 +578,9 @@ namespace DCMarker.LargeFlexible
 
         private void FinishUpdateWorkflow(Article article)
         {
-            digitalIO.SetArticleReady();
-
+            // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+            digitalIO.ResetArticleReady();  // Låg
+            digitalIO.SetReadyToMark();     // Hög
             // reverse IsTestItemSelected to make it easier for the if statement!
             for (int i = 0; i < _articles.Count; i++)
             {

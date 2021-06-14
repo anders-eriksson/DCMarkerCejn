@@ -141,8 +141,8 @@
           <target state="translated">Märkta</target>
         </trans-unit>
         <trans-unit id="Article_does_not_exist_in_database" translate="yes" xml:space="preserve">
-          <source>Article does not exist in database!</source>
-          <target state="translated">Artikel saknas i databasen!</target>
+          <source>Article does not exist in database! May depend on wrong MachineId {0} </source>
+          <target state="translated">Artikel saknas i databasen! Kan bero på fel MaskinId {0}</target>
         </trans-unit>
         <trans-unit id="TestItem" translate="yes" xml:space="preserve">
           <source>Test Item</source>
@@ -272,6 +272,10 @@
         <trans-unit id="ItemsDone" translate="yes" xml:space="preserve">
           <source>Items marked</source>
           <target state="translated">Produkter markerade</target>
+        </trans-unit>
+        <trans-unit id="OpenLogPath" translate="yes" xml:space="preserve">
+          <source>Open Log file directory</source>
+          <target state="translated">Öppna loggfilskatalog</target>
         </trans-unit>
       </group>
     </body>

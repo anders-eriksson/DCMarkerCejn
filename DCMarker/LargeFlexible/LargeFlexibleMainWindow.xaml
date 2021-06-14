@@ -64,6 +64,10 @@
                 </MenuItem>
                 <MenuItem Header="{x:Static p:Resources.HelpMenuHeader}" IsTabStop="False">
                     <MenuItem
+                        x:Name="Logpath"
+                        Click="Logpath_Click"
+                        Header="{x:Static p:Resources.OpenLogPath}" />
+                    <MenuItem
                         x:Name="About"
                         Click="About_Click"
                         Header="{x:Static p:Resources.AboutMenuHeader}" />

@@ -21,7 +21,7 @@ namespace Contracts
             MASK_ARTICLEREADY = cfg.ArticleReady;
             if (MASK_ARTICLEREADY != 0)
             {
-                MASK_ALL |= MASK_ARTICLEREADY;
+                //MASK_ALL |= MASK_ARTICLEREADY;
                 NameDict.Add(MASK_ARTICLEREADY, "MASK_ARTICLEREADY");
             }
 
@@ -59,6 +59,7 @@ namespace Contracts
                 MASK_ALL |= MASK_HANDLEWITHCARE;
                 NameDict.Add(MASK_HANDLEWITHCARE, "MASK_HANDLEWITHCARE");
             }
+
             MASK_EXTERNTEST = cfg.ExternTest;
             if (MASK_EXTERNTEST != 0)
             {
@@ -72,6 +73,13 @@ namespace Contracts
                 MASK_ALL |= MASK_ERROR;
                 NameDict.Add(MASK_ERROR, "MASK_ERROR");
             }
+            if (MASK_ALL != 0)
+            {
+                NameDict.Add(MASK_ALL, "MASK_ALL");
+            }
+
+            MASK_ITEMINPLACE = cfg.ItemInPlace;
+            MASK_EXTERNALSTART = cfg.ExternalStart;
         }
 
         /// <summary>
@@ -114,6 +122,7 @@ namespace Contracts
         // In signals
 
         public int MASK_ITEMINPLACE = 0x0;
+        public int MASK_EXTERNALSTART = 0x0;
         public int MASK_EMERGENCY = 0x0;
 
         public int MASK_RESET = 0x0;

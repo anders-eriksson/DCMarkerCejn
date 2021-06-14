@@ -8,6 +8,7 @@ namespace Contracts
 {
     public interface IWorkFlowDebug
     {
+#if DEBUG
         void _laser_ItemInPositionEvent();
 
         void ArtNo(string artno);
@@ -17,5 +18,6 @@ namespace Contracts
         void Execute();
 
         void Execute2();
+#endif
     }
 }

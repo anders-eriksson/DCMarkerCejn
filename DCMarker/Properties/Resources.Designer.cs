@@ -88,7 +88,7 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Article does not exist in database!.
+        ///   Looks up a localized string similar to Article does not exist in database! May depend on wrong MachineId {0} .
         /// </summary>
         public static string Article_does_not_exist_in_database {
             get {
@@ -223,15 +223,6 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error during Marking.
-        /// </summary>
-        public static string Error_during_Marking {
-            get {
-                return ResourceManager.GetString("Error_during_Marking", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Error initializing machine.
         /// </summary>
         public static string Error_initializing_machine {
@@ -322,7 +313,7 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Items Done.
+        ///   Looks up a localized string similar to Items marked.
         /// </summary>
         public static string ItemsDone {
             get {
@@ -408,6 +399,15 @@ namespace DCMarker.Properties {
         public static string OnTopMenuHeader {
             get {
                 return ResourceManager.GetString("OnTopMenuHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Log file directory.
+        /// </summary>
+        public static string OpenLogPath {
+            get {
+                return ResourceManager.GetString("OpenLogPath", resourceCulture);
             }
         }
         
@@ -556,16 +556,7 @@ namespace DCMarker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TO number must be 7 number long.
-        /// </summary>
-        public static string TO_number_must_be_7_number_long {
-            get {
-                return ResourceManager.GetString("TO_number_must_be_7_number_long", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TO Number.
+        ///   Looks up a localized string similar to TO number.
         /// </summary>
         public static string ToNumber {
             get {

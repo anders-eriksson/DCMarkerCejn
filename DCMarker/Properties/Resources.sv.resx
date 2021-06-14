@@ -106,7 +106,7 @@
     <value>Märkta</value>
   </data>
   <data name="Article_does_not_exist_in_database" xml:space="preserve">
-    <value>Artikel saknas i databasen!</value>
+    <value>Artikel saknas i databasen! Kan bero på fel MaskinId {0}</value>
   </data>
   <data name="TestItem" xml:space="preserve">
     <value>Provbit</value>
@@ -191,5 +191,8 @@
   </data>
   <data name="ItemsDone" xml:space="preserve">
     <value>Produkter markerade</value>
+  </data>
+  <data name="OpenLogPath" xml:space="preserve">
+    <value>Öppna loggfilskatalog</value>
   </data>
 </root>

@@ -217,7 +217,7 @@
     <value>Done</value>
   </data>
   <data name="Article_does_not_exist_in_database" xml:space="preserve">
-    <value>Article does not exist in database!</value>
+    <value>Article does not exist in database! May depend on wrong MachineId {0} </value>
   </data>
   <data name="TestItem" xml:space="preserve">
     <value>Test Item</value>
@@ -314,5 +314,8 @@
   </data>
   <data name="ItemsDone" xml:space="preserve">
     <value>Items marked</value>
+  </data>
+  <data name="OpenLogPath" xml:space="preserve">
+    <value>Open Log file directory</value>
   </data>
 </root>
