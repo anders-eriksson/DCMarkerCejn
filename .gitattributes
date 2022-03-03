@@ -1,1 +1,2 @@
-*.gitattributes linguist-language=C#
+*.cs linguist-language=csharp
+
