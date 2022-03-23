@@ -519,11 +519,16 @@ namespace LaserWrapper
 
         private void DoExecute()
         {
+            Log.Trace("DoExecute");
             Stopwatch stopwatch = new Stopwatch();
 
             stopwatch.Start();
 
-            _doc.execute(true, true);
+            bool brc = _doc.execute(true, true);
+            if (!brc)
+            {
+                _doc.execute(true, true);
+            }
             stopwatch.Stop();
             Log.Debug($"_doc.execute took {stopwatch.Elapsed}");
             if (NextToLast)
