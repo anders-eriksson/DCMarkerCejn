@@ -22,7 +22,7 @@
   </section>
   <section name="Machine">
     <entry name="MaskinId">CABLASER14</entry>
-    <entry name="TypeOfMachine">6</entry>
+    <entry name="TypeOfMachine">7</entry>
     <entry name="GuiLanguage">sv-SE</entry>
     <entry name="Debug">False</entry>
     <entry name="ClearClipboard">True</entry>
