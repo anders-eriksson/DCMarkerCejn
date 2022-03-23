@@ -1,0 +1,2 @@
+*.cs linguist-language=csharp
+*.cs linguist-detectable=true 
