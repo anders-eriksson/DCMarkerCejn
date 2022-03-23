@@ -12,7 +12,7 @@ using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker.Model
 {
-    public partial class Co208WorkFlow : IWorkFlow
+    public partial class Co208WorkFlow : IWorkFlow, IWorkFlowDebug
     {
         private readonly DCConfig cfg;
         private readonly IoSignals sig;
@@ -77,7 +77,17 @@ namespace DCMarker.Model
                 Log.Debug("_laser == null");
             }
         }
-
+        public void SetArticleReady()
+        {
+            if (_laser != null)
+            {
+                _laser.SetPort(0, sig.MASK_ARTICLEREADY);
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
+        }
 #if DEBUG
 
         public void ArtNo(string artno)
@@ -97,6 +107,8 @@ namespace DCMarker.Model
 
 #endif
 
+#if DEBUG
+
         public void Execute()
         {
             if (_laser != null)
@@ -110,6 +122,15 @@ namespace DCMarker.Model
                 Log.Debug("_laser == null");
             }
         }
+
+#else
+
+        public void Execute()
+        {
+            throw new NotImplementedException();
+        }
+
+#endif
 
         public List<Article> GetArticle(string articleNumber)
         {
@@ -180,13 +201,7 @@ namespace DCMarker.Model
             }
         }
 
-#if DEBUG
-
         public void _laser_ItemInPositionEvent()
-#else
-
-        private void _laser_ItemInPositionEvent()
-#endif
         {
 #if !DEBUG
             if (FirstMarkingResetZ)

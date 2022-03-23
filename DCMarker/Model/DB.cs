@@ -212,12 +212,13 @@ namespace DCMarker.Model
                           EnableTO = x.EnableTO,
                           Careful = x.Careful,
                           Template = x.Template,
+                          ExternTest = x.ExternTest,
                       }).ToList();
                 }
                 else
                 {
                     result = context.LaserData
-                        .OrderBy(x => x.F1).ThenBy(x => x.Kant).Where(r => r.F1 == articleNumber && r.MaskinID == maskinID)
+                        .OrderBy(x => x.F1).ThenBy(x => x.Kant).Where(r => r.F1 == articleNumber && (r.MaskinID == maskinID || r.MaskinID == null || r.MaskinID == ""))
                       .Select(x => new Article
                       {
                           Id = x.Id,
@@ -228,6 +229,7 @@ namespace DCMarker.Model
                           EnableTO = x.EnableTO,
                           Careful = x.Careful,
                           Template = x.Template,
+                          ExternTest = x.ExternTest,
                       }).ToList();
                 }
             }

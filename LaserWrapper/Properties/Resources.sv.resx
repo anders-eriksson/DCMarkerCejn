@@ -15,4 +15,7 @@
   <data name="Marking" xml:space="preserve">
     <value>Märkning pågår...</value>
   </data>
+  <data name="No_Connection_with_Z_axis" xml:space="preserve">
+    <value>Ingen kontakt med Z-axeln!</value>
+  </data>
 </root>

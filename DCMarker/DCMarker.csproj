@@ -49,6 +49,17 @@
   <PropertyGroup>
     <ApplicationIcon>dclasersystem.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseDebug|AnyCPU'">
+    <OutputPath>bin\ReleaseDebug\</OutputPath>
+    <DefineConstants>TRACE;ReleaseDebug</DefineConstants>
+    <Optimize>false</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>DCMarker.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=5.2.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.5.2.0\lib\net45\AutoMapper.dll</HintPath>
@@ -113,6 +124,7 @@
     <Compile Include="Flexible\FlexibleMainViewModel.cs" />
     <Compile Include="KantConverter.cs" />
     <Compile Include="Co208MainViewModel.cs" />
+    <Compile Include="LargeFlexible\DigitalIO.cs" />
     <Compile Include="LargeFlexible\LargeFlexibleMainViewModel.cs" />
     <Compile Include="LargeFlexible\LargeFlexibleMainWindow.xaml.cs">
       <DependentUpon>LargeFlexibleMainWindow.xaml</DependentUpon>
@@ -131,8 +143,8 @@
     <Compile Include="Flexible\FlexibleArticleInput.cs" />
     <Compile Include="Model\Co208ArticleInput.cs" />
     <Compile Include="Model\Co208WorkFlow.cs" />
-    <Compile Include="Model\LargeFlexibleArticleInput.cs" />
-    <Compile Include="Model\LargeFlexibleWorkFlow.cs" />
+    <Compile Include="LargeFlexible\LargeFlexibleArticleInput.cs" />
+    <Compile Include="LargeFlexible\LargeFlexibleWorkFlow.cs" />
     <Compile Include="Model\NippleWorkFlow.cs" />
     <Compile Include="Model\AdamArticleInput.cs" />
     <Compile Include="Model\TcpArticleInputWithTOnr.cs" />
@@ -217,9 +229,17 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Resource Include="LargeFlexible\dclasersystem.ico" />
+    <None Include="dcmarker.ReleaseDebug.xml">
+      <DependentUpon>dcmarker.xml</DependentUpon>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
     <Content Include="TypeOfMachine.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="App.ReleaseDebug.config">
+      <DependentUpon>App.config</DependentUpon>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
     <None Include="XMLFile1.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
@@ -227,6 +247,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.sv.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -257,7 +278,9 @@
       <IsTransformFile>true</IsTransformFile>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Resource Include="MachineType.txt" />
+    <Content Include="MachineType.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

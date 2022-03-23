@@ -24,7 +24,5 @@ namespace DCMarkerEF
 
         [StringLength(2)]
         public string Q4 { get; set; }
-
-        public int QID { get; set; }
     }
 }

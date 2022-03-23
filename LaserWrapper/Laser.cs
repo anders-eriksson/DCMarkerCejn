@@ -1,5 +1,5 @@
-// #define FLEXIBLE
-#define CO208
+//#define FLEXIBLE
+//#define CO208
 
 using Configuration;
 using Contracts;
@@ -7,6 +7,7 @@ using DCLog;
 using laserengineLib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -37,6 +38,8 @@ namespace LaserWrapper
         private string _imagePath;
         private bool _isIoEnabled;
         private string _layoutPath;
+
+        public bool FirstMarkingResetZ;
 
         #endregion Configurable variables
 
@@ -73,17 +76,17 @@ namespace LaserWrapper
 
         private void UpdateIoMasks()
         {
-            sig.MASK_ARTICLEREADY = cfg.ArticleReady;
-            sig.MASK_READYTOMARK = cfg.ReadyToMark;
-            sig.MASK_NEXTTOLAST = cfg.NextToLast;
-            sig.MASK_MARKINGDONE = cfg.MarkingDone;
-            sig.MASK_ERROR = cfg.Error;
-            sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
+            //sig.MASK_ARTICLEREADY = cfg.ArticleReady;
+            //sig.MASK_READYTOMARK = cfg.ReadyToMark;
+            //sig.MASK_NEXTTOLAST = cfg.NextToLast;
+            //sig.MASK_MARKINGDONE = cfg.MarkingDone;
+            //sig.MASK_ERROR = cfg.Error;
+            //sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
 
             // In
             sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
-            sig.MASK_EMERGENCY = cfg.EmergencyError;
-            sig.MASK_RESET = cfg.ResetIo;
+            //sig.MASK_EMERGENCY = cfg.EmergencyError;
+            //sig.MASK_RESET = cfg.ResetIo;
         }
 
         public void ResetDocument()
@@ -98,7 +101,7 @@ namespace LaserWrapper
         {
             Log.Debug("Laser: Execute");
 
-            RaiseItemInPositionEvent();
+            //RaiseItemInPositionEvent();
 
             bool result = false;
             if (_doc == null)
@@ -221,8 +224,12 @@ namespace LaserWrapper
                 Log.Trace("Unregister event handlers");
                 _laserAxis.sigZeroReached -= _laserAxis_sigZeroReached;
                 _laserAxis.sigAxisError -= _laserAxis_sigAxisError;
-                _laserSystem.sigQueryStart -= _laserSystem_sigQueryStart;
+#if DEBUG || FLEXIBLE
                 _laserSystem.sigLaserStart -= _laserSystem_sigLaserStart;
+#else
+                _laserSystem.sigQueryStart -= _laserSystem_sigQueryStart;
+
+#endif
                 _laserSystem.sigLaserEnd -= _laserSystem_sigLaserEnd;
                 _laserSystem.sigLaserError -= _laserSystem_sigLaserError;
                 _ioPort.sigInputChange -= _ioPort_sigInputChange;
@@ -397,7 +404,7 @@ namespace LaserWrapper
                 _laserSystem.sigQueryStart += _laserSystem_sigQueryStart;
 #endif
 
-#if DEBUG
+#if DEBUG || FLEXIBLE
                 _laserSystem.sigLaserStart += _laserSystem_sigLaserStart;
 #endif
                 _laserSystem.sigLaserEnd += _laserSystem_sigLaserEnd;
@@ -447,7 +454,12 @@ namespace LaserWrapper
         {
             string[] axisName = new string[] { "X", "Y", "Z", "R" };
             Log.Debug(string.Format("{0} Axis has reached Zero", p_nAxis));
-            RaiseZeroReachedEvent(string.Format("{0}-Axis has been reset", axisName[p_nAxis]));
+            if (FirstMarkingResetZ)
+            {
+                FirstMarkingResetZ = false;
+                DoExecute();
+            }
+            //RaiseZeroReachedEvent(string.Format("{0}-Axis has been reset", axisName[p_nAxis]));
         }
 
         public void SaveDoc()
@@ -469,14 +481,13 @@ namespace LaserWrapper
         /// Event for External Start Signal!
         /// </summary>
 
-#if DEBUG
-
         public void _laserSystem_sigQueryStart()
-#else
-        private void _laserSystem_sigQueryStart()
-#endif
         {
             Log.Trace("Query Start");
+
+            Stopwatch stopwatch2 = new Stopwatch();
+
+            stopwatch2.Start();
 #if CO208
             Execute();
 #else
@@ -484,12 +495,46 @@ namespace LaserWrapper
             RaiseQueryStartEvent(GlblRes.Marking);
             ResetPort(0, sig.MASK_READYTOMARK);
             RaiseLaserBusyEvent(true);
-            _doc.execute(true, true);
+            if (FirstMarkingResetZ)
+            {
+                //FirstMarkingResetZ = false;
+                bool brc = ResetZAxis();
+                if (!brc)
+                {
+                    RaiseErrorEvent(GlblRes.No_Connection_with_Z_axis);
+                    return;
+                }
+
+                // We will return in _laser_ZeroReachedEvent
+            }
+            else
+            {
+                DoExecute();
+            }
+            stopwatch2.Stop();
+            Log.Debug($"_laserSystem_sigQueryStart took {stopwatch2.Elapsed}");
+
+#endif
+        }
+
+        private void DoExecute()
+        {
+            Log.Trace("DoExecute");
+            Stopwatch stopwatch = new Stopwatch();
+
+            stopwatch.Start();
+
+            bool brc = _doc.execute(true, true);
+            if (!brc)
+            {
+                _doc.execute(true, true);
+            }
+            stopwatch.Stop();
+            Log.Debug($"_doc.execute took {stopwatch.Elapsed}");
             if (NextToLast)
             {
                 SetPort(0, sig.MASK_NEXTTOLAST);
             }
-#endif
         }
 
 #endif
@@ -540,7 +585,11 @@ namespace LaserWrapper
                 }
                 Log.Debug(string.Format("Reset IO Mask: {0} - {1}", GetMaskName(mask), mask));
                 IoFix.Delete(mask);
-                return _ioPort.resetPort(port, mask);
+                var brc = WaitForLaserReady();
+                if (brc)
+                    return _ioPort.resetPort(port, mask);
+                else
+                    return false;
             }
             else
             {
@@ -564,7 +613,12 @@ namespace LaserWrapper
                 Log.Debug(string.Format("Set IO Mask: {0} - {1}", GetMaskName(mask), mask));
                 int currentMask = IoFix.Add(mask);
                 Log.Trace(string.Format("Mask: {0} - CurrentMask: {1}", mask, currentMask));
-                return _ioPort.setPort(port, currentMask);
+                // wait until laser is not busy
+                var brc = WaitForLaserReady();
+                if (brc)
+                    return _ioPort.setPort(port, currentMask);
+                else
+                    return false;
             }
             else
             {
@@ -572,6 +626,24 @@ namespace LaserWrapper
             }
 
             return false;
+        }
+
+        private bool WaitForLaserReady()
+        {
+            var status = _laserSystem.getDeviceStatus();
+            if (status == (int)LaserStates.LASER_OFF || status == (int)LaserStates.LASER_WARNING || status == (int)LaserStates.LASER_ERROR)
+            {
+                // laser is not available...
+                return false;
+            }
+
+            while (_laserSystem.isLaserBusy())
+            {
+                Log.Trace("Laser: isLaserBusy returned true, We will wait and try again");
+                Thread.Sleep(100);
+            }
+
+            return true;
         }
 
         private string GetMaskName(int mask)
@@ -654,6 +726,24 @@ namespace LaserWrapper
         }
 
         #endregion LaserEnd Event
+
+        #region Error Event
+
+        public delegate void ErrorHandler(string msg);
+
+        public event EventHandler<ErrorArgs> ErrorEvent;
+
+        internal void RaiseErrorEvent(string msg)
+        {
+            var handler = ErrorEvent;
+            if (handler != null)
+            {
+                var arg = new ErrorArgs(msg);
+                handler(null, arg);
+            }
+        }
+
+        #endregion Error Event
 
         #region LaserError Event
 

@@ -82,6 +82,16 @@ namespace DCMarker.Flexible
             return _laserWrapper.ResetPort(0, sig.MASK_MARKINGDONE);
         }
 
+        public bool SetExternTest()
+        {
+            return _laserWrapper.SetPort(0, sig.MASK_EXTERNTEST);
+        }
+
+        public bool ResetExternTest()
+        {
+            return _laserWrapper.ResetPort(0, sig.MASK_EXTERNTEST);
+        }
+
         public bool SetError()
         {
             return _laserWrapper.SetPort(0, sig.MASK_ERROR);

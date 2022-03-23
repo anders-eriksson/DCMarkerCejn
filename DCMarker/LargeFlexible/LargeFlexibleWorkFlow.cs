@@ -7,39 +7,39 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DCLog;
-using DCMarker.Flexible;
-using DCMarker.Model;
-
 using GlblRes = global::DCMarker.Properties.Resources;
+using System.Threading;
+using DCMarker.LargeFlexible;
+using DCMarker.Model;
+using System.Diagnostics;
 
-namespace DCMarker.Flexible
+namespace DCMarker.LargeFlexible
 {
-    public partial class FlexibleWorkFlow : IWorkFlow
+    public partial class LargeFlexibleWorkFlow : IWorkFlow
     {
         private readonly DCConfig cfg;
         private readonly IoSignals sig;
         private DigitalIO digitalIO;
         private string _articleNumber;
         private List<Article> _articles;
-
-        private FlexibleItem[] _items;
-        private int _itemsDone;
-
-        private int _currentItem;
+        private int _currentEdge;
         private DB _db;
         private bool _hasEdges;
         private Laser _laser;
-        private volatile bool ArticleHasToNumber = false;
-        private volatile string TOnumber;
-        private volatile bool IsTOnumberUpdated = false;
-        private System.Timers.Timer _ReadyToMarkTimer;
+        private volatile bool ExternTest = false;
+        private bool _FirstMarkingResetZ;
 
-        //private volatile bool IsTOnumberApproved = false;
-        private bool _testItem;
+        public bool FirstMarkingResetZ
+        {
+            get { return _FirstMarkingResetZ; }
+            set
+            {
+                _FirstMarkingResetZ = value;
+                _laser.FirstMarkingResetZ = _FirstMarkingResetZ;
+            }
+        }
 
-        public bool FirstMarkingResetZ { get; set; }
-
-        public FlexibleWorkFlow()
+        public LargeFlexibleWorkFlow()
         {
             try
             {
@@ -50,12 +50,10 @@ namespace DCMarker.Flexible
                 }
                 sig = IoSignals.Instance;
                 //UpdateIoMasks();
-                if (cfg.FirstMarkingResetZ)
-                    FirstMarkingResetZ = true;
-                else
-                    FirstMarkingResetZ = false;
-                _currentItem = 0;
+
                 Initialize();
+                digitalIO = new DigitalIO(_laser);
+                digitalIO.SetReady(true);
             }
             catch (Exception)
             {
@@ -66,31 +64,8 @@ namespace DCMarker.Flexible
         public void Close()
         {
             ResetAllIoSignals();
+            digitalIO.SetReady(false);
             _laser.Release();
-            _ReadyToMarkTimer.Dispose();
-        }
-
-        private void CreateTimer()
-        {
-            try
-            {
-                _ReadyToMarkTimer = new System.Timers.Timer();
-                _ReadyToMarkTimer.Interval = cfg.ReadyToMarkDelay;
-                _ReadyToMarkTimer.AutoReset = false;
-                _ReadyToMarkTimer.Elapsed += _ReadyToMarkTimer_Elapsed; ;
-
-                //_ReadyToMarkTimer.Start();
-            }
-            catch (Exception)
-            {
-                RaiseErrorEvent(GlblRes.Cant_start_timer_for_polling_ADAM_Module);
-                throw;
-            }
-        }
-
-        private void _ReadyToMarkTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            digitalIO.SetReadyToMark();
         }
 
         public void ResetArticleData()
@@ -103,24 +78,30 @@ namespace DCMarker.Flexible
             _laser.ResetDocument();
         }
 
-        public void ResetItemsDone()
-        {
-            _itemsDone = 0;
-        }
-
         public void ResetArticleReady()
         {
-            digitalIO.ResetArticleReady();
+            if (_laser != null)
+            {
+                // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+                digitalIO.ResetArticleReady();
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
         }
 
         public void SetArticleReady()
         {
-            digitalIO.SetArticleReady();
-        }
-
-        public void ResetCareful()
-        {
-            digitalIO.ResetHandleWithCare();
+            if (_laser != null)
+            {
+                // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+                digitalIO.SetArticleReady();
+            }
+            else
+            {
+                Log.Debug("_laser == null");
+            }
         }
 
 #if DEBUG
@@ -147,7 +128,11 @@ namespace DCMarker.Flexible
             if (_laser != null)
             {
                 Log.Trace("_laser.Execute");
+#if  DEBUG
                 _laser.Execute();
+#else
+                _laser._laserSystem_sigQueryStart();
+#endif
             }
             else
             {
@@ -159,14 +144,27 @@ namespace DCMarker.Flexible
         {
             List<Article> result;
             var maskinID = DCConfig.Instance.MaskinId;
-
             if (string.IsNullOrWhiteSpace(maskinID))
             {
                 result = _db.GetArticle(articleNumber);
+                if (result?.Count() > 0)
+                {
+                    ExternTest = result[0].ExternTest ?? false;
+                    if (ExternTest)
+                        digitalIO.SetExternTest();
+                    else
+                        digitalIO.ResetExternTest();
+                }
             }
             else
             {
                 result = _db.GetArticle(articleNumber, maskinID);
+                if (result?.Count() > 0)
+                    ExternTest = result[0].ExternTest ?? false;
+                if (ExternTest)
+                    digitalIO.SetExternTest();
+                else
+                    digitalIO.ResetExternTest();
             }
 
             return result;
@@ -180,7 +178,6 @@ namespace DCMarker.Flexible
                 InitializeMachine();
                 InitializeDatabase();
                 InitializeLaser();
-                digitalIO = new DigitalIO(_laser);
             }
             catch (Exception)
             {
@@ -192,23 +189,18 @@ namespace DCMarker.Flexible
 
         public void SimulateItemInPlace(int seq)
         {
-            throw new NotImplementedException("Not implemented in Flexible");
+            UpdateLayout();
         }
 
         public void SimulateItemInPlace(string articlenumber)
         {
-            //UpdateLayout();
-            ArticleData data = new ArticleData();
-            data.ArticleNumber = articlenumber;
-            ArticleArgs e = new ArticleArgs(data);
-            _articleInput_ArticleEvent(null, e);
+            throw new NotImplementedException("Not implemented in LargeFlexibel");
         }
 
         private void _articleInput_ArticleEvent(object sender, ArticleArgs e)
         {
             RaiseErrorEvent(string.Empty);
-            digitalIO.SetReadyToMark();
-            //_laser.ResetPort(0, sig.MASK_READYTOMARK);
+            digitalIO.ResetReadyToMark();
             _articleNumber = e.Data.ArticleNumber;
             RaiseStatusEvent(string.Format(GlblRes.Article_0_received, _articleNumber));
 
@@ -234,74 +226,35 @@ namespace DCMarker.Flexible
         public void _laser_ItemInPositionEvent()
         {
 #if !DEBUG
-            if (FirstMarkingResetZ)
-            {
-                FirstMarkingResetZ = false;
-                bool brc = ResetZAxis();
-                if (!brc)
-                {
-                    RaiseErrorEvent(GlblRes.No_Connection_with_Z_axis);
-                    return;
-                }
+            //if (FirstMarkingResetZ)
+            //{
+            //    FirstMarkingResetZ = false;
+            //    bool brc = ResetZAxis();
+            //    if (!brc)
+            //    {
+            //        RaiseErrorEvent(GlblRes.No_Connection_with_Z_axis);
+            //        return;
+            //    }
 
-                // We will return in _laser_ZeroReachedEvent
-            }
-            else
+            //    // We will return in _laser_ZeroReachedEvent
+            //}
+            //else
             {
-                digitalIO.ResetLastEdge();
-                // TODO Remember to remove this delay
-                //digitalIO.SetLastEdge();
-
-                RaiseUpdateItemStatusEvent(_items, _currentItem);
                 UpdateLayout();
-                //_currentItem = IncrementCurrentItem(_currentItem);
+                digitalIO.ResetReadyToMark();
             }
 #else
-            digitalIO.ResetLastEdge();
-            RaiseUpdateItemStatusEvent(_items, _currentItem);
             UpdateLayout();
-            //_currentItem = IncrementCurrentItem(_currentItem);
 #endif
-        }
-
-        private int IncrementCurrentItem(int currentItem)
-        {
-            int result = 0;
-
-            currentItem++;
-            if (currentItem > 1)
-                currentItem = 0;
-
-            result = currentItem;
-
-            return result;
         }
 
         private void _laser_LaserEndEvent()
         {
             if (_laser != null)
             {
-                FirstMarkingResetZ = false;
-                int n = _currentItem;//_currentItem - 1 < 0 ? 0 : _currentItem - 1;
-                _items[n].ItemState = FlexibleItemStates.MarkingDone;
-                if (_items[n].CurrentEdge >= _items[n].NumberOfEdges)
-                {
-                    digitalIO.SetLastEdge();
-                    //digitalIO.ResetLastEdge();
-
-                    // we are done with the item. Reset it for the next item
-                    ResetItem(n);
-                    RaiseItemDoneEvent(++_itemsDone);
-                }
-
+                _laser.FirstMarkingResetZ = false;
                 digitalIO.SetMarkingDone();
-                System.Threading.Thread.Sleep(20);
-
-                _currentItem = IncrementCurrentItem(_currentItem);
-                RaiseUpdateItemStatusEvent(_items, _currentItem);
-                Log.Trace("Before Start _ReadyToMarkTimer");
-                _ReadyToMarkTimer.Start();
-                //digitalIO.SetReadyToMark();
+                digitalIO.SetReadyToMark();
             }
             else
             {
@@ -311,13 +264,6 @@ namespace DCMarker.Flexible
             // TODO should this be Waiting for product? And Order done when the whole order is marked?
             //RaiseStatusEvent(GlblRes.Marking_is_done);
             RaiseStatusEvent(GlblRes.Waiting_for_product);
-        }
-
-        private void ResetItem(int currentItem)
-        {
-            _items[_currentItem].ItemId++;
-            _items[_currentItem].CurrentEdge = 0;
-            _items[_currentItem].ItemState = FlexibleItemStates.None;
         }
 
         private void _laser_LaserErrorEvent(string msg)
@@ -346,7 +292,7 @@ namespace DCMarker.Flexible
         {
             if (_laser != null)
             {
-                _laser.ResetPort(0, sig.MASK_ALL);
+                digitalIO.ResetAll();
             }
             else
             {
@@ -375,7 +321,7 @@ namespace DCMarker.Flexible
             if (_laser != null)
             {
                 _laser.NextToLast = false;
-                _laser.ResetPort(0, sig.MASK_NEXTTOLAST);
+                digitalIO.ResetNextToLast();
             }
             else
             {
@@ -420,18 +366,38 @@ namespace DCMarker.Flexible
             _laser.LaserEndEvent += _laser_LaserEndEvent;
             _laser.DeviceErrorEvent += _laser_LaserErrorEvent;
             _laser.ItemInPositionEvent += _laser_ItemInPositionEvent;
+            _laser.ExternalStartEvent += _laser_ExternalStartEvent;
             _laser.ResetIoEvent += _laser_ResetIoEvent;
             _laser.LaserBusyEvent += _laser_LaserBusyEvent;
             _laser.ZeroReachedEvent += _laser_ZeroReachedEvent;
+            SetFirstMarkingResetZ();
+        }
+
+        private void SetFirstMarkingResetZ()
+        {
+            if (cfg.FirstMarkingResetZ)
+            {
+                FirstMarkingResetZ = true;
+                _laser.FirstMarkingResetZ = true;
+            }
+            else
+            {
+                FirstMarkingResetZ = false;
+                _laser.FirstMarkingResetZ = false;
+            }
+        }
+
+        private void _laser_ExternalStartEvent()
+        {
+            _laser._laserSystem_sigQueryStart();
         }
 
         private void _laser_ZeroReachedEvent(string msg)
         {
-            digitalIO.ResetLastEdge();
-            //digitalIO.SetLastEdge();
-
-            //UpdateLayout();
-            //_currentItem = IncrementCurrentItem(_currentItem);
+            if (FirstMarkingResetZ)
+            {
+                FirstMarkingResetZ = false;
+            }
         }
 
         private void _laser_LaserBusyEvent(bool busy)
@@ -443,21 +409,13 @@ namespace DCMarker.Flexible
         {
             try
             {
-                CreateNewItems();
-                CreateTimer();
+                // TODO: Do wee need to init the machine?
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Error initializing machine");
                 throw;
             }
-        }
-
-        private void CreateNewItems()
-        {
-            _items = new FlexibleItem[2];
-            _items[0] = new FlexibleItem("A");
-            _items[1] = new FlexibleItem("B");
         }
 
         private string NormalizeLayoutName(string layoutname)
@@ -484,27 +442,12 @@ namespace DCMarker.Flexible
         {
             if (_laser != null)
             {
-                _laser.ResetPort(0, sig.MASK_ALL);
-                _laser.SetReady(false);
+                digitalIO.ResetAll();
+                digitalIO.ResetArticleReady();
+                digitalIO.SetReady(false);
                 RaiseLaserBusyEvent(false);
             }
         }
-
-        //private void UpdateIoMasks()
-        //{
-        //    // Out
-        //    sig.MASK_ARTICLEREADY = cfg.ArticleReady;
-        //    sig.MASK_READYTOMARK = cfg.ReadyToMark;
-        //    sig.MASK_NEXTTOLAST = cfg.NextToLast;
-        //    sig.MASK_MARKINGDONE = cfg.MarkingDone;
-        //    sig.MASK_ERROR = cfg.Error;
-        //    sig.MASK_ALL = sig.MASK_ARTICLEREADY | sig.MASK_READYTOMARK | sig.MASK_NEXTTOLAST | sig.MASK_MARKINGDONE | sig.MASK_ERROR;
-
-        //    // In
-        //    sig.MASK_ITEMINPLACE = cfg.ItemInPlace;
-        //    sig.MASK_EMERGENCY = cfg.EmergencyError;
-        //    sig.MASK_RESET = cfg.ResetIo;
-        //}
 
         /// <summary>
         /// Loads and updates the Layout when we have gotten an ItemInPlace signal from PLC
@@ -512,40 +455,46 @@ namespace DCMarker.Flexible
         public void UpdateLayout()
         {
             Log.Trace("UpdateLayout");
+            Stopwatch stopwatch = new Stopwatch();
+
+            stopwatch.Start();
             RaiseErrorEvent(string.Empty);
 
-            Article article = GetItemArticle(_currentItem);
-            if (article != null)
+            Article article = null;
+            if (_articles != null && _articles.Count > 0)
             {
-                if (article.EnableTO.HasValue && article.EnableTO.Value)
-                    article.TOnumber = TOnumber;
-
-                Log.Debug("Article found");
-                var item = _items[_currentItem];
-                if (item.NumberOfEdges > 1 && item.CurrentEdge > 1)
-                    _hasEdges = true;
-                else
+                if (_hasEdges && _currentEdge >= _articles.Count)
+                {
                     _hasEdges = false;
+                    _currentEdge = 1;
+                }
 
-                ArticleData data = new ArticleData();
-                data.ArticleNumber = article.F1;
-                data.IsNewArticleNumber = false;
-                data.TOnr = TOnumber;
-                data.TestItem = _testItem;
-                data.CurrentItem = _currentItem;
-                ArticleArgs e = new ArticleArgs(data);
-                UpdateViewModel(item, e);
+                if (_hasEdges)
+                {
+                    _currentEdge++;
+                    article = _articles[_currentEdge - 1];
+                }
+                else
+                {
+                    _currentEdge = 0;
+
+                    article = _articles[_currentEdge];
+                    _currentEdge++;
+                }
 
                 string layoutname = article.Template;
                 if (!string.IsNullOrEmpty(layoutname))
                 {
-                    Log.Debug("Layout found");
                     layoutname = NormalizeLayoutName(layoutname);
                     bool brc = _laser.Load(layoutname);
                     if (brc)
                     {
                         //HistoryData historyData = GetHistoryData(_articleNumber, article.Kant, _hasEdges);
                         HistoryData historyData = GetHistoryData(article, _hasEdges);
+                        if (_articles.Count > 1)
+                        {
+                            _hasEdges = true;
+                        }
 
                         if (historyData != null)
                         {
@@ -567,13 +516,7 @@ namespace DCMarker.Flexible
                                     // we are ready to mark...
                                     RaiseStatusEvent(string.Format(GlblRes.Waiting_for_start_signal_0, layoutname));
                                     digitalIO.ResetMarkingDone();
-                                    digitalIO.ResetReadyToMark();
-
-                                    // this is moved to FinishUpdateWorkflow and _laser_LaserEndEvent
-                                    //// digitalIO.SetReadyToMark();
-                                    ///
-                                    Log.Trace("Calling sigLaserStart");
-                                    Execute();
+                                    //digitalIO.SetReadyToMark();
                                 }
                                 else
                                 {
@@ -604,32 +547,14 @@ namespace DCMarker.Flexible
             {
                 RaiseErrorEvent(GlblRes.ItemInPlace_received_before_Article_Number_is_set);
             }
-        }
-
-        private Article GetItemArticle(int currentItem)
-        {
-            Article result = null;
-
-            var edge = _items[currentItem].CurrentEdge;
-            _items[currentItem].CurrentEdge++;
-            if (_items[currentItem].CurrentEdge > _items[currentItem].NumberOfEdges)
-            {
-                // FIX: Change this to something better....
-                RaiseErrorEvent("Trying to mark more edges than is defined");
-
-                result = null;
-            }
-            else
-            {
-                result = _items[currentItem].Articles[edge];
-            }
-
-            return result;
+            stopwatch.Stop();
+            Log.Debug($"UpdateLayout took {stopwatch.Elapsed}");
         }
 
         public void UpdateWorkflow(Article article)
         {
             _articleNumber = article.F1;
+
             var maskinID = DCConfig.Instance.MaskinId;
             if (string.IsNullOrWhiteSpace(maskinID))
             {
@@ -642,14 +567,7 @@ namespace DCMarker.Flexible
 
             if (_articles != null && _articles.Count > 0)
             {
-                if (TemplateExists(_articles[0].Template))
-                {
-                    FinishUpdateWorkflow(_articles[0]);
-                }
-                else
-                {
-                    RaiseErrorEvent(string.Format("Template was not found! {0}.xlp", _articles[0].Template));
-                }
+                FinishUpdateWorkflow(article);
             }
             else
             {
@@ -658,58 +576,17 @@ namespace DCMarker.Flexible
             }
         }
 
-        private bool TemplateExists(string template)
-        {
-            bool result = true;
-
-            var layout = NormalizeLayoutName(template);
-            result = _laser.Load(layout);
-
-            return result;
-        }
-
         private void FinishUpdateWorkflow(Article article)
         {
-            if (article.Careful.HasValue && article.Careful.Value)
-            {
-                digitalIO.SetHandleWithCare();
-            }
-            else
-            {
-                digitalIO.ResetHandleWithCare();
-            }
-
-            digitalIO.SetArticleReady();
-
-            // HACK: ReadyToMark is set before UpdateLayout, according how it was in the old program
-            // HACK: This should be changed.....
-            digitalIO.SetReadyToMark();
-
+            // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+            digitalIO.ResetArticleReady();  // Låg
+            digitalIO.SetReadyToMark();     // Hög
             // reverse IsTestItemSelected to make it easier for the if statement!
             for (int i = 0; i < _articles.Count; i++)
             {
                 _articles[i].TOnumber = article.TOnumber;
                 _articles[i].IsTestItemSelected = !article.IsTestItemSelected;
             }
-            _items[0].Articles = _articles;
-            _items[0].ItemState = FlexibleItemStates.ArticleLoaded;
-            _items[0].NumberOfEdges = _articles.Count;
-            _items[0].CurrentEdge = 0;
-
-            _items[1].Articles = _articles;
-            _items[1].ItemState = FlexibleItemStates.ArticleLoaded;
-            _items[1].NumberOfEdges = _articles.Count;
-            _items[1].CurrentEdge = 0;
-            _currentItem = 0;
-
-            RaiseSetupItemStatusEvent(_items);
-        }
-
-        private FlexibleItem CreateFlexibleItem()
-        {
-            FlexibleItem result = null;
-
-            return result;
         }
 
         private void UpdateViewModel(List<Article> articles)
@@ -719,14 +596,7 @@ namespace DCMarker.Flexible
             RaiseUpdateMainViewModelEvent(data);
         }
 
-        private void UpdateViewModel(FlexibleItem item, ArticleArgs e)
-        {
-            UpdateViewModelData data = CreateUpdateViewModelData(item, e);
-
-            RaiseUpdateMainViewModelEvent(data);
-        }
-
-        private UpdateViewModelData CreateUpdateViewModelData(List<Article> articles)
+        private static UpdateViewModelData CreateUpdateViewModelData(List<Article> articles)
         {
             var data = new UpdateViewModelData();
             Article article = articles[0];
@@ -745,69 +615,30 @@ namespace DCMarker.Flexible
             data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
             data.HasTOnr = article.EnableTO.HasValue ? article.EnableTO.Value : false;
             data.Template = article.Template;
-
             return data;
         }
 
-        private UpdateViewModelData CreateUpdateViewModelData(FlexibleItem item, ArticleArgs e)
+        public void UpdateTOnumber(string onr)
+        { }
+
+        public bool ResetZAxis()
         {
-            Log.Trace("CreateUpdateViewModelData");
-            var data = new UpdateViewModelData();
-            Article article = item.Articles[item.CurrentEdge - 1];
-            data.TotalKant = item.Articles.Count.ToString();
-            data.Provbit = e.Data.TestItem;
-            data.ArticleNumber = string.IsNullOrWhiteSpace(article.F1) ? e.Data.ArticleNumber : article.F1;
-            data.IsNewArticleNumber = e.Data.IsNewArticleNumber;
-            if (string.IsNullOrWhiteSpace(article.Kant))
-            {
-                data.HasKant = false;
-                data.Kant = article.Kant;
-            }
-            else
-            {
-                data.HasKant = true;
-                //data.Kant = articles.Count.ToString();
-                data.Kant = article.Kant;
-            }
-            data.Fixture = article.FixtureId;
-            data.HasFixture = string.IsNullOrWhiteSpace(data.Fixture) ? false : true;
+            Log.Debug("ResetZAxis");
+            bool result = _laser.ResetZAxis();
 
-            // TO-number should only be entered once when the article is loaded!
-            if (!ArticleHasToNumber)
-            {
-                data.HasTOnr = false;
-
-                foreach (Article a in item.Articles)
-                {
-                    if (a.EnableTO.HasValue)
-                    {
-                        data.HasTOnr = a.EnableTO.Value;
-                    }
-                }
-                if (data.HasTOnr)
-                {
-                    ArticleHasToNumber = true;
-                    RaiseArticleHasToNumberEvent(true);
-                }
-                else
-                {
-                    ArticleHasToNumber = false;
-                    RaiseArticleHasToNumberEvent(false);
-                }
-            }
-
-            data.Template = article.Template;
-            data.HasTOnr = ArticleHasToNumber;
-
-            data.CurrentItem = e.Data.CurrentItem;
-            Log.Trace("CreateUpdateViewModelData Done");
-            return data;
+            return result;
         }
 
-        public void UpdateTOnumber(string tonr)
+        /// <summary>
+        /// Starts polling of an IO service
+        /// Only used in connection of a hardware that don't use Events
+        /// </summary>
+        /// <param name="pollInterval">number of milliseconds between each poll</param>
+        /// <param name="errorTimeout">number of milliseconds untile an error timeout is triggered</param>
+        /// <returns>true if successful, otherwise false</returns>
+        public bool StartPoll(int pollInterval, int errorTimeout)
         {
-            TOnumber = tonr;
-            IsTOnumberUpdated = false;
+            return true;
         }
 
         #region only used by NippleWorkFlow // AME - 2018-05-12
@@ -846,6 +677,26 @@ namespace DCMarker.Flexible
         #endregion Article has TO-number Event
 
         #endregion only used by NippleWorkFlow // AME - 2018-05-12
+
+        #region only used in FlexibleWorkFlow // AME - 2018-11-05
+
+        public event EventHandler<ItemDoneArgs> ItemDoneEvent;
+
+        public event EventHandler<UpdateItemStatusArgs> UpdateItemStatusEvent;
+
+        public event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;
+
+        public void ResetItemsDone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ResetCareful()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion only used in FlexibleWorkFlow // AME - 2018-11-05
 
         #region only used by CO208
 
@@ -941,80 +792,6 @@ namespace DCMarker.Flexible
             }
         }
 
-        public bool ResetZAxis()
-        {
-            Log.Debug("ResetZAxis");
-            bool result = _laser.ResetZAxis();
-
-            return result;
-        }
-
-        /// <summary>
-        /// Starts polling of an IO service
-        /// Only used in connection of a hardware that don't use Events
-        /// </summary>
-        /// <param name="pollInterval">number of milliseconds between each poll</param>
-        /// <param name="errorTimeout">number of milliseconds untile an error timeout is triggered</param>
-        /// <returns>true if successful, otherwise false</returns>
-        public bool StartPoll(int pollInterval, int errorTimeout)
-        {
-            return true;
-        }
-
         #endregion Laser Busy Event
-
-        #region Item Done Event
-
-        public delegate void ItemDoneHandler(int numberofItemsDone);
-
-        public event EventHandler<ItemDoneArgs> ItemDoneEvent;
-
-        internal void RaiseItemDoneEvent(int numberofItemsDone)
-        {
-            var handler = ItemDoneEvent;
-            if (handler != null)
-            {
-                var arg = new ItemDoneArgs(numberofItemsDone);
-                handler(null, arg);
-            }
-        }
-
-        #endregion Item Done Event
-
-        #region Setup Item Status Event
-
-        public delegate void SetupItemStatusHandler(FlexibleItem[] items);
-
-        public event EventHandler<SetupItemStatusArgs> SetupItemStatusEvent;
-
-        internal void RaiseSetupItemStatusEvent(FlexibleItem[] items)
-        {
-            var handler = SetupItemStatusEvent;
-            if (handler != null)
-            {
-                var arg = new SetupItemStatusArgs(items);
-                handler(null, arg);
-            }
-        }
-
-        #endregion Setup Item Status Event
-
-        #region Update Item Status Event
-
-        public delegate void UpdateItemStatusHandler(FlexibleItem[] data, int currentItem);
-
-        public event EventHandler<UpdateItemStatusArgs> UpdateItemStatusEvent;
-
-        internal void RaiseUpdateItemStatusEvent(FlexibleItem[] data, int currentItem)
-        {
-            var handler = UpdateItemStatusEvent;
-            if (handler != null)
-            {
-                var arg = new UpdateItemStatusArgs(data, currentItem);
-                handler(null, arg);
-            }
-        }
-
-        #endregion Update Item Status Event
     }
 }

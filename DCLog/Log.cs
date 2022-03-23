@@ -2,6 +2,7 @@
 using NLog.Targets;
 using NLog.Targets.Wrappers;
 using System;
+using System.IO;
 
 namespace DCLog
 {
@@ -133,20 +134,21 @@ namespace DCLog
         /// <param name="ex">Exception</param>
         private static void dclog(LogLevel level, string message, Exception ex = null)
         {
-#if DEBUGx
-            string stackmsg = "|";
-
-            System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(true);
-            for (int i = 0; i < st.FrameCount; i++)
+            if (extendedLogging())
             {
-                // Note that high up the call stack, there is only
-                // one stack frame.
-                System.Diagnostics.StackFrame sf = st.GetFrame(i);
-                string tmp = string.Format("{0} - {1} | ", sf.GetMethod(), sf.GetFileLineNumber());
-                stackmsg += tmp;
+                string stackmsg = "|";
+
+                System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(true);
+                for (int i = 0; i < st.FrameCount; i++)
+                {
+                    // Note that high up the call stack, there is only
+                    // one stack frame.
+                    System.Diagnostics.StackFrame sf = st.GetFrame(i);
+                    string tmp = string.Format("{0} - {1} | ", sf.GetMethod(), sf.GetFileLineNumber());
+                    stackmsg += tmp;
+                }
+                message += stackmsg;
             }
-            message += stackmsg;
-#endif
 #if false
             return;
 #else
@@ -162,6 +164,15 @@ namespace DCLog
                 _logger.Log(typeof(Log), logEvent);
             }
 #endif
+        }
+
+        private static bool extendedLogging()
+        {
+            var extendedFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),"Log.Ext");
+            if (File.Exists(extendedFile))
+                return true;
+            else
+                return false;
         }
     }
 }

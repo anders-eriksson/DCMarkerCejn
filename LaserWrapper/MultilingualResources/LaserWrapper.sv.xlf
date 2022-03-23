@@ -10,6 +10,10 @@
           <source>Marking...</source>
           <target state="translated">Märkning pågår...</target>
         </trans-unit>
+        <trans-unit id="No_Connection_with_Z_axis" translate="yes" xml:space="preserve">
+          <source>No connection with Z axis</source>
+          <target state="translated">Ingen kontakt med Z-axeln!</target>
+        </trans-unit>
       </group>
     </body>
   </file>

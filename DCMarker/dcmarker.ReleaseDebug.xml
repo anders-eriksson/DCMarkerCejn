@@ -8,16 +8,12 @@
   </section>
   <section name="Machine">
     <entry name="Debug"  xdt:Transform="Replace" xdt:Locator="Match(name)">True</entry>
-    <entry name="MaskinID"  xdt:Transform="Replace" xdt:Locator="Match(name)"></entry>
   </section>
-  <section name="Adam">
+  <!--<section name="Adam">
     <entry name="AdamIpAddress" xdt:Transform="Replace" xdt:Locator="Match(name)">192.168.1.100</entry>
     <entry name="AdamErrorTimeout" xdt:Transform="Replace" xdt:Locator="Match(name)">1200000</entry>
     <entry name="IsAdamErrorTimeoutActive" xdt:Transform="Replace" xdt:Locator="Match(name)">False</entry>
     <entry name="AdamLogTelegrams" xdt:Transform="Replace" xdt:Locator="Match(name)">False</entry>
-    <entry name="Debug" xdt:Transform="Replace" xdt:Locator="Match(name)">True</entry>
-  </section>
-  <section>
     <entry name="IsAdamErrorTimeout" xdt:Transform="Replace" xdt:Locator="Match(name)">False</entry>
-  </section>
+  </section>-->
 </profile>

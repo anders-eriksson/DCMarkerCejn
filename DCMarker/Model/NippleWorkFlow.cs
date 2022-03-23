@@ -1,14 +1,13 @@
 using Configuration;
 using Contracts;
+using DCLog;
 using DCMarkerEF;
 using LaserWrapper;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using DCLog;
-using GlblRes = global::DCMarker.Properties.Resources;
 using System.Threading;
+using GlblRes = global::DCMarker.Properties.Resources;
 
 namespace DCMarker.Model
 {
@@ -151,13 +150,7 @@ namespace DCMarker.Model
             throw new NotImplementedException("Not implemented in Nipple");
         }
 
-#if DEBUG
-
         public void _laser_ItemInPositionEvent()
-#else
-
-        private void _laser_ItemInPositionEvent()
-#endif
         {
             UpdateLayout();
         }
@@ -871,6 +864,11 @@ namespace DCMarker.Model
         }
 
         public void ResetArticleReady()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetArticleReady()
         {
             throw new NotImplementedException();
         }

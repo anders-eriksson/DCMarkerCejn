@@ -161,13 +161,7 @@ namespace DCMarker.Model
             }
         }
 
-#if DEBUG
-
         public void _laser_ItemInPositionEvent()
-#else
-
-        private void _laser_ItemInPositionEvent()
-#endif
         {
             UpdateLayout();
         }
@@ -432,6 +426,10 @@ namespace DCMarker.Model
             throw new NotImplementedException();
         }
 
+        public void SetArticleReady()
+        {
+            throw new NotImplementedException();
+        }
         public bool ResetZAxis()
         {
             throw new NotImplementedException();

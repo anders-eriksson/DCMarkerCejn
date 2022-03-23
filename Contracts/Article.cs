@@ -20,5 +20,6 @@ namespace Contracts
         public string TOnumber { get; set; }
         public string Template { get; set; }
         public bool? IsTestItemSelected { get; set; }
+        public bool? ExternTest { get; set; }
     }
 }

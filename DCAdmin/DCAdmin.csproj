@@ -61,6 +61,16 @@
   <PropertyGroup>
     <ApplicationIcon>dclasersystem.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseDebug|AnyCPU'">
+    <OutputPath>bin\ReleaseDebug\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=6.0.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
@@ -234,6 +244,11 @@
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>true</IsTransformFile>
     </None>
+    <None Include="App.ReleaseDebug.config">
+      <DependentUpon>App.config</DependentUpon>
+      <IsTransformFile>true</IsTransformFile>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -314,7 +329,10 @@
     <Folder Include="Model\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="dcmarker.xml" />
+    <None Include="dcmarker.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\AddRow_16x.png" />

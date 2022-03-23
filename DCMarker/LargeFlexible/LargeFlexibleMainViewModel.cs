@@ -1,7 +1,7 @@
 using Configuration;
 using Contracts;
 using DCLog;
-using DCMarker.Flexible;
+using DCMarker.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,40 +11,26 @@ using System.Windows.Media;
 using GlblRes = global::DCMarker.Properties.Resources;
 using System.Collections;
 using System.Diagnostics;
+using DCMarker.LargeFlexible;
 
 namespace DCMarker
 {
-    public partial class FlexibleMainViewModel : INotifyPropertyChanged, IDataErrorInfo
+    public class LargeFlexibleMainViewModel : INotifyPropertyChanged, IDataErrorInfo
     {
         private readonly Color BUSYCOLOR = Colors.Red;
         private readonly Color WAITINGCOLOR = Colors.LightGreen;
-
-        private readonly Brush ACTIVEBRUSH = CreateBrush(0xff, 0xcc, 0xcc);
-        private readonly Brush INACTIVEBRUSH = CreateBrush(0x66, 0xff, 0xcc);
-
-        private static Brush CreateBrush(int r, int g, int b)
-        {
-            Brush result = null;
-            var brush = new SolidColorBrush(Color.FromArgb(255, (byte)r, (byte)g, (byte)b));
-            result = brush;
-
-            return result;
-        }
 
         private IWorkFlow _wf = null;
 
         private DCConfig cfg;
 
-        private string[] TableName = new string[2] { "A", "B" };
-        private int[] _itemsDone = new int[2] { 0, 0 };
-
-        public FlexibleMainViewModel()
+        public LargeFlexibleMainViewModel()
         {
             ArticleNumber = string.Empty;
             Fixture = string.Empty;
             HasFixture = false;
             HasKant = false;
-            KantA = string.Empty;
+            Kant = string.Empty;
             HasTestItem = false;
             TestItem = string.Empty;
             HasBatchSize = false;
@@ -80,39 +66,36 @@ namespace DCMarker
         internal void Test()
         {
             //MarkingIsInProgress = !MarkingIsInProgress;
-            //#if DEBUG
-            if (_wf != null)
+            if (cfg.Debug)
             {
-                //_wf._laser_ItemInPositionEvent();
-                _wf.SimulateItemInPlace(ArticleNumber);
+                if (_wf != null)
+                {
+                    _wf._laser_ItemInPositionEvent();
+                    //_wf.SimulateItemInPlace();
+                }
             }
-            //#endif
         }
-
-#if DEBUG
 
         internal void Execute()
         {
             if (_wf != null)
             {
-                Log.Trace("FlexibleMainViewModel: _wf.Execute");
+                Log.Trace("LargeFlexibleMainViewModel: _wf.Execute");
                 _wf.Execute();
             }
         }
 
-#endif
-
         private void InitializeMachine()
         {
-            _wf = new FlexibleWorkFlow();
-            _wf.ItemDoneEvent += _wf_ItemDoneEvent;
-        }
+            switch (cfg.TypeOfMachine)
+            {
+                case 6:
+                    _wf = new LargeFlexibleWorkFlow();
+                    break;
 
-        private void _wf_ItemDoneEvent(object sender, ItemDoneArgs e)
-        {
-            //_itemsDone[_CurrentSide] = e.NumberofItemsDone;
-            //ItemDone = _itemsDone[_CurrentSide].ToString();
-            ItemsDone = e.NumberofItemsDone.ToString();
+                default:
+                    throw new Exception(string.Format(GlblRes.Type_of_machine_not_available_Type0, cfg.TypeOfMachine));
+            }
         }
 
         internal void ResetAllIoSignals()
@@ -141,48 +124,10 @@ namespace DCMarker
             {
                 _wf.ErrorEvent += _wf_ErrorEvent;
                 _wf.UpdateMainViewModelEvent += _wf_UpdateMainViewModelEvent;
-                _wf.UpdateItemStatusEvent += _wf_UpdateItemStatusEvent;
-                _wf.SetupItemStatusEvent += _wf_SetupItemStatusEvent;
                 _wf.StatusEvent += _wf_StatusEvent;
                 _wf.ErrorMsgEvent += _wf_ErrorMsgEvent;
                 _wf.LaserBusyEvent += _wf_LaserBusyEvent;
             }
-        }
-
-        private void _wf_SetupItemStatusEvent(object sender, SetupItemStatusArgs e)
-        {
-            KantA = e.Items[0].CurrentEdge.ToString();
-            KantB = e.Items[1].CurrentEdge.ToString();
-            TotalKant = e.Items[0].NumberOfEdges.ToString();
-            ItemsDone = "0";
-        }
-
-        private void _wf_UpdateItemStatusEvent(object sender, UpdateItemStatusArgs e)
-        {
-            string edge = string.Empty;
-            TableSide = e.Items[e.CurrentItem].Side;
-            if (TableSide == "A")
-            {
-                //if (e.Item.CurrentEdge == 0)
-                //    KantA = "1";
-                //else
-                KantA = e.Items[0].CurrentEdge.ToString();
-                KantB = e.Items[1].CurrentEdge.ToString();
-                SetActiveItem(0);
-            }
-            else
-            {
-                //if (e.Item.CurrentEdge == 0)
-                //    KantB = "1";
-                //else
-                KantA = e.Items[0].CurrentEdge.ToString();
-                KantB = e.Items[1].CurrentEdge.ToString();
-
-                SetActiveItem(1);
-            }
-            TotalKant = e.Items[e.CurrentItem].NumberOfEdges.ToString();
-
-            //ItemDone = _itemsDone[_CurrentSide].ToString(); ;
         }
 
         private void _wf_LaserBusyEvent(object sender, LaserBusyEventArgs e)
@@ -204,13 +149,16 @@ namespace DCMarker
                     if (BatchesDone >= Convert.ToInt32(Quantity))
                     {
                         // we are done with the order/batch.
-                        _wf.ResetArticleReady();
+                        // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+                        _wf.SetArticleReady();    // Hög
                         _wf.ResetNextToLast();
                         ResetInputValues();
                         Log.Debug(GlblRes.OrderBatch_is_done);
                         OrderNotStarted = true;
                         OrderInProgress = true;
                         Status = GlblRes.Order_is_done;
+                        if (cfg.EnableOrderKlarPrompt)
+                            RaiseDisplayMsgEvent(GlblRes.Order_is_done);
                     }
                 }
             }
@@ -262,108 +210,202 @@ namespace DCMarker
             Fixture = e.Data.Fixture;
             HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
             ArticleNumber = e.Data.ArticleNumber;
-            //Kant = e.Data.Kant;
-            HasKant = string.IsNullOrWhiteSpace(KantA) ? false : true;
-            //TotalKant = e.Data.TotalKant;
+            Kant = e.Data.Kant;
+            HasKant = string.IsNullOrWhiteSpace(Kant) ? false : true;
             HasTOnr = e.Data.HasTOnr;
             HasBatchSize = e.Data.HasBatchSize;
             NeedUserInput = e.Data.NeedUserInput;
             Status = e.Data.Status;
-            //TableSide = TableName[e.Data.CurrentItem];
-            CurrentSide = e.Data.CurrentItem;
-        }
-
-        private void SetActiveItem(int side)
-        {
-            if (side == 0)
-            {
-                IsActiveA = ACTIVEBRUSH;
-                IsActiveB = INACTIVEBRUSH;
-            }
-            else
-            {
-                IsActiveA = INACTIVEBRUSH;
-                IsActiveB = ACTIVEBRUSH;
-            }
-        }
-
-        private Brush _IsActiveA;
-
-        public Brush IsActiveA
-        {
-            get
-            {
-                return _IsActiveA;
-            }
-            set
-            {
-                _IsActiveA = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private Brush _IsActiveB;
-
-        public Brush IsActiveB
-        {
-            get
-            {
-                return _IsActiveB;
-            }
-            set
-            {
-                _IsActiveB = value;
-                NotifyPropertyChanged();
-            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
-        private string _TableSide;
+        private ICommand _ArticleChanged;
 
-        public string TableSide
+        public ICommand ArticleChanged
         {
             get
             {
-                return _TableSide;
+                return _ArticleChanged;
             }
             set
             {
-                _TableSide = value;
+                _ArticleChanged = value;
                 NotifyPropertyChanged();
             }
         }
 
-        private string _ItemDone;
+        private ICommand _LoadArticleCommand;
 
-        public string ItemsDone
+        public ICommand LoadArticleCommand
         {
             get
             {
-                return _ItemDone;
-            }
-            set
-            {
-                _ItemDone = value;
-                NotifyPropertyChanged();
+                if (_LoadArticleCommand == null)
+                {
+                    _LoadArticleCommand = new RelayCommand(
+                        p => this.CanLoadArticleCommandExecute(),
+                        p => this.DoLoadArticleCommand());
+                }
+                return _LoadArticleCommand;
             }
         }
 
-        private int _CurrentSide;
+        private string DoLoadArticleCommand()
+        {
+            string result = null;
 
-        public int CurrentSide
+            ErrorMessage = string.Empty;
+            Status = string.Empty;
+            if (!string.IsNullOrWhiteSpace(ArticleNumber))
+            {
+                List<Article> dbResult = _wf.GetArticle(ArticleNumber);
+                if (dbResult.Count > 0)
+                {
+                    Fixture = dbResult[0].FixtureId;
+                    HasFixture = string.IsNullOrWhiteSpace(Fixture) ? false : true;
+
+                    bool? enableTO = dbResult[0].EnableTO;
+                    // only have to check on the first Edge/Kant
+                    HasTOnr = enableTO.HasValue ? enableTO.Value : false;
+                    TOnr = string.Empty;
+
+                    if (dbResult.Count > 1)
+                    {
+                        // the article has edges/kant
+                        //HasKant = true;
+                        ErrorMessage = GlblRes.Edge_marking_is_not_supported_in_this_version;
+                        result = ErrorMessage;
+                    }
+                    else
+                    {
+                        HasKant = false;
+                    }
+                    ArticleFound = true;
+                }
+                else
+                {
+                    // the article doesn't exists show an error!!!
+                    ErrorMessage = string.Format(GlblRes.Article_does_not_exist_in_database, DCConfig.Instance.MaskinId);
+                    result = ErrorMessage;
+
+                    HasTOnr = false;
+                    ArticleFound = false;
+                }
+            }
+            return result;
+        }
+
+        private bool CanLoadArticleCommandExecute()
+        {
+            return true;
+        }
+
+        private ICommand _OkButtonCommand;
+
+        public ICommand OkButtonCommand
         {
             get
             {
-                return _CurrentSide;
+                if (_OkButtonCommand == null)
+                {
+                    _OkButtonCommand = new RelayCommand(
+                        p => this.CanOkButtonCommandExecute(),
+                        p => this.DoOkButtonCommand());
+                }
+                return _OkButtonCommand;
             }
-            set
+        }
+
+        private bool CanOkButtonCommandExecute()
+        {
+            var result = IsValid;
+            //bool result = false;
+            //if (HasTOnr)
+            //{
+            //    result = !HasInputError; // !string.IsNullOrWhiteSpace(ArticleNumber) && !string.IsNullOrWhiteSpace(Quantity) && TOnr.Length == DCConfig.Instance.ToNumberLength;
+            //}
+            //else
+            //{
+            //    result = !string.IsNullOrWhiteSpace(ArticleNumber) && !string.IsNullOrWhiteSpace(Quantity);
+            //}
+
+            return result;
+        }
+
+        private ICommand _CancelButtonCommand;
+
+        public ICommand CancelButtonCommand
+        {
+            get
             {
-                _CurrentSide = value;
-                NotifyPropertyChanged();
+                if (_CancelButtonCommand == null)
+                {
+                    _CancelButtonCommand = new RelayCommand(
+                        p => this.CanCancelButtonCommandExecute(),
+                        p => this.DoCancelButtonCommand());
+                }
+                return _CancelButtonCommand;
             }
+        }
+
+        private bool CanCancelButtonCommandExecute()
+        {
+            return true;
+        }
+
+        private void DoCancelButtonCommand()
+        {
+            ErrorMessage = string.Empty;
+
+            // av någon anledning blir ArticleReady signalen tvärt emot Hög blir låg, låg blir hög
+            _wf.ResetArticleReady();
+            _wf.ResetNextToLast();
+            ResetInputValues();
+            Status = string.Empty;
+
+            // TODO remove this since we don't use it.... // AME 2017-06-13
+            OrderInProgress = true;
+            OrderNotStarted = true;
+        }
+
+        public bool ArticleFound { get; set; }
+
+        private void DoOkButtonCommand()
+        {
+            int test;
+            if (int.TryParse(Quantity, out test) && ArticleFound)
+            {
+                ErrorMessage = string.Empty;
+                Article article = new Article()
+                {
+                    F1 = ArticleNumber,
+                    Kant = Kant,
+                    MaskinID = DCConfig.Instance.MaskinId,
+                    FixtureId = Fixture,
+                    EnableTO = HasTOnr,
+                    TOnumber = TOnr,
+                    Template = string.Empty,
+                    IsTestItemSelected = IsTestItemSelected
+                };
+                BatchesDone = 0;
+                //OrderInProgress = false;
+                OrderNotStarted = false;
+
+                _wf.UpdateWorkflow(article);
+                if (cfg.FirstMarkingResetZ)
+                    _wf.FirstMarkingResetZ = true;
+                else
+                    _wf.FirstMarkingResetZ = false;
+                Status = GlblRes.Waiting_for_product;
+            }
+            else
+            {
+                ErrorMessage = GlblRes.Both_Article_number_and_quantity_must_be_entered;
+            }
+            //ResetZAxis();
         }
 
         private bool _OrderInProgress;
@@ -448,7 +490,6 @@ namespace DCMarker
                 }
 
                 _articleNumber = value;
-                DoLoadArticleCommand();
                 NotifyPropertyChanged();
             }
         }
@@ -584,8 +625,6 @@ namespace DCMarker
             {
                 _hasTOnr = value;
                 NotifyPropertyChanged();
-
-                RaiseFocusEventEvent("TO-Number");
             }
         }
 
@@ -602,45 +641,15 @@ namespace DCMarker
             }
         }
 
-        public string KantA
+        public string Kant
         {
             get
             {
-                return _KantA;
+                return _kant;
             }
             set
             {
-                _KantA = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private string _KantB;
-
-        public string KantB
-        {
-            get
-            {
-                return _KantB;
-            }
-            set
-            {
-                _KantB = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private string _TotalKant;
-
-        public string TotalKant
-        {
-            get
-            {
-                return _TotalKant;
-            }
-            set
-            {
-                _TotalKant = value;
+                _kant = value;
                 NotifyPropertyChanged();
             }
         }
@@ -699,21 +708,6 @@ namespace DCMarker
             }
         }
 
-        private bool _IsCareful;
-
-        public bool IsCareful
-        {
-            get
-            {
-                return _IsCareful;
-            }
-            set
-            {
-                _IsCareful = value;
-                NotifyPropertyChanged();
-            }
-        }
-
         #region IDataErrorInfo
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
@@ -721,8 +715,7 @@ namespace DCMarker
         {
             get
             {
-                return string.Empty;
-                //throw new NotImplementedException();
+                throw new NotImplementedException();
             }
         }
 
@@ -731,7 +724,7 @@ namespace DCMarker
             get { var error = GetValidationError(propertyName); return error; }
         }
 
-        private static readonly string[] ValidatedProperties = { "ArticleNumber", "TOnr" };
+        private static readonly string[] ValidatedProperties = { "ArticleNumber", "TOnr", "Quantity" };
 
         /// <summary>
         /// Contains the valid state of the Validated Properties.
@@ -844,14 +837,10 @@ namespace DCMarker
                 {
                     result = "!"; // string.Empty; // "TO Number is required";
                 }
-
-#if false
-                // No limits on the length for this machine!
                 else if (TOnr.Length != DCConfig.Instance.ToNumberLength)
                 {
                     result = string.Format(GlblRes.TO_Number_must_be_0_characters, DCConfig.Instance.ToNumberLength);
                 }
-#endif
                 else
                 {
                     ValidatedPropertiesState[GetIndex("TOnr")] = true;
@@ -865,24 +854,6 @@ namespace DCMarker
             return result;
         }
 
-        #region Focus Event Event
-
-        public delegate void FocusEventHandler(string msg);
-
-        public event EventHandler<FocusEventArgs> FocusEvent;
-
-        internal void RaiseFocusEventEvent(string msg)
-        {
-            var handler = FocusEvent;
-            if (handler != null)
-            {
-                var arg = new FocusEventArgs(msg);
-                handler(null, arg);
-            }
-        }
-
-        #endregion Focus Event Event
-
         #endregion IDataErrorInfo
 
         private string _articleNumber;
@@ -894,7 +865,7 @@ namespace DCMarker
         private bool _hasKant;
         private bool _hasTestItem;
         private bool _hasTOnr;
-        private string _KantA;
+        private string _kant;
         private string _status;
         private string _testItem;
         private string _TOnr;
@@ -910,5 +881,33 @@ namespace DCMarker
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        #region Display Message Event
+
+        public delegate void DisplayMsgHandler(string msg);
+
+        public event EventHandler<DisplayMsgArgs> DisplayMsgEvent;
+
+        internal void RaiseDisplayMsgEvent(string msg)
+        {
+            var handler = DisplayMsgEvent;
+            if (handler != null)
+            {
+                var arg = new DisplayMsgArgs(msg);
+                handler(null, arg);
+            }
+        }
+
+        public class DisplayMsgArgs : EventArgs
+        {
+            public DisplayMsgArgs(string msg)
+            {
+                Text = msg;
+            }
+
+            public string Text { get; private set; }
+        }
+
+        #endregion Display Message Event
     }
 }
